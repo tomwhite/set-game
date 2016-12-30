@@ -114,12 +114,12 @@ public class CardDetector {
 
 
     // size of the blur kernel. square region with a width of radius*2 + 1
-    int radius = 8;
+    int radius = 16;
     GrayU8 median = BlurImageOps.median(gray, blurred, radius);
     //panel.addImage(ConvertBufferedImage.convertTo(blurred, null, true),"Median");
 
     // convert into a usable format
-    GrayU8 input = blurred;
+    GrayU8 input = median;
     GrayU8 binary = new GrayU8(input.width,input.height);
     GrayS32 label = new GrayS32(input.width,input.height);
 
