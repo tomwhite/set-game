@@ -7,19 +7,24 @@ import boofcv.alg.filter.binary.GThresholdImageOps;
 import boofcv.alg.filter.binary.ThresholdImageOps;
 import boofcv.alg.filter.blur.BlurImageOps;
 import boofcv.alg.filter.blur.GBlurImageOps;
+import boofcv.alg.shapes.ShapeFittingOps;
 import boofcv.factory.feature.detect.edge.FactoryEdgeDetectors;
 import boofcv.factory.filter.blur.FactoryBlurFilter;
 import boofcv.gui.ListDisplayPanel;
 import boofcv.gui.binary.VisualizeBinaryData;
+import boofcv.gui.feature.VisualizeShapes;
 import boofcv.gui.image.ShowImages;
 import boofcv.io.image.ConvertBufferedImage;
 import boofcv.io.image.UtilImageIO;
 import boofcv.struct.ConnectRule;
+import boofcv.struct.PointIndex_I32;
 import boofcv.struct.image.GrayF32;
 import boofcv.struct.image.GrayS16;
 import boofcv.struct.image.GrayS32;
 import boofcv.struct.image.GrayU8;
+import georegression.struct.point.Point2D_I32;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -104,6 +109,10 @@ public class CardDetector {
 
   }
 
+  // Polynomial fitting tolerances
+  static double splitFraction = 0.05;
+  static double minimumSideFraction = 0.1;
+
   public void scan2(String filename) throws IOException {
     BufferedImage image = UtilImageIO.loadImage(filename);
 
@@ -127,7 +136,7 @@ public class CardDetector {
     double threshold = GThresholdImageOps.computeOtsu(input, 0, 255);
 
     // Apply the threshold to create a binary image
-    ThresholdImageOps.threshold(input, binary, (int) threshold, true);
+    ThresholdImageOps.threshold(input, binary, (int) threshold, false); // "down=false" to find exterior contours
 
     // remove small blobs through erosion and dilation
     // The null in the input indicates that it should internally declare the work image it needs
@@ -149,11 +158,34 @@ public class CardDetector {
     BufferedImage visualContour = VisualizeBinaryData.renderContours(contours, colorExternal, colorInternal,
             input.width, input.height, null);
 
+    // polygons
+    BufferedImage polygon = new BufferedImage(input.width,input.height,BufferedImage.TYPE_INT_RGB);
+    // Fit a polygon to each shape and draw the results
+    Graphics2D g2 = polygon.createGraphics();
+    g2.setStroke(new BasicStroke(2));
+    for( Contour c : contours ) {
+      // Fit the polygon to the found external contour.  Note loop = true
+      List<PointIndex_I32> vertexes = ShapeFittingOps.fitPolygon(c.external, true,
+              splitFraction, minimumSideFraction, 100);
+
+      g2.setColor(Color.RED);
+      VisualizeShapes.drawPolygon(vertexes, true, g2);
+      // TODO: what if polygon is not a quadrilateral
+
+      // handle internal contours now
+      g2.setColor(Color.BLUE);
+      for( List<Point2D_I32> internal : c.internal ) {
+        vertexes = ShapeFittingOps.fitPolygon(internal,true, splitFraction, minimumSideFraction,100);
+        VisualizeShapes.drawPolygon(vertexes,true,g2);
+      }
+    }
+
     ListDisplayPanel panel = new ListDisplayPanel();
     panel.addImage(visualBinary, "Binary Original");
     panel.addImage(visualFiltered, "Binary Filtered");
     panel.addImage(visualLabel, "Labeled Blobs");
     panel.addImage(visualContour, "Contours");
+    panel.addImage(polygon, "Binary Blob Contours");
     ShowImages.showWindow(panel,"Binary Operations",true);
 
   }
