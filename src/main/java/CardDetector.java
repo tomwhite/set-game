@@ -109,8 +109,17 @@ public class CardDetector {
 
     // from http://boofcv.org/index.php?title=Example_Binary_Image
 
+    GrayU8 gray = ConvertBufferedImage.convertFromSingle(image, null, GrayU8.class);
+    GrayU8 blurred = gray.createSameShape();
+
+
+    // size of the blur kernel. square region with a width of radius*2 + 1
+    int radius = 8;
+    GrayU8 median = BlurImageOps.median(gray, blurred, radius);
+    //panel.addImage(ConvertBufferedImage.convertTo(blurred, null, true),"Median");
+
     // convert into a usable format
-    GrayF32 input = ConvertBufferedImage.convertFromSingle(image, null, GrayF32.class);
+    GrayU8 input = blurred;
     GrayU8 binary = new GrayU8(input.width,input.height);
     GrayS32 label = new GrayS32(input.width,input.height);
 
@@ -118,7 +127,7 @@ public class CardDetector {
     double threshold = GThresholdImageOps.computeOtsu(input, 0, 255);
 
     // Apply the threshold to create a binary image
-    ThresholdImageOps.threshold(input, binary, (float) threshold, true);
+    ThresholdImageOps.threshold(input, binary, (int) threshold, true);
 
     // remove small blobs through erosion and dilation
     // The null in the input indicates that it should internally declare the work image it needs
