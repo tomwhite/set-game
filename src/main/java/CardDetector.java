@@ -1,4 +1,5 @@
 import boofcv.abst.filter.blur.BlurFilter;
+import boofcv.alg.distort.RemovePerspectiveDistortion;
 import boofcv.alg.feature.detect.edge.CannyEdge;
 import boofcv.alg.feature.detect.edge.EdgeContour;
 import boofcv.alg.filter.binary.BinaryImageOps;
@@ -18,10 +19,8 @@ import boofcv.io.image.ConvertBufferedImage;
 import boofcv.io.image.UtilImageIO;
 import boofcv.struct.ConnectRule;
 import boofcv.struct.PointIndex_I32;
-import boofcv.struct.image.GrayF32;
-import boofcv.struct.image.GrayS16;
-import boofcv.struct.image.GrayS32;
-import boofcv.struct.image.GrayU8;
+import boofcv.struct.image.*;
+import georegression.struct.point.Point2D_F64;
 import georegression.struct.point.Point2D_I32;
 
 import java.awt.*;
@@ -101,10 +100,16 @@ public class CardDetector {
     // Fit a polygon to each shape and draw the results
     Graphics2D g2 = polygon.createGraphics();
     g2.setStroke(new BasicStroke(2));
+
+    List<PointIndex_I32> v = null;
+
     for( Contour c : contours ) {
       // Fit the polygon to the found external contour.  Note loop = true
       List<PointIndex_I32> vertexes = ShapeFittingOps.fitPolygon(c.external, true,
               splitFraction, minimumSideFraction, 100);
+      if (v == null) {
+        v = vertexes; // set first vertexes
+      }
 
       g2.setColor(Color.RED);
       VisualizeShapes.drawPolygon(vertexes, true, g2);
@@ -118,6 +123,34 @@ public class CardDetector {
       }
     }
 
+
+    // Remove perspective distortion
+    // see http://boofcv.org/index.php?title=Example_Remove_Perspective_Distortion
+    Planar<GrayF32> input2 = ConvertBufferedImage.convertFromMulti(image, null, true, GrayF32.class);
+
+    RemovePerspectiveDistortion<Planar<GrayF32>> removePerspective =
+            new RemovePerspectiveDistortion<>(400, 500, ImageType.pl(3, GrayF32.class));
+
+    // Specify the corners in the input image of the region.
+    // Order matters! top-left, top-right, bottom-right, bottom-left
+    Point2D_I32 p0 = v.get(0);
+    Point2D_I32 p1 = v.get(1);
+    Point2D_I32 p2 = v.get(2);
+    Point2D_I32 p3 = v.get(3);
+    System.out.println(p0);
+    System.out.println(p1);
+    System.out.println(p2);
+    System.out.println(p3);
+    if( !removePerspective.apply(input2,
+            new Point2D_F64(p0.getX(), p0.getY()), new Point2D_F64(p1.getX(), p1.getY()),
+            new Point2D_F64(p2.getX(), p2.getY()), new Point2D_F64(p3.getX(), p3.getY())) ){
+      throw new RuntimeException("Failed!?!?");
+    }
+
+    Planar<GrayF32> output = removePerspective.getOutput();
+
+    BufferedImage flat = ConvertBufferedImage.convertTo_F32(output,null,true);
+
     if (debug) {
       ListDisplayPanel panel = new ListDisplayPanel();
       panel.addImage(visualBinary, "Binary Original");
@@ -125,6 +158,7 @@ public class CardDetector {
       panel.addImage(visualLabel, "Labeled Blobs");
       panel.addImage(visualContour, "Contours");
       panel.addImage(polygon, "Binary Blob Contours");
+      panel.addImage(flat,"Without Perspective Distortion");
       ShowImages.showWindow(panel, "Binary Operations", true);
     }
 
