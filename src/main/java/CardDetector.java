@@ -128,8 +128,9 @@ public class CardDetector {
     // see http://boofcv.org/index.php?title=Example_Remove_Perspective_Distortion
     Planar<GrayF32> input2 = ConvertBufferedImage.convertFromMulti(image, null, true, GrayF32.class);
 
+    // actual cards measure 57 mm x 89 mm
     RemovePerspectiveDistortion<Planar<GrayF32>> removePerspective =
-            new RemovePerspectiveDistortion<>(400, 500, ImageType.pl(3, GrayF32.class));
+            new RemovePerspectiveDistortion<>(57 * 3, 89 * 3, ImageType.pl(3, GrayF32.class));
 
     // Specify the corners in the input image of the region.
     // Order matters! top-left, top-right, bottom-right, bottom-left
@@ -151,6 +152,8 @@ public class CardDetector {
     Planar<GrayF32> output = removePerspective.getOutput();
 
     BufferedImage flat = ConvertBufferedImage.convertTo_F32(output,null,true);
+
+    UtilImageIO.saveImage(flat, "/tmp/flat.png");
 
     if (debug) {
       ListDisplayPanel panel = new ListDisplayPanel();
