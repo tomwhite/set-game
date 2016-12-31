@@ -49,73 +49,11 @@ public class CardDetector {
     scan(originalImage, false);
   }
 
-  public void scan(BufferedImage originalImage, boolean debug) throws IOException {
-    // TODO
-
-    ListDisplayPanel panel = new ListDisplayPanel();
-
-    GrayU8 gray = ConvertBufferedImage.convertFromSingle(originalImage, null, GrayU8.class);
-    GrayU8 blurred = gray.createSameShape();
-
-
-    // size of the blur kernel. square region with a width of radius*2 + 1
-    int radius = 8;
-
-    // Apply gaussian blur using a procedural interface
-    GBlurImageOps.gaussian(gray, blurred, -1, radius, null);
-    panel.addImage(ConvertBufferedImage.convertTo(blurred, null, true),"Gaussian");
-
-    // Apply a mean filter using an object oriented interface.  This has the advantage of automatically
-    // recycling memory used in intermediate steps
-    BlurFilter<GrayU8> filterMean = FactoryBlurFilter.mean(GrayU8.class, radius);
-    filterMean.process(gray, blurred);
-    panel.addImage(ConvertBufferedImage.convertTo(blurred, null, true),"Mean");
-
-    // Apply a median filter using image type specific procedural interface.  Won't work if the type
-    // isn't known at compile time
-    GrayU8 median = BlurImageOps.median(gray, blurred, radius);
-    panel.addImage(ConvertBufferedImage.convertTo(blurred, null, true),"Median");
-
-    GrayU8 filtered = BinaryImageOps.erode8(gray, 1, null);
-    filtered = BinaryImageOps.dilate8(filtered, 1, null);
-    panel.addImage(ConvertBufferedImage.convertTo(filtered, null, true),"filtered");
-
-    // Canny edge
-    GrayU8 edgeImage = gray.createSameShape();
-    CannyEdge<GrayU8,GrayS16> canny = FactoryEdgeDetectors.canny(2,true, true, GrayU8.class, GrayS16.class);
-    // The edge image is actually an optional parameter.  If you don't need it just pass in null
-    canny.process(median,0.1f,0.3f,edgeImage);
-
-    // First get the contour created by canny
-    List<EdgeContour> edgeContours = canny.getContours();
-    // The 'edgeContours' is a tree graph that can be difficult to process.  An alternative is to extract
-    // the contours from the binary image, which will produce a single loop for each connected cluster of pixels.
-    // Note that you are only interested in external contours.
-    List<Contour> contours = BinaryImageOps.contour(edgeImage, ConnectRule.EIGHT, null);
-
-    BufferedImage visualBinary = VisualizeBinaryData.renderBinary(edgeImage, false, null);
-    BufferedImage visualCannyContour = VisualizeBinaryData.renderContours(edgeContours,null,
-            gray.width,gray.height,null);
-
-    int colorExternal = 0xFFFFFF;
-    int colorInternal = 0xFF2020;
-    BufferedImage visualEdgeContour = VisualizeBinaryData.renderContours(contours, colorExternal, colorInternal,
-            gray.width, gray.height, null);
-    panel.addImage(visualBinary,"Binary Edges from Canny");
-    panel.addImage(visualCannyContour, "Canny Trace Graph");
-    panel.addImage(visualEdgeContour,"Contour from Canny Binary");
-
-    ShowImages.showWindow(panel,"Image Blur Examples",true);
-
-  }
-
   // Polynomial fitting tolerances
   static double splitFraction = 0.05;
   static double minimumSideFraction = 0.1;
 
-  public void scan2(String filename) throws IOException {
-    BufferedImage image = UtilImageIO.loadImage(filename);
-
+  public void scan(BufferedImage image, boolean debug) throws IOException {
     // from http://boofcv.org/index.php?title=Example_Binary_Image
 
     GrayU8 gray = ConvertBufferedImage.convertFromSingle(image, null, GrayU8.class);
@@ -180,17 +118,19 @@ public class CardDetector {
       }
     }
 
-    ListDisplayPanel panel = new ListDisplayPanel();
-    panel.addImage(visualBinary, "Binary Original");
-    panel.addImage(visualFiltered, "Binary Filtered");
-    panel.addImage(visualLabel, "Labeled Blobs");
-    panel.addImage(visualContour, "Contours");
-    panel.addImage(polygon, "Binary Blob Contours");
-    ShowImages.showWindow(panel,"Binary Operations",true);
+    if (debug) {
+      ListDisplayPanel panel = new ListDisplayPanel();
+      panel.addImage(visualBinary, "Binary Original");
+      panel.addImage(visualFiltered, "Binary Filtered");
+      panel.addImage(visualLabel, "Labeled Blobs");
+      panel.addImage(visualContour, "Contours");
+      panel.addImage(polygon, "Binary Blob Contours");
+      ShowImages.showWindow(panel, "Binary Operations", true);
+    }
 
   }
 
   public static void main(String[] args) throws IOException {
-    new CardDetector().scan2(args[0]);
+    new CardDetector().scan(args[0], true);
   }
 }
