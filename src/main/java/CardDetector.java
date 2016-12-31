@@ -1,16 +1,10 @@
-import boofcv.abst.filter.blur.BlurFilter;
 import boofcv.alg.distort.RemovePerspectiveDistortion;
-import boofcv.alg.feature.detect.edge.CannyEdge;
-import boofcv.alg.feature.detect.edge.EdgeContour;
 import boofcv.alg.filter.binary.BinaryImageOps;
 import boofcv.alg.filter.binary.Contour;
 import boofcv.alg.filter.binary.GThresholdImageOps;
 import boofcv.alg.filter.binary.ThresholdImageOps;
 import boofcv.alg.filter.blur.BlurImageOps;
-import boofcv.alg.filter.blur.GBlurImageOps;
 import boofcv.alg.shapes.ShapeFittingOps;
-import boofcv.factory.feature.detect.edge.FactoryEdgeDetectors;
-import boofcv.factory.filter.blur.FactoryBlurFilter;
 import boofcv.gui.ListDisplayPanel;
 import boofcv.gui.binary.VisualizeBinaryData;
 import boofcv.gui.feature.VisualizeShapes;
@@ -21,7 +15,6 @@ import boofcv.struct.ConnectRule;
 import boofcv.struct.PointIndex_I32;
 import boofcv.struct.image.*;
 import georegression.geometry.UtilPolygons2D_F64;
-import georegression.geometry.UtilPolygons2D_I32;
 import georegression.struct.point.Point2D_F64;
 import georegression.struct.point.Point2D_I32;
 import georegression.struct.shapes.Polygon2D_F64;
@@ -29,10 +22,7 @@ import georegression.struct.shapes.Quadrilateral_F64;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 /**
