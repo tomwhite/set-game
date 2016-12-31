@@ -133,6 +133,7 @@ public class CardDetector {
 
     // Specify the corners in the input image of the region.
     // Order matters! top-left, top-right, bottom-right, bottom-left
+    // TODO: make sure order is correct (and not stretching card)
     Point2D_I32 p0 = v.get(0);
     Point2D_I32 p1 = v.get(1);
     Point2D_I32 p2 = v.get(2);
