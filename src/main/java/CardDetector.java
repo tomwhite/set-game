@@ -140,6 +140,7 @@ public class CardDetector {
 
     if (debug) {
       ListDisplayPanel panel = new ListDisplayPanel();
+      panel.addImage(image, "Original");
       panel.addImage(visualBinary, "Binary Original");
       panel.addImage(visualFiltered, "Binary Filtered");
       panel.addImage(visualLabel, "Labeled Blobs");
