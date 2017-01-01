@@ -1,4 +1,3 @@
-import boofcv.alg.distort.RemovePerspectiveDistortion;
 import boofcv.alg.filter.binary.BinaryImageOps;
 import boofcv.alg.filter.binary.Contour;
 import boofcv.alg.filter.binary.GThresholdImageOps;
@@ -14,11 +13,8 @@ import boofcv.io.image.UtilImageIO;
 import boofcv.struct.ConnectRule;
 import boofcv.struct.PointIndex_I32;
 import boofcv.struct.image.*;
-import georegression.geometry.UtilPolygons2D_F64;
 import georegression.metric.Area2D_F64;
-import georegression.struct.point.Point2D_F64;
 import georegression.struct.point.Point2D_I32;
-import georegression.struct.shapes.Polygon2D_F64;
 import georegression.struct.shapes.Quadrilateral_F64;
 
 import java.awt.*;
@@ -28,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalDouble;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Extract a standardised card (or cards) from an image.
@@ -93,7 +88,6 @@ public class CardDetector {
     }
 
     List<BufferedImage> cardImages = new ArrayList<>();
-
     List<List<PointIndex_I32>> quads = new ArrayList<>();
     for( Contour c : contours ) {
       // Fit the polygon to the found external contour.  Note loop = true
@@ -120,14 +114,14 @@ public class CardDetector {
     // Only include shapes that are within given percentage of the mean area. This filters out image artifacts that
     // happen to be quadrilaterals that are not cards (since they are usually a different size).
     int areaTolerancePct = 20;
-    List<Quadrilateral_F64> quadrilaterals = quads.stream().map(CardDetector::toQuadrilateral).collect(Collectors.toList());
+    List<Quadrilateral_F64> quadrilaterals = quads.stream().map(GeometryUtils::toQuadrilateral).collect(Collectors.toList());
     OptionalDouble meanArea = quadrilaterals.stream().mapToDouble(Area2D_F64::quadrilateral).average();
     quadrilaterals.stream().filter(q -> {
       double m = meanArea.getAsDouble();
       return Math.abs(Area2D_F64.quadrilateral(q) - m) / m <= areaTolerancePct / 100.0;
     }).forEach(q -> {
         // Remove perspective distortion
-        Planar<GrayF32> output = removePerspectiveDistortion(image, q);
+        Planar<GrayF32> output = GeometryUtils.removePerspectiveDistortion(image, q, 57 * 3, 89 * 3); // actual cards measure 57 mm x 89 mm
         BufferedImage flat = ConvertBufferedImage.convertTo_F32(output, null, true);
         cardImages.add(flat);
         // UtilImageIO.saveImage(flat, "/tmp/flat.png");
@@ -164,61 +158,6 @@ public class CardDetector {
 
     return cardImages;
 
-  }
-
-  private static Quadrilateral_F64 toQuadrilateral(List<PointIndex_I32> quadrilateral) {
-    if (!GeometryUtils.isQuadrilateral(quadrilateral)) {
-      throw new IllegalArgumentException("Not a quadrilateral: " + quadrilateral);
-    }
-
-    // Specify the corners in the input image of the region.
-    // Order matters! top-left, top-right, bottom-right, bottom-left
-    Point2D_I32 p0 = quadrilateral.get(0);
-    Point2D_I32 p1 = quadrilateral.get(1);
-    Point2D_I32 p2 = quadrilateral.get(2);
-    Point2D_I32 p3 = quadrilateral.get(3);
-    Polygon2D_F64 poly = new Polygon2D_F64(p0.getX(), p0.getY(), p1.getX(), p1.getY(), p2.getX(), p2.getY(), p3.getX(), p3.getY());
-    if (poly.isCCW()) {
-      poly.flip();
-    }
-    Quadrilateral_F64 quad = new Quadrilateral_F64();
-    UtilPolygons2D_F64.convert(poly, quad);
-
-    return quad;
-  }
-
-  private static Planar<GrayF32> removePerspectiveDistortion(BufferedImage image, Quadrilateral_F64 quad) {
-
-    // see http://boofcv.org/index.php?title=Example_Remove_Perspective_Distortion
-    Planar<GrayF32> input2 = ConvertBufferedImage.convertFromMulti(image, null, true, GrayF32.class);
-
-    // actual cards measure 57 mm x 89 mm
-    RemovePerspectiveDistortion<Planar<GrayF32>> removePerspective =
-            new RemovePerspectiveDistortion<>(57 * 3, 89 * 3, ImageType.pl(3, GrayF32.class));
-
-    double len1 = quad.getSideLength(0) + quad.getSideLength(2);
-    double len2 = quad.getSideLength(1) + quad.getSideLength(3);
-    Point2D_F64 corner0, corner1, corner2, corner3;
-    if (len1 > len2) {
-      corner0 = quad.b;
-      corner1 = quad.c;
-      corner2 = quad.d;
-      corner3 = quad.a;
-    } else {
-      corner0 = quad.a;
-      corner1 = quad.b;
-      corner2 = quad.c;
-      corner3 = quad.d;
-    }
-//    System.out.println(p0);
-//    System.out.println(p1);
-//    System.out.println(p2);
-//    System.out.println(p3);
-    if( !removePerspective.apply(input2, corner0, corner1, corner2, corner3) ){
-      throw new RuntimeException("Failed!?!?");
-    }
-
-    return removePerspective.getOutput();
   }
 
   public static void main(String[] args) throws IOException {
