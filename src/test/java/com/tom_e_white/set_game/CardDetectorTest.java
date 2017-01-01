@@ -30,7 +30,7 @@ public class CardDetectorTest {
     @Test
     public void testErrantBorder() throws IOException {
         // this image has a border with some artifacts that may be detected as quadrilaterals
-        List<BufferedImage> images = cardDetector.scan("data/train/purple-1-20170101_124559.jpg");
+        List<BufferedImage> images = cardDetector.scan("data/purple-1-20170101_124559.jpg");
         assertEquals(9, images.size());
     }
 

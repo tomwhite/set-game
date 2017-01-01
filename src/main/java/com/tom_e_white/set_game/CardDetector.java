@@ -116,12 +116,14 @@ public class CardDetector {
     // Only include shapes that are within given percentage of the mean area. This filters out image artifacts that
     // happen to be quadrilaterals that are not cards (since they are usually a different size).
     int areaTolerancePct = 20;
-    List<Quadrilateral_F64> quadrilaterals = quads.stream().map(GeometryUtils::toQuadrilateral).collect(Collectors.toList());
-    OptionalDouble meanArea = quadrilaterals.stream().mapToDouble(Area2D_F64::quadrilateral).average();
-    quadrilaterals.stream().filter(q -> {
+    List<Quadrilateral_F64> allQuadrilaterals = quads.stream().map(GeometryUtils::toQuadrilateral).collect(Collectors.toList());
+    OptionalDouble meanArea = allQuadrilaterals.stream().mapToDouble(Area2D_F64::quadrilateral).average();
+    List<Quadrilateral_F64> cards = allQuadrilaterals.stream().filter(q -> {
       double m = meanArea.getAsDouble();
       return Math.abs(Area2D_F64.quadrilateral(q) - m) / m <= areaTolerancePct / 100.0;
-    }).forEach(q -> {
+    }).collect(Collectors.toList());
+    cards = GeometryUtils.sortRowWise(cards); // sort into a stable order
+    cards.stream().forEach(q -> {
         // Remove perspective distortion
         Planar<GrayF32> output = GeometryUtils.removePerspectiveDistortion(image, q, 57 * 3, 89 * 3); // actual cards measure 57 mm x 89 mm
         BufferedImage flat = ConvertBufferedImage.convertTo_F32(output, null, true);
