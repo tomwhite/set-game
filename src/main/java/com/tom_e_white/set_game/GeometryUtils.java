@@ -1,3 +1,5 @@
+package com.tom_e_white.set_game;
+
 import boofcv.alg.distort.RemovePerspectiveDistortion;
 import boofcv.io.image.ConvertBufferedImage;
 import boofcv.struct.PointIndex_I32;

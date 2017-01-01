@@ -1,3 +1,5 @@
+package com.tom_e_white.set_game;
+
 import boofcv.alg.filter.binary.BinaryImageOps;
 import boofcv.alg.filter.binary.Contour;
 import boofcv.alg.filter.binary.GThresholdImageOps;

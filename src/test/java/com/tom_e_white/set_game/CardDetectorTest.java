@@ -1,3 +1,6 @@
+package com.tom_e_white.set_game;
+
+import com.tom_e_white.set_game.CardDetector;
 import org.junit.Test;
 
 import java.awt.image.BufferedImage;
