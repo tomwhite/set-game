@@ -95,20 +95,17 @@ public class CardDetector {
       List<PointIndex_I32> vertexes = ShapeFittingOps.fitPolygon(c.external, true,
               splitFraction, minimumSideFraction, 100);
 
-      // Remove perspective distortion
-      Planar<GrayF32> output = removePerspectiveDistortion(image, vertexes);
-      BufferedImage flat = ConvertBufferedImage.convertTo_F32(output,null,true);
-      cardImages.add(flat);
-
-      // UtilImageIO.saveImage(flat, "/tmp/flat.png");
+      if (GeometryUtils.isQuadrilateral(vertexes)) {
+        // Remove perspective distortion
+        Planar<GrayF32> output = removePerspectiveDistortion(image, vertexes);
+        BufferedImage flat = ConvertBufferedImage.convertTo_F32(output, null, true);
+        cardImages.add(flat);
+        // UtilImageIO.saveImage(flat, "/tmp/flat.png");
+      }
 
       if (debug) {
         g2.setColor(Color.RED);
         VisualizeShapes.drawPolygon(vertexes, true, g2);
-        if (!GeometryUtils.isQuadrilateral(vertexes)) {
-          // TODO: what if polygon is not a quadrilateral
-          System.err.println("Warning: not a quadrilateral: " + vertexes);
-        }
 
         // handle internal contours now
         g2.setColor(Color.BLUE);
@@ -189,10 +186,10 @@ public class CardDetector {
       corner2 = quad.c;
       corner3 = quad.d;
     }
-    System.out.println(p0);
-    System.out.println(p1);
-    System.out.println(p2);
-    System.out.println(p3);
+//    System.out.println(p0);
+//    System.out.println(p1);
+//    System.out.println(p2);
+//    System.out.println(p3);
     if( !removePerspective.apply(input2, corner0, corner1, corner2, corner3) ){
       throw new RuntimeException("Failed!?!?");
     }
