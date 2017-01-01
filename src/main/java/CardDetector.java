@@ -78,22 +78,14 @@ public class CardDetector {
     // Detect blobs inside the image using an 8-connect rule
     List<Contour> contours = BinaryImageOps.contour(filtered, ConnectRule.EIGHT, label);
 
-    // colors of contours
-    int colorExternal = 0xFFFFFF;
-    int colorInternal = 0xFF2020;
-
-    // display the results
-    BufferedImage visualBinary = VisualizeBinaryData.renderBinary(binary, false, null);
-    BufferedImage visualFiltered = VisualizeBinaryData.renderBinary(filtered, false, null);
-    BufferedImage visualLabel = VisualizeBinaryData.renderLabeledBG(label, contours.size(), null);
-    BufferedImage visualContour = VisualizeBinaryData.renderContours(contours, colorExternal, colorInternal,
-            input.width, input.height, null);
-
+    Graphics2D g2 = null;
     // polygons
-    BufferedImage polygon = new BufferedImage(input.width,input.height,BufferedImage.TYPE_INT_RGB);
-    // Fit a polygon to each shape and draw the results
-    Graphics2D g2 = polygon.createGraphics();
-    g2.setStroke(new BasicStroke(2));
+    BufferedImage polygon = new BufferedImage(input.width, input.height, BufferedImage.TYPE_INT_RGB);
+    if (debug) {
+      // Fit a polygon to each shape and draw the results
+      g2 = polygon.createGraphics();
+      g2.setStroke(new BasicStroke(2));
+    }
 
     List<PointIndex_I32> v = null;
 
@@ -105,18 +97,20 @@ public class CardDetector {
         v = vertexes; // set first vertexes
       }
 
-      g2.setColor(Color.RED);
-      VisualizeShapes.drawPolygon(vertexes, true, g2);
-      if (!GeometryUtils.isQuadrilateral(vertexes)) {
-        // TODO: what if polygon is not a quadrilateral
-        System.err.println("Warning: not a quadrilateral: " + vertexes);
-      }
+      if (debug) {
+        g2.setColor(Color.RED);
+        VisualizeShapes.drawPolygon(vertexes, true, g2);
+        if (!GeometryUtils.isQuadrilateral(vertexes)) {
+          // TODO: what if polygon is not a quadrilateral
+          System.err.println("Warning: not a quadrilateral: " + vertexes);
+        }
 
-      // handle internal contours now
-      g2.setColor(Color.BLUE);
-      for( List<Point2D_I32> internal : c.internal ) {
-        vertexes = ShapeFittingOps.fitPolygon(internal,true, splitFraction, minimumSideFraction,100);
-        VisualizeShapes.drawPolygon(vertexes,true,g2);
+        // handle internal contours now
+        g2.setColor(Color.BLUE);
+        for (List<Point2D_I32> internal : c.internal) {
+          vertexes = ShapeFittingOps.fitPolygon(internal, true, splitFraction, minimumSideFraction, 100);
+          VisualizeShapes.drawPolygon(vertexes, true, g2);
+        }
       }
     }
 
@@ -129,6 +123,19 @@ public class CardDetector {
     UtilImageIO.saveImage(flat, "/tmp/flat.png");
 
     if (debug) {
+
+      // colors of contours
+      int colorExternal = 0xFFFFFF;
+      int colorInternal = 0xFF2020;
+
+      // display the results
+      BufferedImage visualBinary = VisualizeBinaryData.renderBinary(binary, false, null);
+      BufferedImage visualFiltered = VisualizeBinaryData.renderBinary(filtered, false, null);
+      BufferedImage visualLabel = VisualizeBinaryData.renderLabeledBG(label, contours.size(), null);
+      BufferedImage visualContour = VisualizeBinaryData.renderContours(contours, colorExternal, colorInternal,
+              input.width, input.height, null);
+
+
       ListDisplayPanel panel = new ListDisplayPanel();
       panel.addImage(image, "Original");
       panel.addImage(visualBinary, "Binary Original");
