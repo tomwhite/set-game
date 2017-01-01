@@ -27,7 +27,7 @@ public class CardDetectorTest {
     @Test
     public void test() throws IOException {
         CardDetector cardDetector = new CardDetector();
-        File[] files = new File("data").listFiles((dir, name) -> name.matches("2016.*\\.jpg"));
+        File[] files = new File("data/train").listFiles();
         for (File file : files) {
             System.out.println(file);
             List<BufferedImage> images = cardDetector.scan(file.getAbsolutePath());
