@@ -23,6 +23,7 @@ import georegression.struct.shapes.Quadrilateral_F64;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,23 +31,23 @@ import java.util.List;
  */
 public class CardDetector {
 
-  public void scan(String filename) throws IOException {
-    scan(UtilImageIO.loadImage(filename));
+  public List<BufferedImage> scan(String filename) throws IOException {
+    return scan(UtilImageIO.loadImage(filename));
   }
 
-  public void scan(String filename, boolean debug) throws IOException {
-    scan(UtilImageIO.loadImage(filename), debug);
+  public List<BufferedImage> scan(String filename, boolean debug) throws IOException {
+    return scan(UtilImageIO.loadImage(filename), debug);
   }
 
-  public void scan(BufferedImage originalImage) throws IOException {
-    scan(originalImage, false);
+  public List<BufferedImage> scan(BufferedImage originalImage) throws IOException {
+    return scan(originalImage, false);
   }
 
   // Polynomial fitting tolerances
   static double splitFraction = 0.05;
   static double minimumSideFraction = 0.1;
 
-  public void scan(BufferedImage image, boolean debug) throws IOException {
+  public List<BufferedImage> scan(BufferedImage image, boolean debug) throws IOException {
     // from http://boofcv.org/index.php?title=Example_Binary_Image
 
     GrayU8 gray = ConvertBufferedImage.convertFromSingle(image, null, GrayU8.class);
@@ -87,15 +88,19 @@ public class CardDetector {
       g2.setStroke(new BasicStroke(2));
     }
 
-    List<PointIndex_I32> v = null;
+    List<BufferedImage> cardImages = new ArrayList<>();
 
     for( Contour c : contours ) {
       // Fit the polygon to the found external contour.  Note loop = true
       List<PointIndex_I32> vertexes = ShapeFittingOps.fitPolygon(c.external, true,
               splitFraction, minimumSideFraction, 100);
-      if (v == null) {
-        v = vertexes; // set first vertexes
-      }
+
+      // Remove perspective distortion
+      Planar<GrayF32> output = removePerspectiveDistortion(image, vertexes);
+      BufferedImage flat = ConvertBufferedImage.convertTo_F32(output,null,true);
+      cardImages.add(flat);
+
+      // UtilImageIO.saveImage(flat, "/tmp/flat.png");
 
       if (debug) {
         g2.setColor(Color.RED);
@@ -113,14 +118,6 @@ public class CardDetector {
         }
       }
     }
-
-
-    // Remove perspective distortion
-    Planar<GrayF32> output = removePerspectiveDistortion(image, v);
-
-    BufferedImage flat = ConvertBufferedImage.convertTo_F32(output,null,true);
-
-    UtilImageIO.saveImage(flat, "/tmp/flat.png");
 
     if (debug) {
 
@@ -143,9 +140,14 @@ public class CardDetector {
       panel.addImage(visualLabel, "Labeled Blobs");
       panel.addImage(visualContour, "Contours");
       panel.addImage(polygon, "Binary Blob Contours");
-      panel.addImage(flat,"Without Perspective Distortion");
+      int i = 1;
+      for (BufferedImage card : cardImages) {
+        panel.addImage(card, "Card " + i++);
+      }
       ShowImages.showWindow(panel, "Binary Operations", true);
     }
+
+    return cardImages;
 
   }
 
