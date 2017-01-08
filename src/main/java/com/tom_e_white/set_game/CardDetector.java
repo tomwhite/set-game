@@ -1,5 +1,7 @@
 package com.tom_e_white.set_game;
 
+import boofcv.alg.color.ColorHsv;
+import boofcv.alg.color.ColorRgb;
 import boofcv.alg.filter.binary.BinaryImageOps;
 import boofcv.alg.filter.binary.Contour;
 import boofcv.alg.filter.binary.GThresholdImageOps;
@@ -156,6 +158,19 @@ public class CardDetector {
       int i = 1;
       for (BufferedImage card : cardImages) {
         panel.addImage(card, "Card " + i++);
+        Planar<GrayF32> card2 = ConvertBufferedImage.convertFromMulti(card, null, true, GrayF32.class);
+        Planar<GrayF32> hsv1 = new Planar<>(GrayF32.class,card.getWidth(),card.getHeight(),3);
+        ColorHsv.rgbToHsv_F32(card2, hsv1);
+        GrayF32 aNew = hsv1.getBand(2).createNew(hsv1.width, hsv1.height);
+        for (int x = 0; x < hsv1.width; x++) {
+          for (int y = 0; y < hsv1.height; y++) {
+            aNew.set(x, y, 200f);
+          }
+        }
+        hsv1.setBand(2, aNew);
+        ColorHsv.hsvToRgb_F32(hsv1, card2);
+        //Planar<GrayF32> hs = hsv1.partialSpectrum(0,1);
+        panel.addImage(card2, "Card HSV " + i++);
       }
       ShowImages.showWindow(panel, "Binary Operations", true);
     }
