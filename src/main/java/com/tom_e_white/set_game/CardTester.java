@@ -10,12 +10,16 @@ import boofcv.struct.image.Planar;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CardTester {
 
@@ -48,13 +52,25 @@ public class CardTester {
     public static void main(String[] args) throws IOException {
         CardDetector cardDetector = new CardDetector();
         List<BufferedImage> images = cardDetector.scan(args[0], true);
+        List<String> predictions = new ArrayList<>();
         for (BufferedImage image : images) {
-            Arrays.stream(new File("data/train-out").listFiles((dir, name) -> name.matches(".*\\.jpg"))).map(
+            Optional<ScoredCard> best = Arrays.stream(new File("data/train-out").listFiles((dir, name) -> name.matches(".*\\.jpg"))).map(
                     f -> new ScoredCard(toLabel(f.getName()), f.toString(), diff(image, UtilImageIO.loadImage(f.toString())))
-            ).sorted().forEach(System.out::println);
-//            System.out.println(best.get());
-            break;
+            ).sorted().findFirst();
+            System.out.println(best.get());
+            predictions.add(best.get().label);
         }
+
+        List<String> testLabels = Files.lines(Paths.get(args[0].replace(".jpg", ".txt"))).collect(Collectors.toList());
+
+        int score = 0;
+        for (int i = 0; i < testLabels.size(); i++) {
+            if (testLabels.get(i).equals(predictions.get(i))) {
+                score++;
+            }
+        }
+
+        System.out.println("Accuracy: " + ((int) (((double) score)/testLabels.size() * 100)) + " percent");
 //
 //        String green_1_1 = "/Users/tom/projects-workspace/set-game/data/train-out/green-1-20161231_114459_1.jpg";
 //        String green_1_2 = "/Users/tom/projects-workspace/set-game/data/train-out/green-1-20161231_114459_2.jpg";
@@ -104,24 +120,25 @@ public class CardTester {
             String colour = matcher.group(1);
             String number = matcher.group(2);
             String index = matcher.group(3);
-            return number + colour.charAt(0) + toLabel(Integer.parseInt(index));
+            return toLabel(Integer.parseInt(number), colour, Integer.parseInt(index));
         }
         throw new IllegalArgumentException("Unrecognized file: " + filename);
     }
 
-    private static String toLabel(int index) {
+    private static String toLabel(int number, String colour, int index) {
         // filled, hatched, open
         // oval, diamond, squiggle
+        String s = number == 1 ? "" : "s";
         switch (index) {
-            case 1: return "fo";
-            case 2: return "fd";
-            case 3: return "fs";
-            case 4: return "ho";
-            case 5: return "hd";
-            case 6: return "hs";
-            case 7: return "oo";
-            case 8: return "od";
-            case 9: return "os";
+            case 1: return number + " filled " + colour + " oval" + s;
+            case 2: return number + " filled " + colour + " diamond" + s;
+            case 3: return number + " filled " + colour + " squiggle" + s;
+            case 4: return number + " hatched " + colour + " oval" + s;
+            case 5: return number + " hatched " + colour + " diamond" + s;
+            case 6: return number + " hatched " + colour + " squiggle" + s;
+            case 7: return number + " open " + colour + " oval" + s;
+            case 8: return number + " open " + colour + " diamond" + s;
+            case 9: return number + " open " + colour + " squiggle" + s;
             default: throw new IllegalArgumentException("Unrecognized index " + index);
         }
     }

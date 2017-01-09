@@ -170,7 +170,12 @@ public class CardDetector {
         hsv1.setBand(2, aNew);
         ColorHsv.hsvToRgb_F32(hsv1, card2);
         //Planar<GrayF32> hs = hsv1.partialSpectrum(0,1);
-        panel.addImage(card2, "Card HSV " + i++);
+        panel.addImage(card2, "Card HSV " + i);
+
+        Planar<GrayF32> bl = card2.createSameShape();
+        BlurImageOps.median(card2, bl, 3);
+        panel.addImage(bl, "Card HSV blurred " + i);
+
       }
       ShowImages.showWindow(panel, "Binary Operations", true);
     }
