@@ -55,7 +55,7 @@ public class CardTester {
         List<String> predictions = new ArrayList<>();
         for (BufferedImage image : images) {
             Optional<ScoredCard> best = Arrays.stream(new File("data/train-out").listFiles((dir, name) -> name.matches(".*\\.jpg"))).map(
-                    f -> new ScoredCard(toLabel(f.getName()), f.toString(), diff(image, UtilImageIO.loadImage(f.toString())))
+                    f -> new ScoredCard(toLabel(f), f.toString(), diff(image, UtilImageIO.loadImage(f.toString())))
             ).sorted().findFirst();
             System.out.println(best.get());
             predictions.add(best.get().label);
@@ -112,7 +112,8 @@ public class CardTester {
         return Math.sqrt(d1 * d1 + d2 * d2 + d3 * d3);
     }
 
-    public static String toLabel(String filename) {
+    public static String toLabel(File file) {
+        String filename = file.getName();
         String reg = "([^-]+)-([^-]+).*(\\d)\\.jpg";
         Pattern pattern = Pattern.compile(reg);
         Matcher matcher = pattern.matcher(filename);
