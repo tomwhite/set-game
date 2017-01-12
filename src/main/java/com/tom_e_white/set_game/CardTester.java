@@ -2,9 +2,11 @@ package com.tom_e_white.set_game;
 
 import boofcv.alg.color.ColorHsv;
 import boofcv.alg.misc.ImageStatistics;
+import boofcv.alg.misc.PixelMath;
 import boofcv.io.image.ConvertBufferedImage;
 import boofcv.io.image.UtilImageIO;
 import boofcv.struct.image.GrayF32;
+import boofcv.struct.image.GrayU8;
 import boofcv.struct.image.Planar;
 
 import java.awt.image.BufferedImage;
@@ -55,7 +57,7 @@ public class CardTester {
         List<String> predictions = new ArrayList<>();
         for (BufferedImage image : images) {
             Optional<ScoredCard> best = Arrays.stream(new File("data/train-out").listFiles((dir, name) -> name.matches(".*\\.jpg"))).map(
-                    f -> new ScoredCard(toLabel(f), f.toString(), diff(image, UtilImageIO.loadImage(f.toString())))
+                    f -> new ScoredCard(removeColour(toLabel(f)), f.toString(), diff(image, UtilImageIO.loadImage(f.toString())))
             ).sorted().findFirst();
             System.out.println(best.get());
             predictions.add(best.get().label);
@@ -65,10 +67,14 @@ public class CardTester {
 
         int score = 0;
         for (int i = 0; i < testLabels.size(); i++) {
-            if (testLabels.get(i).equals(predictions.get(i))) {
+            if (removeColour(testLabels.get(i)).equals(predictions.get(i))) {
                 score++;
             }
         }
+        System.out.println("Test labels: ");
+        testLabels.stream().forEach(System.out::println);
+        System.out.println("Predicted labels: ");
+        predictions.stream().forEach(System.out::println);
 
         System.out.println("Accuracy: " + ((int) (((double) score)/testLabels.size() * 100)) + " percent");
 //
@@ -85,7 +91,7 @@ public class CardTester {
 //        ).sorted().forEach(System.out::println);
     }
 
-    private static double diff(BufferedImage image1, BufferedImage image2) {
+    private static double diffOld(BufferedImage image1, BufferedImage image2) {
         Planar<GrayF32> input1 = ConvertBufferedImage.convertFromMulti(image1, null, true, GrayF32.class);
         Planar<GrayF32> input2 = ConvertBufferedImage.convertFromMulti(image2, null, true, GrayF32.class);
 
@@ -112,7 +118,15 @@ public class CardTester {
         return Math.sqrt(d1 * d1 + d2 * d2 + d3 * d3);
     }
 
-    public static String toLabel(File file) {
+    private static double diff(BufferedImage image1, BufferedImage image2) {
+        GrayU8 gray1 = ConvertBufferedImage.convertFromSingle(image1, null, GrayU8.class);
+        GrayU8 gray2 = ConvertBufferedImage.convertFromSingle(image2, null, GrayU8.class);
+        GrayU8 diff = gray1.createSameShape();
+
+        return ImageStatistics.meanDiffAbs(gray1, gray2);
+    }
+
+        public static String toLabel(File file) {
         String filename = file.getName();
         String reg = "([^-]+)-([^-]+).*(\\d)\\.jpg";
         Pattern pattern = Pattern.compile(reg);
@@ -142,5 +156,9 @@ public class CardTester {
             case 9: return number + " open " + colour + " squiggle" + s;
             default: throw new IllegalArgumentException("Unrecognized index " + index);
         }
+    }
+
+    private static String removeColour(String label) {
+        return label.replace("red ", "").replace("green ", "").replace("purple ", "");
     }
 }
