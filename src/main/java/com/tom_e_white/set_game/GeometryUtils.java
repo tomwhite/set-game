@@ -8,6 +8,7 @@ import boofcv.struct.image.ImageType;
 import boofcv.struct.image.Planar;
 import georegression.geometry.UtilPoint2D_F64;
 import georegression.geometry.UtilPolygons2D_F64;
+import georegression.metric.Area2D_F64;
 import georegression.struct.point.Point2D_F64;
 import georegression.struct.point.Point2D_I32;
 import georegression.struct.shapes.Polygon2D_F64;
@@ -131,5 +132,13 @@ public class GeometryUtils {
 
     private static double distance(Point2D_F64 p) {
         return p.distance(0, 0);
+    }
+
+    public static List<Quadrilateral_F64> filterByArea(List<Quadrilateral_F64> quads, int areaTolerancePct) {
+        OptionalDouble meanArea = quads.stream().mapToDouble(Area2D_F64::quadrilateral).average();
+        return quads.stream().filter(q -> {
+            double m = meanArea.getAsDouble();
+            return Math.abs(Area2D_F64.quadrilateral(q) - m) / m <= areaTolerancePct / 100.0;
+        }).collect(Collectors.toList());
     }
 }

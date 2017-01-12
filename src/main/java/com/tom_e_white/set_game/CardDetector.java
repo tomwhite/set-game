@@ -54,44 +54,25 @@ public class CardDetector {
     // from http://boofcv.org/index.php?title=Example_Binary_Image
 
     GrayU8 gray = ConvertBufferedImage.convertFromSingle(image, null, GrayU8.class);
-    GrayU8 blurred = gray.createSameShape();
-
-
-    // size of the blur kernel. square region with a width of radius*2 + 1
-    int radius = 16;
-    GrayU8 median = BlurImageOps.median(gray, blurred, radius);
-    //panel.addImage(ConvertBufferedImage.convertTo(blurred, null, true),"Median");
-
-    // convert into a usable format
-    GrayU8 input = median;
-    GrayU8 binary = new GrayU8(input.width,input.height);
-    GrayS32 label = new GrayS32(input.width,input.height);
-
-    // Select a global threshold using Otsu's method.
-    double threshold = GThresholdImageOps.computeOtsu(input, 0, 255);
-
-    // Apply the threshold to create a binary image
-    ThresholdImageOps.threshold(input, binary, (int) threshold, false); // "down=false" to find exterior contours
-
+    GrayU8 median = ImageUtils.medianBlur(gray, 16);
+    GrayU8 binary = ImageUtils.binarize(median, 0, 255);
     // remove small blobs through erosion and dilation
-    // The null in the input indicates that it should internally declare the work image it needs
-    // this is less efficient, but easier to code.
-    GrayU8 filtered = BinaryImageOps.erode8(binary, 1, null);
-    filtered = BinaryImageOps.dilate8(filtered, 1, null);
+    GrayU8 eroded = BinaryImageOps.erode8(binary, 1, null);
+    GrayU8 filtered = BinaryImageOps.dilate8(eroded, 1, null);
 
     // Detect blobs inside the image using an 8-connect rule
+    GrayS32 label = new GrayS32(gray.width,gray.height);
     List<Contour> contours = BinaryImageOps.contour(filtered, ConnectRule.EIGHT, label);
 
     Graphics2D g2 = null;
     // polygons
-    BufferedImage polygon = new BufferedImage(input.width, input.height, BufferedImage.TYPE_INT_RGB);
+    BufferedImage polygon = new BufferedImage(gray.width, gray.height, BufferedImage.TYPE_INT_RGB);
     if (debug) {
       // Fit a polygon to each shape and draw the results
       g2 = polygon.createGraphics();
       g2.setStroke(new BasicStroke(2));
     }
 
-    List<BufferedImage> cardImages = new ArrayList<>();
     List<List<PointIndex_I32>> quads = new ArrayList<>();
     for( Contour c : contours ) {
       // Fit the polygon to the found external contour.  Note loop = true
@@ -117,22 +98,15 @@ public class CardDetector {
 
     // Only include shapes that are within given percentage of the mean area. This filters out image artifacts that
     // happen to be quadrilaterals that are not cards (since they are usually a different size).
-    int areaTolerancePct = 20;
     List<Quadrilateral_F64> allQuadrilaterals = quads.stream().map(GeometryUtils::toQuadrilateral).collect(Collectors.toList());
-    OptionalDouble meanArea = allQuadrilaterals.stream().mapToDouble(Area2D_F64::quadrilateral).average();
-    List<Quadrilateral_F64> cards = allQuadrilaterals.stream().filter(q -> {
-      double m = meanArea.getAsDouble();
-      return Math.abs(Area2D_F64.quadrilateral(q) - m) / m <= areaTolerancePct / 100.0;
-    }).collect(Collectors.toList());
+    List<Quadrilateral_F64> cards = GeometryUtils.filterByArea(allQuadrilaterals, 20);
     cards = GeometryUtils.sortRowWise(cards); // sort into a stable order
-    cards.stream().forEach(q -> {
-        // Remove perspective distortion
-        Planar<GrayF32> output = GeometryUtils.removePerspectiveDistortion(image, q, 57 * 3, 89 * 3); // actual cards measure 57 mm x 89 mm
-        BufferedImage flat = ConvertBufferedImage.convertTo_F32(output, null, true);
-        cardImages.add(flat);
-        // UtilImageIO.saveImage(flat, "/tmp/flat.png");
-      }
-    );
+    List<BufferedImage> cardImages = cards.stream().map(q -> {
+              // Remove perspective distortion
+              Planar<GrayF32> output = GeometryUtils.removePerspectiveDistortion(image, q, 57 * 3, 89 * 3); // actual cards measure 57 mm x 89 mm
+              return ConvertBufferedImage.convertTo_F32(output, null, true);
+            }
+    ).collect(Collectors.toList());
 
     if (debug) {
 
@@ -145,7 +119,7 @@ public class CardDetector {
       BufferedImage visualFiltered = VisualizeBinaryData.renderBinary(filtered, false, null);
       BufferedImage visualLabel = VisualizeBinaryData.renderLabeledBG(label, contours.size(), null);
       BufferedImage visualContour = VisualizeBinaryData.renderContours(contours, colorExternal, colorInternal,
-              input.width, input.height, null);
+              gray.width, gray.height, null);
 
 
       ListDisplayPanel panel = new ListDisplayPanel();
