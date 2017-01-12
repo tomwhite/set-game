@@ -1,5 +1,6 @@
 package com.tom_e_white.set_game;
 
+import boofcv.alg.color.ColorHsv;
 import boofcv.alg.filter.binary.BinaryImageOps;
 import boofcv.alg.filter.binary.GThresholdImageOps;
 import boofcv.alg.filter.binary.ThresholdImageOps;
@@ -11,7 +12,9 @@ import boofcv.gui.binary.VisualizeBinaryData;
 import boofcv.gui.image.ShowImages;
 import boofcv.io.image.ConvertBufferedImage;
 import boofcv.io.image.UtilImageIO;
+import boofcv.struct.image.GrayF32;
 import boofcv.struct.image.GrayU8;
+import boofcv.struct.image.Planar;
 
 import java.awt.image.BufferedImage;
 
@@ -39,6 +42,8 @@ public class CardDiff {
         ListDisplayPanel panel = new ListDisplayPanel();
         panel.addImage(image1, "Image 1");
         panel.addImage(image2, "Image 2");
+        panel.addImage(removeV(image1), "Image 1 no V");
+        panel.addImage(removeV(image2), "Image 2     no V");
         panel.addImage(visualBinary1, "Gray 1");
         panel.addImage(visualBinary2, "Gray 2");
         panel.addImage(visualBinaryDiff, "Diff");
@@ -65,5 +70,16 @@ public class CardDiff {
         GrayU8 filtered = BinaryImageOps.dilate8(gray, 1, null);
 
         return gray;
+    }
+
+    private static Planar<GrayF32> removeV(BufferedImage image) {
+        Planar<GrayF32> input = ConvertBufferedImage.convertFromMulti(image, null, true, GrayF32.class);
+        Planar<GrayF32> hsv = new Planar<>(GrayF32.class,input.getWidth(),input.getHeight(),3);
+        ColorHsv.rgbToHsv_F32(input, hsv);
+        GrayF32 vBand = hsv.getBand(2);
+        PixelMath.boundImage(vBand, 200, 200);
+        Planar<GrayF32> output = input.createSameShape();
+        ColorHsv.hsvToRgb_F32(hsv, output);
+        return output;
     }
 }
