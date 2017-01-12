@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Use {@link CardDetector} to create a training set of cards.
+ */
 public class CreateTrainingSet {
     public static void main(String[] args) {
         CardDetector cardDetector = new CardDetector();

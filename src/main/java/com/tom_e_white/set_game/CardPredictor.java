@@ -23,7 +23,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CardTester {
+/**
+ * Try to predict cards from a test image.
+ */
+public class CardPredictor {
 
     public static class ScoredCard implements Comparable<ScoredCard> {
         private String label;

@@ -18,6 +18,10 @@ import boofcv.struct.image.Planar;
 
 import java.awt.image.BufferedImage;
 
+/**
+ * Small program to do diffs between images, and render the differences. Also useful for trying out different
+ * pre-processing steps.
+ */
 public class CardDiff {
     public static void main(String[] args) {
         //BufferedImage image1 = UtilImageIO.loadImage("data/train-out/green-1-20161231_114459_1.jpg");

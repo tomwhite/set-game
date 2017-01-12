@@ -10,6 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+/**
+ * Take the images created by {@link CreateTrainingData} and extract Hue and Saturation histograms from them.
+ * The resulting data can be used a to train a model (using kNN or SVM) for predicting the colour of a card.
+ */
 public class CreateTrainingData {
     public static void main(String[] args) throws IOException {
         Stream<String> stream = Arrays.stream(new File("data/train-out").listFiles((dir, name) -> name.matches(".*\\.jpg")))
@@ -30,7 +34,7 @@ public class CreateTrainingData {
     }
 
     private static int getColourNumber(File file) {
-        String colourString = CardTester.toLabel(file).split(" ")[2];
+        String colourString = CardPredictor.toLabel(file).split(" ")[2];
         switch (colourString) {
             case "red": return 1;
             case "purple": return 2;
