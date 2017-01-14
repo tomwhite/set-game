@@ -1,13 +1,7 @@
 package com.tom_e_white.set_game;
 
-import boofcv.alg.color.ColorHsv;
-import boofcv.alg.color.ColorRgb;
 import boofcv.alg.filter.binary.BinaryImageOps;
 import boofcv.alg.filter.binary.Contour;
-import boofcv.alg.filter.binary.GThresholdImageOps;
-import boofcv.alg.filter.binary.ThresholdImageOps;
-import boofcv.alg.filter.blur.BlurImageOps;
-import boofcv.alg.shapes.ShapeFittingOps;
 import boofcv.gui.ListDisplayPanel;
 import boofcv.gui.binary.VisualizeBinaryData;
 import boofcv.gui.feature.VisualizeShapes;
@@ -17,16 +11,12 @@ import boofcv.io.image.UtilImageIO;
 import boofcv.struct.ConnectRule;
 import boofcv.struct.PointIndex_I32;
 import boofcv.struct.image.*;
-import georegression.metric.Area2D_F64;
-import georegression.struct.point.Point2D_I32;
 import georegression.struct.shapes.Quadrilateral_F64;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.OptionalDouble;
 import java.util.stream.Collectors;
 
 /**
@@ -46,12 +36,8 @@ public class CardDetector {
     return scan(originalImage, false);
   }
 
-  // Polynomial fitting tolerances
-  static double splitFraction = 0.05;
-  static double minimumSideFraction = 0.1;
-
   public List<BufferedImage> scan(BufferedImage image, boolean debug) throws IOException {
-    // from http://boofcv.org/index.php?title=Example_Binary_Image
+    // Based on code from http://boofcv.org/index.php?title=Example_Binary_Image
 
     GrayU8 gray = ConvertBufferedImage.convertFromSingle(image, null, GrayU8.class);
     GrayU8 median = ImageUtils.medianBlur(gray, 16);
@@ -64,42 +50,21 @@ public class CardDetector {
     GrayS32 label = new GrayS32(gray.width,gray.height);
     List<Contour> contours = BinaryImageOps.contour(filtered, ConnectRule.EIGHT, label);
 
-    Graphics2D g2 = null;
-    // polygons
-    BufferedImage polygon = new BufferedImage(gray.width, gray.height, BufferedImage.TYPE_INT_RGB);
-    if (debug) {
-      // Fit a polygon to each shape and draw the results
-      g2 = polygon.createGraphics();
-      g2.setStroke(new BasicStroke(2));
-    }
+    // Find polygons
+    double splitFraction = 0.05;
+    double minimumSideFraction = 0.1;
+    List<List<PointIndex_I32>> externalContours = GeometryUtils.getExternalContours(contours, splitFraction, minimumSideFraction);
+    List<List<PointIndex_I32>> internalContours = GeometryUtils.getInternalContours(contours, splitFraction, minimumSideFraction);
 
-    List<List<PointIndex_I32>> quads = new ArrayList<>();
-    for( Contour c : contours ) {
-      // Fit the polygon to the found external contour.  Note loop = true
-      List<PointIndex_I32> vertexes = ShapeFittingOps.fitPolygon(c.external, true,
-              splitFraction, minimumSideFraction, 100);
-
-      if (GeometryUtils.isQuadrilateral(vertexes)) {
-        quads.add(vertexes);
-      }
-
-      if (debug) {
-        g2.setColor(Color.RED);
-        VisualizeShapes.drawPolygon(vertexes, true, g2);
-
-        // handle internal contours now
-        g2.setColor(Color.BLUE);
-        for (List<Point2D_I32> internal : c.internal) {
-          vertexes = ShapeFittingOps.fitPolygon(internal, true, splitFraction, minimumSideFraction, 100);
-          VisualizeShapes.drawPolygon(vertexes, true, g2);
-        }
-      }
-    }
+    // Filter to quadrilaterals
+    List<Quadrilateral_F64> quads = externalContours.stream()
+            .filter(GeometryUtils::isQuadrilateral)
+            .map(GeometryUtils::toQuadrilateral)
+            .collect(Collectors.toList());
 
     // Only include shapes that are within given percentage of the mean area. This filters out image artifacts that
     // happen to be quadrilaterals that are not cards (since they are usually a different size).
-    List<Quadrilateral_F64> allQuadrilaterals = quads.stream().map(GeometryUtils::toQuadrilateral).collect(Collectors.toList());
-    List<Quadrilateral_F64> cards = GeometryUtils.filterByArea(allQuadrilaterals, 20);
+    List<Quadrilateral_F64> cards = GeometryUtils.filterByArea(quads, 20);
     cards = GeometryUtils.sortRowWise(cards); // sort into a stable order
     List<BufferedImage> cardImages = cards.stream().map(q -> {
               // Remove perspective distortion
@@ -121,6 +86,21 @@ public class CardDetector {
       BufferedImage visualContour = VisualizeBinaryData.renderContours(contours, colorExternal, colorInternal,
               gray.width, gray.height, null);
 
+      // polygons
+      BufferedImage polygon = new BufferedImage(gray.width, gray.height, BufferedImage.TYPE_INT_RGB);
+      // Fit a polygon to each shape and draw the results
+      Graphics2D g2 = polygon.createGraphics();
+      g2.setStroke(new BasicStroke(2));
+
+      for (List<PointIndex_I32> vertexes : externalContours) {
+        g2.setColor(Color.RED);
+        VisualizeShapes.drawPolygon(vertexes, true, g2);
+      }
+      for (List<PointIndex_I32> vertexes : internalContours) {
+        // handle internal contours now
+        g2.setColor(Color.BLUE);
+        VisualizeShapes.drawPolygon(vertexes, true, g2);
+      }
 
       ListDisplayPanel panel = new ListDisplayPanel();
       panel.addImage(image, "Original");
@@ -132,24 +112,6 @@ public class CardDetector {
       int i = 1;
       for (BufferedImage card : cardImages) {
         panel.addImage(card, "Card " + i++);
-        Planar<GrayF32> card2 = ConvertBufferedImage.convertFromMulti(card, null, true, GrayF32.class);
-        Planar<GrayF32> hsv1 = new Planar<>(GrayF32.class,card.getWidth(),card.getHeight(),3);
-        ColorHsv.rgbToHsv_F32(card2, hsv1);
-        GrayF32 aNew = hsv1.getBand(2).createNew(hsv1.width, hsv1.height);
-        for (int x = 0; x < hsv1.width; x++) {
-          for (int y = 0; y < hsv1.height; y++) {
-            aNew.set(x, y, 200f);
-          }
-        }
-        hsv1.setBand(2, aNew);
-        ColorHsv.hsvToRgb_F32(hsv1, card2);
-        //Planar<GrayF32> hs = hsv1.partialSpectrum(0,1);
-        panel.addImage(card2, "Card HSV " + i);
-
-        Planar<GrayF32> bl = card2.createSameShape();
-        BlurImageOps.median(card2, bl, 3);
-        panel.addImage(bl, "Card HSV blurred " + i);
-
       }
       ShowImages.showWindow(panel, "Binary Operations", true);
     }

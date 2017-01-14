@@ -1,6 +1,8 @@
 package com.tom_e_white.set_game;
 
 import boofcv.alg.distort.RemovePerspectiveDistortion;
+import boofcv.alg.filter.binary.Contour;
+import boofcv.alg.shapes.ShapeFittingOps;
 import boofcv.io.image.ConvertBufferedImage;
 import boofcv.struct.PointIndex_I32;
 import boofcv.struct.image.GrayF32;
@@ -21,6 +23,30 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class GeometryUtils {
+
+    public static List<List<PointIndex_I32>> getExternalContours(List<Contour> contours, double splitFraction, double minimumSideFraction) {
+        List<List<PointIndex_I32>> externalContours = new ArrayList<>();
+        for( Contour c : contours ) {
+            // Fit the polygon to the found external contour.  Note loop = true
+            List<PointIndex_I32> vertexes = ShapeFittingOps.fitPolygon(c.external, true,
+                    splitFraction, minimumSideFraction, 100);
+            externalContours.add(vertexes);
+        }
+        return externalContours;
+    }
+
+    public static List<List<PointIndex_I32>> getInternalContours(List<Contour> contours, double splitFraction, double minimumSideFraction) {
+        List<List<PointIndex_I32>> internalContours = new ArrayList<>();
+        for( Contour c : contours ) {
+            for (List<Point2D_I32> internal : c.internal) {
+                List<PointIndex_I32> vertexes = ShapeFittingOps.fitPolygon(internal, true,
+                        splitFraction, minimumSideFraction, 100);
+                internalContours.add(vertexes);
+            }
+        }
+        return internalContours;
+    }
+
     public static boolean isQuadrilateral(List<PointIndex_I32> vertexes) {
         return vertexes.size() == 4;
     }
