@@ -16,10 +16,10 @@ public class ImageUtils {
 
     public static GrayU8 binarize(GrayU8 input, int minValue, int maxValue) {
         // Select a global threshold using Otsu's method.
-        double threshold = GThresholdImageOps.computeOtsu(input, 0, 255);
+        double threshold = GThresholdImageOps.computeOtsu(input, minValue, maxValue);
 
         // Apply the threshold to create a binary image
-        return ThresholdImageOps.threshold(input, null, (int) threshold, true); // "down=false" to find exterior contours
+        return ThresholdImageOps.threshold(input, null, (int) threshold, false); // "down=false" to find exterior contours
     }
 
     public static GrayU8 findEdges(GrayU8 input) {
