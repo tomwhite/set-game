@@ -41,13 +41,14 @@ public class CardFeatureCounter {
             .gray()
             .medianBlur(3) // this is fairly critical
             .edges()
+            .dilate()
             .contours()
             .polygons(0.05, 0.05)
             .getExternalBoundingBoxes();
 
     int expectedWidth = 40 * 3; // 40mm
     int expectedHeight = 20 * 3; // 20mm
-    int tolerancePct = 20;
+    int tolerancePct = 40;
     List<RectangleLength2D_F32> shapes = boxes.stream()
             .filter(b -> {
 //              System.out.println(Math.abs(b.getWidth() - expectedWidth) / expectedWidth);
