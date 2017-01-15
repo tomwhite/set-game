@@ -39,7 +39,7 @@ public class CardFeatureCounter {
 
     List<RectangleLength2D_F32> boxes = ImageProcessingPipeline.fromBufferedImage(image, panel)
             .gray()
-            .medianBlur(3)
+            .medianBlur(3) // this is fairly critical
             .edges()
             .contours()
             .polygons(0.05, 0.05)
