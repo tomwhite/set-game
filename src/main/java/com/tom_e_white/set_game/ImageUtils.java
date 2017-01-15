@@ -22,7 +22,7 @@ public class ImageUtils {
         return ThresholdImageOps.threshold(input, null, (int) threshold, false); // "down=false" to find exterior contours
     }
 
-    public static GrayU8 findEdges(GrayU8 input) {
+    public static GrayU8 edges(GrayU8 input) {
         GrayU8 edgeImage = input.createSameShape();
         CannyEdge<GrayU8, GrayS16> canny = FactoryEdgeDetectors.canny(2, true, true, GrayU8.class, GrayS16.class);
         canny.process(input, 0.1f, 0.2f, edgeImage);

@@ -10,10 +10,19 @@ import boofcv.struct.ConnectRule;
 import boofcv.struct.PointIndex_I32;
 import boofcv.struct.image.GrayS32;
 import boofcv.struct.image.GrayU8;
+import georegression.geometry.UtilPoint2D_F32;
+import georegression.geometry.UtilPoint2D_F64;
+import georegression.struct.point.Point2D_F32;
+import georegression.struct.point.Point2D_I32;
 import georegression.struct.shapes.Quadrilateral_F64;
+import georegression.struct.shapes.Rectangle2D_F32;
+import georegression.struct.shapes.RectangleLength2D_F32;
+import georegression.struct.shapes.RectangleLength2D_F64;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,6 +68,12 @@ public class ImageProcessingPipeline {
         public GrayImageProcessor binarize(int minValue, int maxValue) {
             GrayU8 newImage = ImageUtils.binarize(image, minValue, maxValue);
             addImageToPanel(newImage, String.format("Binarize (min %d, max %d)", minValue, maxValue));
+            return new GrayImageProcessor(newImage);
+        }
+
+        public GrayImageProcessor edges() {
+            GrayU8 newImage = ImageUtils.edges(image);
+            addImageToPanel(newImage, String.format("Edges"));
             return new GrayImageProcessor(newImage);
         }
 
@@ -143,6 +158,20 @@ public class ImageProcessingPipeline {
             return externalContours.stream()
                     .filter(GeometryUtils::isQuadrilateral)
                     .map(GeometryUtils::toQuadrilateral)
+                    .collect(Collectors.toList());
+        }
+
+        public List<RectangleLength2D_F32> getExternalBoundingBoxes() {
+            return externalContours.stream()
+                    .filter(c -> c.size() > 1)
+                    .map(c -> {
+                        List<Point2D_F32> points = new ArrayList<>();
+                        for (PointIndex_I32 p : c) {
+                            points.add(new Point2D_F32(p.x, p.y));
+                        }
+                        return points;
+                    })
+                    .map(c -> UtilPoint2D_F32.bounding(c, new RectangleLength2D_F32()))
                     .collect(Collectors.toList());
         }
     }
