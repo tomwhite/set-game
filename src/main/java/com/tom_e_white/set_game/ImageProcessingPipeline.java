@@ -95,7 +95,7 @@ public class ImageProcessingPipeline {
             List<Contour> contours = BinaryImageOps.contour(image, ConnectRule.EIGHT, label);
             if (panel != null) {
                 panel.addImage(VisualizeBinaryData.renderLabeledBG(label, contours.size(), null),
-                        String.format("Labelled blobs (n=%d)", contours.size()));
+                        String.format("Labelled contours (n=%d)", contours.size()));
             }
             return new ContoursProcessor(contours, image.width, image.height);
         }
@@ -132,7 +132,7 @@ public class ImageProcessingPipeline {
                     g2.setColor(Color.BLUE);
                     VisualizeShapes.drawPolygon(vertexes, true, g2);
                 }
-                panel.addImage(polygon, "External (red) and internal (blue) Contours");
+                panel.addImage(polygon, "External (red) and internal (blue) contours");
             }
 
             return new ContourPolygonsProcessor(externalContours, internalContours);
