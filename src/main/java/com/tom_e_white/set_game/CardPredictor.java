@@ -1,8 +1,6 @@
 package com.tom_e_white.set_game;
 
-import boofcv.alg.color.ColorHsv;
 import boofcv.alg.misc.ImageStatistics;
-import boofcv.alg.misc.PixelMath;
 import boofcv.io.image.ConvertBufferedImage;
 import boofcv.io.image.UtilImageIO;
 import boofcv.struct.image.GrayF32;
@@ -21,7 +19,6 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Try to predict cards from a test image.

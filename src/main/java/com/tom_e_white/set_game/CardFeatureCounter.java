@@ -3,11 +3,8 @@ package com.tom_e_white.set_game;
 import boofcv.gui.ListDisplayPanel;
 import boofcv.gui.image.ShowImages;
 import boofcv.io.image.UtilImageIO;
-import boofcv.struct.PointIndex_I32;
 import georegression.metric.Intersection2D_F32;
-import georegression.struct.shapes.Rectangle2D_F32;
 import georegression.struct.shapes.RectangleLength2D_F32;
-import georegression.struct.shapes.RectangleLength2D_F64;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;

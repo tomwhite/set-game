@@ -8,7 +8,6 @@ import boofcv.struct.PointIndex_I32;
 import boofcv.struct.image.GrayF32;
 import boofcv.struct.image.ImageType;
 import boofcv.struct.image.Planar;
-import georegression.geometry.UtilPoint2D_F64;
 import georegression.geometry.UtilPolygons2D_F64;
 import georegression.metric.Area2D_F64;
 import georegression.struct.point.Point2D_F64;
@@ -20,7 +19,6 @@ import georegression.struct.shapes.Rectangle2D_F64;
 import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class GeometryUtils {
 

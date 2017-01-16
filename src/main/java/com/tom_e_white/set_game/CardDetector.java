@@ -4,7 +4,8 @@ import boofcv.gui.ListDisplayPanel;
 import boofcv.gui.image.ShowImages;
 import boofcv.io.image.ConvertBufferedImage;
 import boofcv.io.image.UtilImageIO;
-import boofcv.struct.image.*;
+import boofcv.struct.image.GrayF32;
+import boofcv.struct.image.Planar;
 import georegression.struct.shapes.Quadrilateral_F64;
 
 import java.awt.image.BufferedImage;

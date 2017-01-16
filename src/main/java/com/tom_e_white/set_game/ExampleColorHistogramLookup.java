@@ -8,7 +8,6 @@ import boofcv.alg.feature.color.Histogram_F64;
 import boofcv.gui.ListDisplayPanel;
 import boofcv.gui.image.ScaleOptions;
 import boofcv.gui.image.ShowImages;
-import boofcv.io.UtilIO;
 import boofcv.io.image.ConvertBufferedImage;
 import boofcv.io.image.UtilImageIO;
 import boofcv.misc.BoofMiscOps;

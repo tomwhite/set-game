@@ -11,18 +11,13 @@ import boofcv.struct.PointIndex_I32;
 import boofcv.struct.image.GrayS32;
 import boofcv.struct.image.GrayU8;
 import georegression.geometry.UtilPoint2D_F32;
-import georegression.geometry.UtilPoint2D_F64;
 import georegression.struct.point.Point2D_F32;
-import georegression.struct.point.Point2D_I32;
 import georegression.struct.shapes.Quadrilateral_F64;
-import georegression.struct.shapes.Rectangle2D_F32;
 import georegression.struct.shapes.RectangleLength2D_F32;
-import georegression.struct.shapes.RectangleLength2D_F64;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
