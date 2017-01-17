@@ -21,15 +21,15 @@ public class CardFeatureCounter {
     return scan(UtilImageIO.loadImage(filename));
   }
 
-  public int scan(String filename, boolean debug) throws IOException {
+  private int scan(String filename, boolean debug) throws IOException {
     return scan(UtilImageIO.loadImage(filename), debug);
   }
 
-  public int scan(BufferedImage originalImage) throws IOException {
+  private int scan(BufferedImage originalImage) throws IOException {
     return scan(originalImage, false);
   }
 
-  public int scan(BufferedImage image, boolean debug) throws IOException {
+  private int scan(BufferedImage image, boolean debug) throws IOException {
     // Based on code from http://boofcv.org/index.php?title=Example_Binary_Image
 
     ListDisplayPanel panel = debug ? new ListDisplayPanel() : null;

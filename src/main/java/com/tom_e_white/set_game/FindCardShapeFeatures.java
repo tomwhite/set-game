@@ -3,15 +3,10 @@ package com.tom_e_white.set_game;
 import boofcv.gui.ListDisplayPanel;
 import boofcv.gui.image.ShowImages;
 import boofcv.io.image.UtilImageIO;
-import georegression.metric.Intersection2D_F32;
-import georegression.struct.shapes.RectangleLength2D_F32;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Find features for shapes on a card.
@@ -48,15 +43,15 @@ public class FindCardShapeFeatures {
     return scan(UtilImageIO.loadImage(filename));
   }
 
-  public CardShapeFeatures scan(String filename, boolean debug) throws IOException {
+  private CardShapeFeatures scan(String filename, boolean debug) throws IOException {
     return scan(UtilImageIO.loadImage(filename), debug);
   }
 
-  public CardShapeFeatures scan(BufferedImage originalImage) throws IOException {
+  private CardShapeFeatures scan(BufferedImage originalImage) throws IOException {
     return scan(originalImage, false);
   }
 
-  public CardShapeFeatures scan(BufferedImage image, boolean debug) throws IOException {
+  private CardShapeFeatures scan(BufferedImage image, boolean debug) throws IOException {
     // Based on code from http://boofcv.org/index.php?title=Example_Binary_Image
 
     ListDisplayPanel panel = debug ? new ListDisplayPanel() : null;

@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -21,11 +19,9 @@ public class CreateShapeTrainingData {
                             try {
                                 FindCardShapeFeatures findCardShapeFeatures = new FindCardShapeFeatures();
                                 FindCardShapeFeatures.CardShapeFeatures cardShapeFeatures = findCardShapeFeatures.scan(file.getAbsolutePath());
-                                StringBuilder sb = new StringBuilder();
-                                sb.append(getShapeNumber(file)).append(",");
-                                sb.append(cardShapeFeatures.getNumSides()).append(",");
-                                sb.append(cardShapeFeatures.isConvex() ? "1" : "0");
-                                return sb.toString();
+                                return String.valueOf(getShapeNumber(file)) + "," +
+                                        cardShapeFeatures.getNumSides() + "," +
+                                        (cardShapeFeatures.isConvex() ? "1" : "0");
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }

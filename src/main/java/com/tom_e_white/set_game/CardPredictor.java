@@ -72,9 +72,9 @@ public class CardPredictor {
             }
         }
         System.out.println("Test labels: ");
-        testLabels.stream().forEach(System.out::println);
+        testLabels.forEach(System.out::println);
         System.out.println("Predicted labels: ");
-        predictions.stream().forEach(System.out::println);
+        predictions.forEach(System.out::println);
 
         System.out.println("Accuracy: " + ((int) (((double) score)/testLabels.size() * 100)) + " percent");
 //

@@ -26,11 +26,11 @@ public class CardDetector {
     return scan(UtilImageIO.loadImage(filename), debug);
   }
 
-  public List<BufferedImage> scan(BufferedImage originalImage) throws IOException {
+  private List<BufferedImage> scan(BufferedImage originalImage) throws IOException {
     return scan(originalImage, false);
   }
 
-  public List<BufferedImage> scan(BufferedImage image, boolean debug) throws IOException {
+  private List<BufferedImage> scan(BufferedImage image, boolean debug) throws IOException {
     // Based on code from http://boofcv.org/index.php?title=Example_Binary_Image
 
     ListDisplayPanel panel = debug ? new ListDisplayPanel() : null;

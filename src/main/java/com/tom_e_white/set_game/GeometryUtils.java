@@ -106,10 +106,6 @@ public class GeometryUtils {
               corner3 = quad.d;
           }
       }
-  //    System.out.println(p0);
-  //    System.out.println(p1);
-  //    System.out.println(p2);
-  //    System.out.println(p3);
       if(!removePerspective.apply(input2, corner0, corner1, corner2, corner3)){
         throw new RuntimeException("Failed!?!?");
       }
