@@ -12,6 +12,7 @@ import boofcv.struct.image.GrayS32;
 import boofcv.struct.image.GrayU8;
 import georegression.geometry.UtilPoint2D_F32;
 import georegression.struct.point.Point2D_F32;
+import georegression.struct.shapes.Polygon2D_F32;
 import georegression.struct.shapes.Quadrilateral_F64;
 import georegression.struct.shapes.RectangleLength2D_F32;
 
@@ -153,6 +154,21 @@ public class ImageProcessingPipeline {
             return externalContours.stream()
                     .filter(GeometryUtils::isQuadrilateral)
                     .map(GeometryUtils::toQuadrilateral)
+                    .collect(Collectors.toList());
+        }
+
+        public List<Polygon2D_F32> getExternalPolygons() {
+            return externalContours.stream()
+                    .filter(c -> c.size() > 1)
+                    .map(c -> {
+                        int i = 0;
+                        float[] points = new float[c.size() * 2];
+                        for (PointIndex_I32 p : c) {
+                            points[i++] = p.x;
+                            points[i++] = p.y;
+                        }
+                        return new Polygon2D_F32(points);
+                    })
                     .collect(Collectors.toList());
         }
 
