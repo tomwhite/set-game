@@ -22,7 +22,7 @@ public class CardLabel {
         throw new IllegalArgumentException("Unrecognized file: " + filename);
     }
 
-    static String toLabel(int number, String colour, int index) {
+    private static String toLabel(int number, String colour, int index) {
         // filled, hatched, open
         // oval, diamond, squiggle
         String s = number == 1 ? "" : "s";

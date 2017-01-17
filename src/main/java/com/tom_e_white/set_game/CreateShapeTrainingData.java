@@ -18,7 +18,7 @@ public class CreateShapeTrainingData {
                 .map(file -> {
                             try {
                                 FindCardShapeFeatures findCardShapeFeatures = new FindCardShapeFeatures();
-                                FindCardShapeFeatures.CardShapeFeatures cardShapeFeatures = findCardShapeFeatures.scan(file.getAbsolutePath());
+                                FindCardShapeFeatures.CardShapeFeatures cardShapeFeatures = findCardShapeFeatures.scan(file.getAbsolutePath(), false);
                                 return String.valueOf(CardLabel.getShapeNumber(file)) + "," +
                                         cardShapeFeatures.getNumSides() + "," +
                                         (cardShapeFeatures.isConvex() ? "1" : "0");

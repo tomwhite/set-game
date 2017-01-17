@@ -21,19 +21,13 @@ import java.util.stream.Collectors;
 public class CardDetector {
 
   public List<BufferedImage> scan(String filename) throws IOException {
-    return scan(UtilImageIO.loadImage(filename));
+    return scan(filename, false);
   }
 
   public List<BufferedImage> scan(String filename, boolean debug) throws IOException {
-    return scan(UtilImageIO.loadImage(filename), debug);
-  }
-
-  private List<BufferedImage> scan(BufferedImage originalImage) throws IOException {
-    return scan(originalImage, false);
-  }
-
-  private List<BufferedImage> scan(BufferedImage image, boolean debug) throws IOException {
     // Based on code from http://boofcv.org/index.php?title=Example_Binary_Image
+
+    BufferedImage image = UtilImageIO.loadImage(filename);
 
     ListDisplayPanel panel = debug ? new ListDisplayPanel() : null;
 

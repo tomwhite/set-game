@@ -40,20 +40,10 @@ public class FindCardShapeFeatures {
     }
   }
 
-  public CardShapeFeatures scan(String filename) throws IOException {
-    return scan(UtilImageIO.loadImage(filename));
-  }
-
-  private CardShapeFeatures scan(String filename, boolean debug) throws IOException {
-    return scan(UtilImageIO.loadImage(filename), debug);
-  }
-
-  private CardShapeFeatures scan(BufferedImage originalImage) throws IOException {
-    return scan(originalImage, false);
-  }
-
-  private CardShapeFeatures scan(BufferedImage image, boolean debug) throws IOException {
+  public CardShapeFeatures scan(String filename, boolean debug) throws IOException {
     // Based on code from http://boofcv.org/index.php?title=Example_Binary_Image
+
+    BufferedImage image = UtilImageIO.loadImage(filename);
 
     ListDisplayPanel panel = debug ? new ListDisplayPanel() : null;
 

@@ -18,20 +18,10 @@ import java.util.stream.Collectors;
  */
 public class FindCardNumberFeatures {
 
-  public int scan(String filename) throws IOException {
-    return scan(UtilImageIO.loadImage(filename));
-  }
-
-  private int scan(String filename, boolean debug) throws IOException {
-    return scan(UtilImageIO.loadImage(filename), debug);
-  }
-
-  private int scan(BufferedImage originalImage) throws IOException {
-    return scan(originalImage, false);
-  }
-
-  private int scan(BufferedImage image, boolean debug) throws IOException {
+  public int scan(String filename, boolean debug) throws IOException {
     // Based on code from http://boofcv.org/index.php?title=Example_Binary_Image
+
+    BufferedImage image = UtilImageIO.loadImage(filename);
 
     ListDisplayPanel panel = debug ? new ListDisplayPanel() : null;
 

@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Try to predict cards from a test image.
+ * Try to predict cards from a test image using a simple diff (not very effective).
  */
 public class CardPredictor {
 
