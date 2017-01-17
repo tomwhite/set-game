@@ -1,4 +1,4 @@
-package com.tom_e_white.set_game;
+package com.tom_e_white.set_game.image;
 
 import boofcv.alg.distort.RemovePerspectiveDistortion;
 import boofcv.alg.filter.binary.Contour;

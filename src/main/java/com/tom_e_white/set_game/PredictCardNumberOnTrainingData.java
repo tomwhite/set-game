@@ -3,15 +3,18 @@ package com.tom_e_white.set_game;
 import java.io.File;
 import java.io.IOException;
 
-public class CardFeatureCounterBatch {
+/**
+ * Use {@link FindCardNumberFeatures} to predict the number of shapes on each card in the training set.
+ */
+public class PredictCardNumberOnTrainingData {
     public static void main(String[] args) throws IOException {
-        CardFeatureCounter cardFeatureCounter = new CardFeatureCounter();
+        FindCardNumberFeatures cardFeatureCounter = new FindCardNumberFeatures();
         int correct = 0;
         int total = 0;
         for (File file : new File("data/train-out").listFiles((dir, name) -> name.matches(".*\\.jpg"))) {
             System.out.println(file);
             int predictedNumber = cardFeatureCounter.scan(file.getAbsolutePath());
-            int actualNumber = getShapeNumber(file);
+            int actualNumber = CardLabel.getShapeNumber(file);
             if (predictedNumber == actualNumber) {
                 correct++;
             } else {
@@ -21,10 +24,6 @@ public class CardFeatureCounterBatch {
         }
         System.out.println("Correct: " + correct);
         System.out.println("Total: " + total);
-        System.out.println("Accuracy: " + ((int) (((double) correct)/total * 100)) + " percent");    }
-
-    private static int getShapeNumber(File file) {
-        return Integer.parseInt(CardPredictor.toLabel(file).split(" ")[0]);
+        System.out.println("Accuracy: " + ((int) (((double) correct)/total * 100)) + " percent");
     }
-
 }

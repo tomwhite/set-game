@@ -3,6 +3,7 @@ package com.tom_e_white.set_game;
 import boofcv.gui.ListDisplayPanel;
 import boofcv.gui.image.ShowImages;
 import boofcv.io.image.UtilImageIO;
+import com.tom_e_white.set_game.image.ImageProcessingPipeline;
 import georegression.metric.Intersection2D_F32;
 import georegression.struct.shapes.RectangleLength2D_F32;
 
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 /**
  * Count the number of shapes on a card.
  */
-public class CardFeatureCounter {
+public class FindCardNumberFeatures {
 
   public int scan(String filename) throws IOException {
     return scan(UtilImageIO.loadImage(filename));
@@ -76,6 +77,6 @@ public class CardFeatureCounter {
   }
 
   public static void main(String[] args) throws IOException {
-    new CardFeatureCounter().scan(args[0], true);
+    new FindCardNumberFeatures().scan(args[0], true);
   }
 }

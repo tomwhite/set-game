@@ -3,6 +3,7 @@ package com.tom_e_white.set_game;
 import boofcv.gui.ListDisplayPanel;
 import boofcv.gui.image.ShowImages;
 import boofcv.io.image.UtilImageIO;
+import com.tom_e_white.set_game.image.ImageProcessingPipeline;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;

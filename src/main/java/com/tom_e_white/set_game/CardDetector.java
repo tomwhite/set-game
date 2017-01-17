@@ -6,6 +6,8 @@ import boofcv.io.image.ConvertBufferedImage;
 import boofcv.io.image.UtilImageIO;
 import boofcv.struct.image.GrayF32;
 import boofcv.struct.image.Planar;
+import com.tom_e_white.set_game.image.GeometryUtils;
+import com.tom_e_white.set_game.image.ImageProcessingPipeline;
 import georegression.struct.shapes.Quadrilateral_F64;
 
 import java.awt.image.BufferedImage;

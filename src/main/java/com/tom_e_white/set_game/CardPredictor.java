@@ -16,8 +16,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -57,7 +55,7 @@ public class CardPredictor {
         List<String> predictions = new ArrayList<>();
         for (BufferedImage image : images) {
             Optional<ScoredCard> best = Arrays.stream(new File("data/train-out").listFiles((dir, name) -> name.matches(".*\\.jpg"))).map(
-                    f -> new ScoredCard(removeColour(toLabel(f)), f.toString(), diff(image, UtilImageIO.loadImage(f.toString())))
+                    f -> new ScoredCard(removeColour(CardLabel.toLabel(f)), f.toString(), diff(image, UtilImageIO.loadImage(f.toString())))
             ).sorted().findFirst();
             System.out.println(best.get());
             predictions.add(best.get().label);
@@ -124,38 +122,6 @@ public class CardPredictor {
         GrayU8 diff = gray1.createSameShape();
 
         return ImageStatistics.meanDiffAbs(gray1, gray2);
-    }
-
-        public static String toLabel(File file) {
-        String filename = file.getName();
-        String reg = "([^-]+)-([^-]+).*(\\d)\\.jpg";
-        Pattern pattern = Pattern.compile(reg);
-        Matcher matcher = pattern.matcher(filename);
-        if (matcher.matches()) {
-            String colour = matcher.group(1);
-            String number = matcher.group(2);
-            String index = matcher.group(3);
-            return toLabel(Integer.parseInt(number), colour, Integer.parseInt(index));
-        }
-        throw new IllegalArgumentException("Unrecognized file: " + filename);
-    }
-
-    private static String toLabel(int number, String colour, int index) {
-        // filled, hatched, open
-        // oval, diamond, squiggle
-        String s = number == 1 ? "" : "s";
-        switch (index) {
-            case 1: return number + " filled " + colour + " oval" + s;
-            case 2: return number + " filled " + colour + " diamond" + s;
-            case 3: return number + " filled " + colour + " squiggle" + s;
-            case 4: return number + " hatched " + colour + " oval" + s;
-            case 5: return number + " hatched " + colour + " diamond" + s;
-            case 6: return number + " hatched " + colour + " squiggle" + s;
-            case 7: return number + " open " + colour + " oval" + s;
-            case 8: return number + " open " + colour + " diamond" + s;
-            case 9: return number + " open " + colour + " squiggle" + s;
-            default: throw new IllegalArgumentException("Unrecognized index " + index);
-        }
     }
 
     private static String removeColour(String label) {

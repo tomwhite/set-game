@@ -19,7 +19,7 @@ public class CreateShapeTrainingData {
                             try {
                                 FindCardShapeFeatures findCardShapeFeatures = new FindCardShapeFeatures();
                                 FindCardShapeFeatures.CardShapeFeatures cardShapeFeatures = findCardShapeFeatures.scan(file.getAbsolutePath());
-                                return String.valueOf(getShapeNumber(file)) + "," +
+                                return String.valueOf(CardLabel.getShapeNumber(file)) + "," +
                                         cardShapeFeatures.getNumSides() + "," +
                                         (cardShapeFeatures.isConvex() ? "1" : "0");
                             } catch (IOException e) {
@@ -30,13 +30,4 @@ public class CreateShapeTrainingData {
         Files.write(p, (Iterable<String>)stream::iterator);
     }
 
-    private static int getShapeNumber(File file) {
-        String shapeString = CardPredictor.toLabel(file).split(" ")[3];
-        switch (shapeString) {
-            case "oval": case "ovals": return 1;
-            case "diamond": case "diamonds": return 2;
-            case "squiggle": case "squiggles": return 3;
-            default: throw new IllegalArgumentException("Unrecognized shape: " + shapeString);
-        }
-    }
 }
