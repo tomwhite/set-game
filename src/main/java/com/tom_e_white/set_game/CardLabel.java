@@ -42,6 +42,10 @@ public class CardLabel {
         }
     }
 
+     static int getNumber(File file) {
+        return Integer.parseInt(toLabel(file).split(" ")[0]);
+    }
+
     static int getColourNumber(File file) {
         String colourString = toLabel(file).split(" ")[2];
         switch (colourString) {
