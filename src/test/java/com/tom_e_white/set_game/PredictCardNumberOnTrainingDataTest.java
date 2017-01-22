@@ -10,6 +10,6 @@ public class PredictCardNumberOnTrainingDataTest {
     @Test
     public void test() throws IOException {
         double accuracy = PredictCardNumberOnTrainingData.computeAccuracyOnTrainingData();
-        assertTrue(accuracy > 0.99);
+        assertTrue(accuracy > 99.0);
     }
 }
