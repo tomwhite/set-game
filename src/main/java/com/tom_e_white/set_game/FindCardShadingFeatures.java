@@ -66,9 +66,15 @@ public class FindCardShadingFeatures implements FeatureFinder<FindCardShadingFea
         Quadrilateral_F64 quad = new Quadrilateral_F64();
         RectangleLength2D_F32 rect = box.get();
         convert(rect, quad);
-        Planar<GrayF32> output = GeometryUtils.removePerspectiveDistortion(image, quad, 100, 50);
+        Planar<GrayF32> output = GeometryUtils.removePerspectiveDistortion(image, quad, 200, 100);
         BufferedImage shape = ConvertBufferedImage.convertTo_F32(output, null, true);
         panel.addImage(shape, "Shape");
+
+        // now process the shape by looking at contours (internal/exernal, and number - large => hatched)
+        ImageProcessingPipeline.fromBufferedImage(shape, panel)
+                .gray()
+                .edges()
+                .contours();
       }
 
       ShowImages.showWindow(panel, getClass().getSimpleName(), true);
