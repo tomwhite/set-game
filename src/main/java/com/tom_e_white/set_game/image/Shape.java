@@ -12,6 +12,24 @@ public class Shape {
     private final Polygon2D_F32 polygon;
     private final RectangleLength2D_F32 boundingBox;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Shape shape = (Shape) o;
+
+        if (!polygon.equals(shape.polygon)) return false;
+        return boundingBox.equals(shape.boundingBox);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = polygon.hashCode();
+        result = 31 * result + boundingBox.hashCode();
+        return result;
+    }
+
     public Shape(List<Point2D_F32> points) {
         int i = 0;
         float[] floatPoints = new float[points.size() * 2];
@@ -30,4 +48,5 @@ public class Shape {
     public RectangleLength2D_F32 getBoundingBox() {
         return boundingBox;
     }
+
 }

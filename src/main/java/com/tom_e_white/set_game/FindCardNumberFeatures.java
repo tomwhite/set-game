@@ -3,6 +3,7 @@ package com.tom_e_white.set_game;
 import boofcv.gui.ListDisplayPanel;
 import boofcv.gui.image.ShowImages;
 import boofcv.io.image.UtilImageIO;
+import com.tom_e_white.set_game.image.GeometryUtils;
 import com.tom_e_white.set_game.image.ImageProcessingPipeline;
 import com.tom_e_white.set_game.image.Shape;
 import georegression.metric.Intersection2D_F32;
@@ -38,25 +39,8 @@ public class FindCardNumberFeatures {
     int expectedWidth = 40 * 3; // 40mm
     int expectedHeight = 20 * 3; // 20mm
     int tolerancePct = 40;
-    List<Shape> filtered = shapes.stream()
-            .filter(shape -> {
-              RectangleLength2D_F32 b = shape.getBoundingBox();
-//              System.out.println(Math.abs(b.getWidth() - expectedWidth) / expectedWidth);
-//              System.out.println(Math.abs(b.getHeight() - expectedHeight) / expectedHeight);
-              return Math.abs(b.getWidth() - expectedWidth) / expectedWidth <= tolerancePct / 100.0
-                      && Math.abs(b.getHeight() - expectedHeight) / expectedHeight <= tolerancePct / 100.0;
-            })
-            .collect(Collectors.toList());
-    List<Shape> nonOverlapping = new ArrayList<>(filtered);
-    for (int i = 0; i < filtered.size(); i++) {
-      for (int j = 0; j < i; j++) {
-        RectangleLength2D_F32 rect1 = shapes.get(i).getBoundingBox();
-        RectangleLength2D_F32 rect2 = shapes.get(j).getBoundingBox();
-        if (Intersection2D_F32.intersection(rect1, rect2) != null) {
-          nonOverlapping.remove(shapes.get(j));
-        }
-      }
-    }
+    List<Shape> filtered = GeometryUtils.filterByArea(shapes, expectedWidth, expectedHeight, tolerancePct);
+    List<Shape> nonOverlapping = GeometryUtils.filterNonOverlappingBoundingBoxes(filtered);
 
     if (debug) {
       System.out.println(shapes);
