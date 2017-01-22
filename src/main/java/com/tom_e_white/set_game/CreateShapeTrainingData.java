@@ -14,14 +14,13 @@ import java.util.stream.Stream;
  */
 public class CreateShapeTrainingData {
     public static void main(String[] args) throws IOException {
+        // TODO: refactor this into FindCardShapeFeatures
+        FeatureFinder<FindCardShapeFeatures.CardShapeFeatures> finder = new FindCardShapeFeatures();
         Stream<String> stream = Arrays.stream(new File("data/train-out").listFiles((dir, name) -> name.matches(".*\\.jpg")))
                 .map(file -> {
                             try {
-                                FindCardShapeFeatures findCardShapeFeatures = new FindCardShapeFeatures();
-                                FindCardShapeFeatures.CardShapeFeatures cardShapeFeatures = findCardShapeFeatures.scan(file.getAbsolutePath(), false);
-                                return String.valueOf(CardLabel.getShapeNumber(file)) + "," +
-                                        cardShapeFeatures.getNumSides() + "," +
-                                        (cardShapeFeatures.isConvex() ? "1" : "0");
+                                Features features = finder.find(file.getAbsolutePath(), false);
+                                return features.getSummaryLine();
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }

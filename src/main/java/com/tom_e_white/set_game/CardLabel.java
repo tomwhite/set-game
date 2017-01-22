@@ -9,7 +9,9 @@ import java.util.regex.Pattern;
  */
 public class CardLabel {
     static String toLabel(File file) {
-        String filename = file.getName();
+        return toLabel(file);
+    }
+    static String toLabel(String filename) {
         String reg = "([^-]+)-([^-]+).*(\\d)\\.jpg";
         Pattern pattern = Pattern.compile(reg);
         Matcher matcher = pattern.matcher(filename);
@@ -50,8 +52,8 @@ public class CardLabel {
         }
     }
 
-    static int getShapeNumber(File file) {
-        String shapeString = toLabel(file).split(" ")[3];
+    static int getShapeNumber(String filename) {
+        String shapeString = toLabel(filename).split(" ")[3];
         switch (shapeString) {
             case "oval": case "ovals": return 1;
             case "diamond": case "diamonds": return 2;

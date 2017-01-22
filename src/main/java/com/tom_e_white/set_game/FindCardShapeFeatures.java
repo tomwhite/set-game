@@ -12,13 +12,15 @@ import java.util.Optional;
 /**
  * Find features for shapes on a card.
  */
-public class FindCardShapeFeatures {
+public class FindCardShapeFeatures implements FeatureFinder<FindCardShapeFeatures.CardShapeFeatures> {
 
-  public static class CardShapeFeatures {
+  public static class CardShapeFeatures implements Features {
+    private final int shapeNumberLabel;
     private final int numSides;
     private final boolean isConvex;
 
-    public CardShapeFeatures(int numSides, boolean isConvex) {
+    public CardShapeFeatures(int shapeNumberLabel, int numSides, boolean isConvex) {
+      this.shapeNumberLabel = shapeNumberLabel;
       this.numSides = numSides;
       this.isConvex = isConvex;
     }
@@ -32,15 +34,24 @@ public class FindCardShapeFeatures {
     }
 
     @Override
+    public String getSummaryLine() {
+      return shapeNumberLabel + "," +
+              numSides + "," +
+              (isConvex ? "1" : "0");
+    }
+
+    @Override
     public String toString() {
       return "CardShapeFeatures{" +
-              "numSides=" + numSides +
+              "shapeNumberLabel=" + shapeNumberLabel +
+              ", numSides=" + numSides +
               ", isConvex=" + isConvex +
               '}';
     }
   }
 
-  public CardShapeFeatures scan(String filename, boolean debug) throws IOException {
+  @Override
+  public CardShapeFeatures find(String filename, boolean debug) throws IOException {
     // Based on code from http://boofcv.org/index.php?title=Example_Binary_Image
 
     BufferedImage image = UtilImageIO.loadImage(filename);
@@ -57,7 +68,7 @@ public class FindCardShapeFeatures {
             .polygons(0.05, 0.05)
             .getExternalPolygons()
             .stream()
-            .map(p -> new CardShapeFeatures(p.size(), p.isConvex()))
+            .map(p -> new CardShapeFeatures(CardLabel.getShapeNumber(filename), p.size(), p.isConvex()))
             .findFirst();
 
     if (debug) {
@@ -68,7 +79,7 @@ public class FindCardShapeFeatures {
   }
 
   public static void main(String[] args) throws IOException {
-    CardShapeFeatures cardShapeFeatures = new FindCardShapeFeatures().scan(args[0], true);
+    CardShapeFeatures cardShapeFeatures = new FindCardShapeFeatures().find(args[0], true);
     System.out.println(cardShapeFeatures);
   }
 }
