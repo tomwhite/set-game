@@ -3,7 +3,9 @@ package com.tom_e_white.set_game;
 import boofcv.gui.ListDisplayPanel;
 import boofcv.gui.image.ShowImages;
 import boofcv.io.image.UtilImageIO;
+import com.tom_e_white.set_game.image.GeometryUtils;
 import com.tom_e_white.set_game.image.ImageProcessingPipeline;
+import com.tom_e_white.set_game.image.Shape;
 import georegression.metric.Intersection2D_F32;
 import georegression.struct.shapes.RectangleLength2D_F32;
 
@@ -25,40 +27,24 @@ public class FindCardNumberFeatures {
 
     ListDisplayPanel panel = debug ? new ListDisplayPanel() : null;
 
-    List<RectangleLength2D_F32> boxes = ImageProcessingPipeline.fromBufferedImage(image, panel)
+    List<Shape> shapes = ImageProcessingPipeline.fromBufferedImage(image, panel)
             .gray()
             .medianBlur(3) // this is fairly critical
             .edges()
             .dilate()
             .contours()
             .polygons(0.05, 0.05)
-            .getExternalBoundingBoxes();
+            .getExternalShapes();
 
     int expectedWidth = 40 * 3; // 40mm
     int expectedHeight = 20 * 3; // 20mm
     int tolerancePct = 40;
-    List<RectangleLength2D_F32> shapes = boxes.stream()
-            .filter(b -> {
-//              System.out.println(Math.abs(b.getWidth() - expectedWidth) / expectedWidth);
-//              System.out.println(Math.abs(b.getHeight() - expectedHeight) / expectedHeight);
-              return Math.abs(b.getWidth() - expectedWidth) / expectedWidth <= tolerancePct / 100.0
-                      && Math.abs(b.getHeight() - expectedHeight) / expectedHeight <= tolerancePct / 100.0;
-            })
-            .collect(Collectors.toList());
-    List<RectangleLength2D_F32> nonOverlapping = new ArrayList<>(shapes);
-    for (int i = 0; i < shapes.size(); i++) {
-      for (int j = 0; j < i; j++) {
-        RectangleLength2D_F32 rect1 = shapes.get(i);
-        RectangleLength2D_F32 rect2 = shapes.get(j);
-        if (Intersection2D_F32.intersection(rect1, rect2) != null) {
-          nonOverlapping.remove(rect2);
-        }
-      }
-    }
+    List<Shape> filtered = GeometryUtils.filterByArea(shapes, expectedWidth, expectedHeight, tolerancePct);
+    List<Shape> nonOverlapping = GeometryUtils.filterNonOverlappingBoundingBoxes(filtered);
 
     if (debug) {
-      System.out.println(boxes);
       System.out.println(shapes);
+      System.out.println(filtered);
       System.out.println(nonOverlapping);
       ShowImages.showWindow(panel, "Binary Operations", true);
     }

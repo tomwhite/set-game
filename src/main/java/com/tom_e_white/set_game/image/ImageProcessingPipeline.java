@@ -158,21 +158,14 @@ public class ImageProcessingPipeline {
         }
 
         public List<Polygon2D_F32> getExternalPolygons() {
-            return externalContours.stream()
-                    .filter(c -> c.size() > 1)
-                    .map(c -> {
-                        int i = 0;
-                        float[] points = new float[c.size() * 2];
-                        for (PointIndex_I32 p : c) {
-                            points[i++] = p.x;
-                            points[i++] = p.y;
-                        }
-                        return new Polygon2D_F32(points);
-                    })
-                    .collect(Collectors.toList());
+            return getExternalShapes().stream().map(Shape::getPolygon).collect(Collectors.toList());
         }
 
         public List<RectangleLength2D_F32> getExternalBoundingBoxes() {
+            return getExternalShapes().stream().map(Shape::getBoundingBox).collect(Collectors.toList());
+        }
+
+        public List<Shape> getExternalShapes() {
             return externalContours.stream()
                     .filter(c -> c.size() > 1)
                     .map(c -> {
@@ -180,9 +173,8 @@ public class ImageProcessingPipeline {
                         for (PointIndex_I32 p : c) {
                             points.add(new Point2D_F32(p.x, p.y));
                         }
-                        return points;
+                        return new Shape(points);
                     })
-                    .map(c -> UtilPoint2D_F32.bounding(c, new RectangleLength2D_F32()))
                     .collect(Collectors.toList());
         }
     }
