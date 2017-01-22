@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
  */
 public class CardLabel {
     static String toLabel(File file) {
-        return toLabel(file);
+        return toLabel(file.getName());
     }
     static String toLabel(String filename) {
         String reg = "([^-]+)-([^-]+).*(\\d)\\.jpg";
