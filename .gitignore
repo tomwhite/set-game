@@ -1,3 +1,3 @@
 .DS_Store
-data/train-out
+data/train-out*
 target

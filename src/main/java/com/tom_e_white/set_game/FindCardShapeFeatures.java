@@ -6,6 +6,7 @@ import boofcv.io.image.UtilImageIO;
 import com.tom_e_white.set_game.image.ImageProcessingPipeline;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -68,7 +69,7 @@ public class FindCardShapeFeatures implements FeatureFinder<FindCardShapeFeature
             .polygons(0.05, 0.05)
             .getExternalPolygons()
             .stream()
-            .map(p -> new CardShapeFeatures(CardLabel.getShapeNumber(filename), p.size(), p.isConvex()))
+            .map(p -> new CardShapeFeatures(CardLabel.getShapeNumber(new File(filename)), p.size(), p.isConvex()))
             .findFirst();
 
     if (debug) {

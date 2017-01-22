@@ -25,7 +25,7 @@ public class CreateShapeTrainingData {
                                 throw new RuntimeException(e);
                             }
                         });
-        Path p = Paths.get("data/train-out-shape.txt");
+        Path p = Paths.get("data/train-out-shape.csv");
         Files.write(p, (Iterable<String>)stream::iterator);
     }
 
