@@ -7,7 +7,8 @@ import java.io.IOException;
  * Use {@link FindCardNumberFeatures} to predict the number of shapes on each card in the training set.
  */
 public class PredictCardNumberOnTrainingData {
-    public static void main(String[] args) throws IOException {
+
+    public static double computeAccuracyOnTrainingData() throws IOException {
         FindCardNumberFeatures cardFeatureCounter = new FindCardNumberFeatures();
         int correct = 0;
         int total = 0;
@@ -24,6 +25,11 @@ public class PredictCardNumberOnTrainingData {
         }
         System.out.println("Correct: " + correct);
         System.out.println("Total: " + total);
-        System.out.println("Accuracy: " + ((int) (((double) correct)/total * 100)) + " percent");
+        double accuracy = ((double) correct)/total * 100;
+        System.out.println("Accuracy: " + ((int) accuracy) + " percent");
+        return accuracy;
+    }
+    public static void main(String[] args) throws IOException {
+        computeAccuracyOnTrainingData();
     }
 }
