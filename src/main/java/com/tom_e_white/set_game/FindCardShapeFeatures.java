@@ -3,11 +3,14 @@ package com.tom_e_white.set_game;
 import boofcv.gui.ListDisplayPanel;
 import boofcv.gui.image.ShowImages;
 import boofcv.io.image.UtilImageIO;
+import com.tom_e_white.set_game.image.GeometryUtils;
 import com.tom_e_white.set_game.image.ImageProcessingPipeline;
+import com.tom_e_white.set_game.image.Shape;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -59,16 +62,23 @@ public class FindCardShapeFeatures implements FeatureFinder<FindCardShapeFeature
 
     ListDisplayPanel panel = debug ? new ListDisplayPanel() : null;
 
-    // TODO: Use shapes found by CardFeatureCounter, since these are "good" contours. Maybe join?
-    Optional<CardShapeFeatures> cardShapeFeatures = ImageProcessingPipeline.fromBufferedImage(image, panel)
+    List<Shape> shapes = ImageProcessingPipeline.fromBufferedImage(image, panel)
             .gray()
             .medianBlur(3) // this is fairly critical
             .edges()
             .dilate()
             .contours()
             .polygons(0.05, 0.05)
-            .getExternalPolygons()
-            .stream()
+            .getExternalShapes();
+
+    int expectedWidth = 40 * 3; // 40mm
+    int expectedHeight = 20 * 3; // 20mm
+    int tolerancePct = 40;
+    List<Shape> filtered = GeometryUtils.filterByArea(shapes, expectedWidth, expectedHeight, tolerancePct);
+    List<Shape> nonOverlapping = GeometryUtils.filterNonOverlappingBoundingBoxes(filtered);
+
+    Optional<CardShapeFeatures> cardShapeFeatures = nonOverlapping.stream()
+            .map(Shape::getPolygon)
             .map(p -> new CardShapeFeatures(CardLabel.getShapeNumber(new File(filename)), p.size(), p.isConvex()))
             .findFirst();
 

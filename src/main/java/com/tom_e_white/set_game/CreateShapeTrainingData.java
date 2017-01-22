@@ -20,7 +20,7 @@ public class CreateShapeTrainingData {
                 .map(file -> {
                             try {
                                 Features features = finder.find(file.getAbsolutePath(), false);
-                                return features.getSummaryLine();
+                                return features == null ? "" : features.getSummaryLine();
                             } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }
