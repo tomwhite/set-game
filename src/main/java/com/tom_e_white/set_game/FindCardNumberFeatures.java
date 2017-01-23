@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Count the number of shapes on a card.
  */
-public class FindCardNumberFeatures {
+public class FindCardNumberFeatures { // TODO: implement FeatureFinder
 
   public int scan(String filename, boolean debug) throws IOException {
     // Based on code from http://boofcv.org/index.php?title=Example_Binary_Image
