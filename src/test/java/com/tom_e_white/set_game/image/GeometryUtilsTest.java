@@ -1,6 +1,5 @@
 package com.tom_e_white.set_game.image;
 
-import com.tom_e_white.set_game.image.GeometryUtils;
 import georegression.struct.shapes.Quadrilateral_F64;
 import org.junit.Test;
 

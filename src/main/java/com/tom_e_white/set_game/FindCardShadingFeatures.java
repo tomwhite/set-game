@@ -9,7 +9,8 @@ import boofcv.struct.image.Planar;
 import com.tom_e_white.set_game.image.GeometryUtils;
 import com.tom_e_white.set_game.image.ImageProcessingPipeline;
 import com.tom_e_white.set_game.image.Shape;
-import georegression.struct.shapes.*;
+import georegression.struct.shapes.Quadrilateral_F64;
+import georegression.struct.shapes.RectangleLength2D_F32;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -118,6 +119,11 @@ public class FindCardShadingFeatures implements FeatureFinder<FindCardShadingFea
     }
 
     return features;
+  }
+
+  @Override
+  public String getFileName() {
+    return "shading.csv";
   }
 
   private static void convert(RectangleLength2D_F32 input, Quadrilateral_F64 output) {

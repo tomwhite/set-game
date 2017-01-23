@@ -4,4 +4,5 @@ import java.io.IOException;
 
 public interface FeatureFinder<F extends Features> {
     F find(String filename, boolean debug) throws IOException;
+    String getFileName();
 }

@@ -6,14 +6,10 @@ import boofcv.io.image.UtilImageIO;
 import com.tom_e_white.set_game.image.GeometryUtils;
 import com.tom_e_white.set_game.image.ImageProcessingPipeline;
 import com.tom_e_white.set_game.image.Shape;
-import georegression.metric.Intersection2D_F32;
-import georegression.struct.shapes.RectangleLength2D_F32;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Count the number of shapes on a card.

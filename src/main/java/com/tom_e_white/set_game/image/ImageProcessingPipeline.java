@@ -10,7 +10,6 @@ import boofcv.struct.ConnectRule;
 import boofcv.struct.PointIndex_I32;
 import boofcv.struct.image.GrayS32;
 import boofcv.struct.image.GrayU8;
-import georegression.geometry.UtilPoint2D_F32;
 import georegression.struct.point.Point2D_F32;
 import georegression.struct.shapes.Polygon2D_F32;
 import georegression.struct.shapes.Quadrilateral_F64;

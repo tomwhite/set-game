@@ -89,6 +89,11 @@ public class FindCardShapeFeatures implements FeatureFinder<FindCardShapeFeature
     return cardShapeFeatures.orElse(null); // improve
   }
 
+  @Override
+  public String getFileName() {
+    return "shape.csv";
+  }
+
   public static void main(String[] args) throws IOException {
     CardShapeFeatures cardShapeFeatures = new FindCardShapeFeatures().find(args[0], true);
     System.out.println(cardShapeFeatures);
