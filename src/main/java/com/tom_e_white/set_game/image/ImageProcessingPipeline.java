@@ -62,8 +62,12 @@ public class ImageProcessingPipeline {
         }
 
         public GrayImageProcessor binarize(int minValue, int maxValue) {
-            GrayU8 newImage = ImageUtils.binarize(image, minValue, maxValue);
-            addImageToPanel(newImage, String.format("Binarize (min %d, max %d)", minValue, maxValue));
+            return binarize(minValue, maxValue, false);
+        }
+
+        public GrayImageProcessor binarize(int minValue, int maxValue, boolean down) {
+            GrayU8 newImage = ImageUtils.binarize(image, minValue, maxValue, down);
+            addImageToPanel(newImage, String.format("Binarize (min %d, max %d, down %s)", minValue, maxValue, down));
             return new GrayImageProcessor(newImage);
         }
 
@@ -148,6 +152,10 @@ public class ImageProcessingPipeline {
 
         public List<List<PointIndex_I32>> getExternalContours() {
             return externalContours;
+        }
+
+        public List<List<PointIndex_I32>> getInternalContours() {
+            return internalContours;
         }
 
         public List<Quadrilateral_F64> getExternalQuadrilaterals() {

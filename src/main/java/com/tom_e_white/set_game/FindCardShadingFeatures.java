@@ -12,6 +12,7 @@ import com.tom_e_white.set_game.image.Shape;
 import georegression.struct.shapes.*;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -23,14 +24,36 @@ public class FindCardShadingFeatures implements FeatureFinder<FindCardShadingFea
 
   public static class CardShadingFeatures implements Features {
     private final int shapeShadingLabel;
+    private final int numEdgeExternalContours;
+    private final int numEdgeInternalContours;
+    private final int numBinaryExternalContours;
+    private final int numBinaryInternalContours;
 
-    public CardShadingFeatures(int shapeShadingLabel) {
+    public CardShadingFeatures(int shapeShadingLabel, int numEdgeExternalContours, int numEdgeInternalContours,
+                               int numBinaryExternalContours, int numBinaryInternalContours) {
       this.shapeShadingLabel = shapeShadingLabel;
+      this.numEdgeExternalContours = numEdgeExternalContours;
+      this.numEdgeInternalContours = numEdgeInternalContours;
+      this.numBinaryExternalContours = numBinaryExternalContours;
+      this.numBinaryInternalContours = numBinaryInternalContours;
     }
 
     @Override
     public String getSummaryLine() {
-      return shapeShadingLabel + "";
+      return shapeShadingLabel + "," +
+              numEdgeExternalContours + "," + numEdgeInternalContours + "," +
+              numBinaryExternalContours + "," + numBinaryInternalContours;
+    }
+
+    @Override
+    public String toString() {
+      return "CardShadingFeatures{" +
+              "shapeShadingLabel=" + shapeShadingLabel +
+              ", numEdgeExternalContours=" + numEdgeExternalContours +
+              ", numEdgeInternalContours=" + numEdgeInternalContours +
+              ", numBinaryExternalContours=" + numBinaryExternalContours +
+              ", numBinaryInternalContours=" + numBinaryInternalContours +
+              '}';
     }
   }
 
@@ -61,26 +84,40 @@ public class FindCardShadingFeatures implements FeatureFinder<FindCardShadingFea
             .map(Shape::getBoundingBox)
             .findFirst();
 
-    if (debug) {
-      if (box.isPresent()) {
-        Quadrilateral_F64 quad = new Quadrilateral_F64();
-        RectangleLength2D_F32 rect = box.get();
-        convert(rect, quad);
-        Planar<GrayF32> output = GeometryUtils.removePerspectiveDistortion(image, quad, 200, 100);
-        BufferedImage shape = ConvertBufferedImage.convertTo_F32(output, null, true);
+    CardShadingFeatures features = null;
+    if (box.isPresent()) {
+      Quadrilateral_F64 quad = new Quadrilateral_F64();
+      RectangleLength2D_F32 rect = box.get();
+      convert(rect, quad);
+      Planar<GrayF32> output = GeometryUtils.removePerspectiveDistortion(image, quad, 200, 100);
+      BufferedImage shape = ConvertBufferedImage.convertTo_F32(output, null, true);
+      if (debug) {
         panel.addImage(shape, "Shape");
-
-        // now process the shape by looking at contours (internal/exernal, and number - large => hatched)
-        ImageProcessingPipeline.fromBufferedImage(shape, panel)
-                .gray()
-                .edges()
-                .contours();
       }
 
+      ImageProcessingPipeline.ContourPolygonsProcessor edgeProcessor = ImageProcessingPipeline.fromBufferedImage(shape, panel)
+              .gray()
+              .edges()
+              .contours()
+              .polygons(0.01, 0.01);
+
+      ImageProcessingPipeline.ContourPolygonsProcessor binaryProcessor = ImageProcessingPipeline.fromBufferedImage(shape, panel)
+              .gray()
+              .binarize(0, 255, true)
+              .contours()
+              .polygons(0.01, 0.01);
+
+      features = new CardShadingFeatures(CardLabel.getShadingNumber(new File(filename)),
+              edgeProcessor.getExternalContours().size(), edgeProcessor.getInternalContours().size(),
+              binaryProcessor.getExternalContours().size(), binaryProcessor.getInternalContours().size()
+      );
+    }
+
+    if (debug) {
       ShowImages.showWindow(panel, getClass().getSimpleName(), true);
     }
 
-    return null;
+    return features;
   }
 
   private static void convert(RectangleLength2D_F32 input, Quadrilateral_F64 output) {
@@ -95,6 +132,7 @@ public class FindCardShadingFeatures implements FeatureFinder<FindCardShadingFea
   }
 
   public static void main(String[] args) throws IOException {
-    new FindCardShadingFeatures().find(args[0], true);
+    CardShadingFeatures cardShadingFeatures = new FindCardShadingFeatures().find(args[0], true);
+    System.out.println(cardShadingFeatures);
   }
 }

@@ -24,11 +24,15 @@ public class ImageUtils {
     }
 
     public static GrayU8 binarize(GrayU8 input, int minValue, int maxValue) {
+        return binarize(input, minValue, maxValue, false); // "down=false" to find exterior contours
+    }
+
+    public static GrayU8 binarize(GrayU8 input, int minValue, int maxValue, boolean down) {
         // Select a global threshold using Otsu's method.
         double threshold = GThresholdImageOps.computeOtsu(input, minValue, maxValue);
 
         // Apply the threshold to create a binary image
-        return ThresholdImageOps.threshold(input, null, (int) threshold, false); // "down=false" to find exterior contours
+        return ThresholdImageOps.threshold(input, null, (int) threshold, down); // "down=false" to find exterior contours
     }
 
     public static GrayU8 edges(GrayU8 input) {

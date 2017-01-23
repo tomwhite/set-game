@@ -12,9 +12,9 @@ import java.util.stream.Stream;
  * Take the images created by {@link CreateTrainingSet} and extract useful features from the polygons in them.
  * The resulting data can be used a to train a model for predicting the shapes on a card.
  */
-public class CreateShapeTrainingData {
+public class CreateShadingTrainingData {
     public static void main(String[] args) throws IOException {
-        FeatureFinder<? extends Features> finder = new FindCardShapeFeatures();
+        FeatureFinder<? extends Features> finder = new FindCardShadingFeatures();
         Stream<String> stream = Arrays.stream(new File("data/train-out").listFiles((dir, name) -> name.matches(".*\\.jpg")))
                 .map(file -> {
                             try {
@@ -24,7 +24,7 @@ public class CreateShapeTrainingData {
                                 throw new RuntimeException(e);
                             }
                         });
-        Path p = Paths.get("data/train-out-shape.csv");
+        Path p = Paths.get("data/train-out-shading.csv");
         Files.write(p, (Iterable<String>)stream::iterator);
     }
 
