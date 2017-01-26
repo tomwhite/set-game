@@ -28,6 +28,9 @@ public class CardDetector {
     // Based on code from http://boofcv.org/index.php?title=Example_Binary_Image
 
     BufferedImage image = UtilImageIO.loadImage(filename);
+    if (image.getWidth() > image.getHeight()) {
+      throw new IllegalArgumentException("Image height must be greater than width: " + filename);
+    }
 
     ListDisplayPanel panel = debug ? new ListDisplayPanel() : null;
 
