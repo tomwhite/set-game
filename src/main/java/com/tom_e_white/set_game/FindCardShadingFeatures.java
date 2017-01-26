@@ -119,11 +119,18 @@ public class FindCardShadingFeatures implements FeatureFinder<FindCardShadingFea
 
       GrayU8 finalImage = ImageProcessingPipeline.fromBufferedImage(shape, panel)
               .gray()
-              .equalize()
+              .sharpen()
               .binarize(0, 255, true)
               .extract(100 - 25, 50 - 12, 50, 25)
               .getImage();
       double meanPixelValue = ImageStatistics.mean(finalImage);
+      int shadingNo = CardLabel.getShadingNumber(new File(filename));
+      if ((shadingNo == 1 && meanPixelValue < 0.75)
+        || (shadingNo == 2 && meanPixelValue < 0.25 && meanPixelValue > 0.75)
+              || (shadingNo == 3 && meanPixelValue > 0.25)) {
+        System.out.println(filename + "," + CardLabel.toLabel(new File(filename).getName()) + "," + shadingNo + "," + meanPixelValue);
+      }
+
 
       features = new CardShadingFeatures(CardLabel.getShadingNumber(new File(filename)),
               edgeProcessor.getExternalContours().size(), edgeProcessor.getInternalContours().size(),
