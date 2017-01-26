@@ -25,10 +25,14 @@ public class CardDetector {
   }
 
   public List<BufferedImage> scan(String filename, boolean debug) throws IOException {
+    return scan(filename, debug, false);
+  }
+
+  public List<BufferedImage> scan(String filename, boolean debug, boolean allowRotated) throws IOException {
     // Based on code from http://boofcv.org/index.php?title=Example_Binary_Image
 
     BufferedImage image = UtilImageIO.loadImage(filename);
-    if (image.getWidth() > image.getHeight()) {
+    if (!allowRotated && image.getWidth() > image.getHeight()) {
       throw new IllegalArgumentException("Image height must be greater than width: " + filename);
     }
 
@@ -46,7 +50,7 @@ public class CardDetector {
 
     // Only include shapes that are within given percentage of the mean area. This filters out image artifacts that
     // happen to be quadrilaterals that are not cards (since they are usually a different size).
-    List<Quadrilateral_F64> cards = GeometryUtils.filterByArea(quads, 20);
+    List<Quadrilateral_F64> cards = GeometryUtils.filterByArea(quads, 25);
     cards = GeometryUtils.sortRowWise(cards); // sort into a stable order
     List<BufferedImage> cardImages = cards.stream().map(q -> {
               // Remove perspective distortion

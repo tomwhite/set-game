@@ -23,7 +23,7 @@ public class CardDetectorTest {
 
     @Test
     public void testSingleCard() throws IOException {
-        List<BufferedImage> images = cardDetector.scan("data/one-card-20161230_192626.jpg");
+        List<BufferedImage> images = cardDetector.scan("data/one-card-20161230_192626.jpg", false, true);
         assertEquals(1, images.size());
     }
 
@@ -37,7 +37,7 @@ public class CardDetectorTest {
     @Test
     public void testRotated() throws IOException {
         // this image is rotated through 90 degrees
-        List<BufferedImage> images = cardDetector.scan("data/green-2-rotated-20161231_114543.jpg");
+        List<BufferedImage> images = cardDetector.scan("data/green-2-rotated-20161231_114543.jpg", false, true);
         assertEquals(9, images.size());
     }
 
