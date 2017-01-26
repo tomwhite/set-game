@@ -1,7 +1,10 @@
 package com.tom_e_white.set_game.image;
 
+import boofcv.alg.enhance.EnhanceImageOps;
 import boofcv.alg.filter.binary.BinaryImageOps;
 import boofcv.alg.filter.binary.Contour;
+import boofcv.alg.misc.ImageMiscOps;
+import boofcv.alg.misc.ImageStatistics;
 import boofcv.gui.ListDisplayPanel;
 import boofcv.gui.binary.VisualizeBinaryData;
 import boofcv.gui.feature.VisualizeShapes;
@@ -60,6 +63,24 @@ public class ImageProcessingPipeline {
             return new GrayImageProcessor(newImage);
         }
 
+        public GrayImageProcessor equalize() {
+            int histogram[] = new int[256];
+            int transform[] = new int[256];
+            ImageStatistics.histogram(image, histogram);
+            EnhanceImageOps.equalize(histogram, transform);
+            GrayU8 newImage = image.createSameShape();
+            EnhanceImageOps.applyTransform(image, transform, newImage);
+            addImageToPanel(newImage, String.format("Equalize"));
+            return new GrayImageProcessor(newImage);
+        }
+
+        public GrayImageProcessor sharpen() {
+            GrayU8 newImage = image.createSameShape();
+            EnhanceImageOps.sharpen8(image, newImage);;
+            addImageToPanel(newImage, String.format("Sharpen"));
+            return new GrayImageProcessor(newImage);
+        }
+
         public GrayImageProcessor binarize(int minValue, int maxValue) {
             return binarize(minValue, maxValue, false);
         }
@@ -67,6 +88,12 @@ public class ImageProcessingPipeline {
         public GrayImageProcessor binarize(int minValue, int maxValue, boolean down) {
             GrayU8 newImage = ImageUtils.binarize(image, minValue, maxValue, down);
             addImageToPanel(newImage, String.format("Binarize (min %d, max %d, down %s)", minValue, maxValue, down));
+            return new GrayImageProcessor(newImage);
+        }
+
+        public GrayImageProcessor binarize(int minValue, int maxValue, boolean down, int threshold) {
+            GrayU8 newImage = ImageUtils.binarize(image, minValue, maxValue, down, threshold);
+            addImageToPanel(newImage, String.format("Binarize (min %d, max %d, down %s, threshold %d)", minValue, maxValue, down, threshold));
             return new GrayImageProcessor(newImage);
         }
 
@@ -88,6 +115,13 @@ public class ImageProcessingPipeline {
             return new GrayImageProcessor(newImage);
         }
 
+        public GrayImageProcessor extract(int x, int y, int width, int height) {
+            GrayU8 newImage = new GrayU8(width, height);
+            ImageMiscOps.copy(x, y, 0, 0, width, height, image, newImage);
+            addImageToPanel(newImage, String.format("Extract"));
+            return new GrayImageProcessor(newImage);
+        }
+
         public ContoursProcessor contours() {
             // Detect blobs inside the image using an 8-connect rule
             GrayS32 label = new GrayS32(image.width, image.height);
@@ -99,6 +133,9 @@ public class ImageProcessingPipeline {
             return new ContoursProcessor(contours, image.width, image.height);
         }
 
+        public GrayU8 getImage() {
+            return image;
+        }
     }
 
     public class ContoursProcessor {
