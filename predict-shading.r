@@ -6,3 +6,6 @@ aFit <- train(X1 ~ X1.0, data = a, method = "svmRadial", preProc = c("center", "
               tuneLength = 10,
               tr = trainControl(method = "repeatedcv", repeats = 5, classProbs = TRUE))
 aFit
+
+aFitKnn <- train(X1 ~ X1.0, data = a, method = "knn", preProc = c("center", "scale"))
+aFitKnn

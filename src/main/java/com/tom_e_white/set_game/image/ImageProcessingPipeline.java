@@ -1,16 +1,22 @@
 package com.tom_e_white.set_game.image;
 
 import boofcv.alg.enhance.EnhanceImageOps;
+import boofcv.alg.feature.detect.edge.CannyEdge;
 import boofcv.alg.filter.binary.BinaryImageOps;
 import boofcv.alg.filter.binary.Contour;
+import boofcv.alg.filter.binary.GThresholdImageOps;
+import boofcv.alg.filter.binary.ThresholdImageOps;
+import boofcv.alg.filter.blur.BlurImageOps;
 import boofcv.alg.misc.ImageMiscOps;
 import boofcv.alg.misc.ImageStatistics;
+import boofcv.factory.feature.detect.edge.FactoryEdgeDetectors;
 import boofcv.gui.ListDisplayPanel;
 import boofcv.gui.binary.VisualizeBinaryData;
 import boofcv.gui.feature.VisualizeShapes;
 import boofcv.io.image.ConvertBufferedImage;
 import boofcv.struct.ConnectRule;
 import boofcv.struct.PointIndex_I32;
+import boofcv.struct.image.GrayS16;
 import boofcv.struct.image.GrayS32;
 import boofcv.struct.image.GrayU8;
 import georegression.struct.point.Point2D_F32;
@@ -58,7 +64,8 @@ public class ImageProcessingPipeline {
         }
 
         public GrayImageProcessor medianBlur(int radius) {
-            GrayU8 newImage = ImageUtils.medianBlur(image, radius);
+            // size of the blur kernel. square region with a width of radius*2 + 1
+            GrayU8 newImage = BlurImageOps.median(image, null, radius);
             addImageToPanel(newImage, String.format("Median blur (radius %d)", radius));
             return new GrayImageProcessor(newImage);
         }
@@ -86,19 +93,26 @@ public class ImageProcessingPipeline {
         }
 
         public GrayImageProcessor binarize(int minValue, int maxValue, boolean down) {
-            GrayU8 newImage = ImageUtils.binarize(image, minValue, maxValue, down);
+            // Select a global threshold using Otsu's method.
+            double threshold = GThresholdImageOps.computeOtsu(image, minValue, maxValue);
+            // Apply the threshold to create a binary image
+            GrayU8 newImage = ThresholdImageOps.threshold(image, null, (int) threshold, down);
             addImageToPanel(newImage, String.format("Binarize (min %d, max %d, down %s)", minValue, maxValue, down));
             return new GrayImageProcessor(newImage);
         }
 
         public GrayImageProcessor binarize(int minValue, int maxValue, boolean down, int threshold) {
-            GrayU8 newImage = ImageUtils.binarize(image, minValue, maxValue, down, threshold);
+            // Apply the threshold to create a binary image
+            GrayU8 newImage = ThresholdImageOps.threshold(image, null, threshold, down);
             addImageToPanel(newImage, String.format("Binarize (min %d, max %d, down %s, threshold %d)", minValue, maxValue, down, threshold));
             return new GrayImageProcessor(newImage);
         }
 
         public GrayImageProcessor edges() {
-            GrayU8 newImage = ImageUtils.edges(image);
+            GrayU8 edgeImage = image.createSameShape();
+            CannyEdge<GrayU8, GrayS16> canny = FactoryEdgeDetectors.canny(2, true, true, GrayU8.class, GrayS16.class);
+            canny.process(image, 0.1f, 0.2f, edgeImage);
+            GrayU8 newImage = edgeImage;
             addImageToPanel(newImage, String.format("Edges"));
             return new GrayImageProcessor(newImage);
         }
