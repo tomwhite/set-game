@@ -45,6 +45,10 @@ public class FindCardShadingFeatures implements FeatureFinder<FindCardShadingFea
       this.meanPixelValue = meanPixelValue;
     }
 
+    public double getMeanPixelValue() {
+      return meanPixelValue;
+    }
+
     @Override
     public String toString() {
       return "CardShadingFeatures{" +
