@@ -1,32 +1,12 @@
 package com.tom_e_white.set_game;
 
-import boofcv.io.image.UtilImageIO;
 import com.tom_e_white.set_game.image.ImageUtils;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class FindCardColourFeatures implements FeatureFinder<FindCardColourFeatures.CardColourFeatures>{
-
-    public static class CardColourFeatures implements Features {
-
-        private final int label;
-        private final double[] vector;
-
-        public CardColourFeatures(int label, double[] vector) {
-            this.label = label;
-            this.vector = vector;
-        }
-
-        @Override
-        public String getSummaryLine() {
-            StringBuilder sb = new StringBuilder();
-            sb.append(label).append(" ");
-            for (int i = 0; i < vector.length; i++) {
-                sb.append(i).append(":").append(String.format("%.4f", vector[i])).append(" ");
-            }
-            return sb.toString();        }
-    }
+public class FindCardColourFeatures implements FeatureFinder {
 
     @Override
     public int getLabel(String filename) {
@@ -34,9 +14,18 @@ public class FindCardColourFeatures implements FeatureFinder<FindCardColourFeatu
     }
 
     @Override
-    public CardColourFeatures find(String filename, boolean debug) throws IOException {
-        double[] vector = ImageUtils.coupledHueSat(UtilImageIO.loadImage(filename));
-        return new CardColourFeatures(getLabel(filename), vector);
+    public String getSummaryLine(String filename, double[] features) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getLabel(filename)).append(" ");
+        for (int i = 0; i < features.length; i++) {
+            sb.append(i).append(":").append(String.format("%.4f", features[i])).append(" ");
+        }
+        return sb.toString();
+    }
+
+    @Override
+    public double[] find(BufferedImage image, boolean debug) throws IOException {
+        return ImageUtils.coupledHueSat(image);
     }
 
     @Override

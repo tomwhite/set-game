@@ -1,5 +1,8 @@
 package com.tom_e_white.set_game;
 
+import boofcv.io.image.UtilImageIO;
+
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,17 +17,18 @@ import java.util.List;
  */
 public class CreateTrainingData {
     public static void main(String[] args) throws IOException {
-        FeatureFinder<? extends Features>[] finders = new FeatureFinder[] {
+        FeatureFinder[] finders = new FeatureFinder[] {
                 new FindCardColourFeatures(),
                 new FindCardShadingFeatures(),
                 new FindCardShapeFeatures()
         };
-        for (FeatureFinder<? extends Features> finder : finders) {
+        for (FeatureFinder finder : finders) {
             List<String> summaries = new ArrayList<>();
             for (File file : new File("data/train-out").listFiles((dir, name) -> name.matches(".*\\.jpg"))) {
-                Features features = finder.find(file.getAbsolutePath(), false);
+                BufferedImage image = UtilImageIO.loadImage(file.getAbsolutePath());
+                double[] features = finder.find(image, false);
                 if (features != null) {
-                    summaries.add(features.getSummaryLine());
+                    summaries.add(finder.getSummaryLine(file.getAbsolutePath(), features));
                 }
             }
             Path p = Paths.get("data/train-out-" + finder.getFileName());

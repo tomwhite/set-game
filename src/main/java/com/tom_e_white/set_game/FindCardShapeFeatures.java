@@ -10,49 +10,14 @@ import com.tom_e_white.set_game.image.Shape;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 /**
  * Find features for shapes on a card.
  */
-public class FindCardShapeFeatures implements FeatureFinder<FindCardShapeFeatures.CardShapeFeatures> {
-
-  public static class CardShapeFeatures implements Features {
-    private final int shapeNumberLabel;
-    private final int numSides;
-    private final boolean isConvex;
-
-    public CardShapeFeatures(int shapeNumberLabel, int numSides, boolean isConvex) {
-      this.shapeNumberLabel = shapeNumberLabel;
-      this.numSides = numSides;
-      this.isConvex = isConvex;
-    }
-
-    public int getNumSides() {
-      return numSides;
-    }
-
-    public boolean isConvex() {
-      return isConvex;
-    }
-
-    @Override
-    public String getSummaryLine() {
-      return shapeNumberLabel + "," +
-              numSides + "," +
-              (isConvex ? "1" : "0");
-    }
-
-    @Override
-    public String toString() {
-      return "CardShapeFeatures{" +
-              "shapeNumberLabel=" + shapeNumberLabel +
-              ", numSides=" + numSides +
-              ", isConvex=" + isConvex +
-              '}';
-    }
-  }
+public class FindCardShapeFeatures implements FeatureFinder {
 
   @Override
   public int getLabel(String filename) {
@@ -60,10 +25,17 @@ public class FindCardShapeFeatures implements FeatureFinder<FindCardShapeFeature
   }
 
   @Override
-  public CardShapeFeatures find(String filename, boolean debug) throws IOException {
-    // Based on code from http://boofcv.org/index.php?title=Example_Binary_Image
+  public String getSummaryLine(String filename, double[] features) {
+    StringBuilder sb = new StringBuilder(getLabel(filename));
+    for (double f : features) {
+      sb.append(",").append(f);
+    }
+    return sb.toString();
+  }
 
-    BufferedImage image = UtilImageIO.loadImage(filename);
+  @Override
+  public double[] find(BufferedImage image, boolean debug) throws IOException {
+    // Based on code from http://boofcv.org/index.php?title=Example_Binary_Image
 
     ListDisplayPanel panel = debug ? new ListDisplayPanel() : null;
 
@@ -82,9 +54,9 @@ public class FindCardShapeFeatures implements FeatureFinder<FindCardShapeFeature
     List<Shape> filtered = GeometryUtils.filterByArea(shapes, expectedWidth, expectedHeight, tolerancePct);
     List<Shape> nonOverlapping = GeometryUtils.filterNonOverlappingBoundingBoxes(filtered);
 
-    Optional<CardShapeFeatures> cardShapeFeatures = nonOverlapping.stream()
+    Optional<double[]> cardShapeFeatures = nonOverlapping.stream()
             .map(Shape::getPolygon)
-            .map(p -> new CardShapeFeatures(getLabel(filename), p.size(), p.isConvex()))
+            .map(p -> new double[] { p.size(), p.isConvex() ? 1 : 0 })
             .findFirst();
 
     if (debug) {
@@ -100,7 +72,10 @@ public class FindCardShapeFeatures implements FeatureFinder<FindCardShapeFeature
   }
 
   public static void main(String[] args) throws IOException {
-    CardShapeFeatures cardShapeFeatures = new FindCardShapeFeatures().find(args[0], true);
-    System.out.println(cardShapeFeatures);
+    BufferedImage image = UtilImageIO.loadImage(args[0]);
+    FindCardShapeFeatures featureFinder = new FindCardShapeFeatures();
+    double[] features = featureFinder.find(image, true);
+    System.out.println(featureFinder.getLabel(args[0]));
+    System.out.println(Arrays.toString(features));
   }
 }

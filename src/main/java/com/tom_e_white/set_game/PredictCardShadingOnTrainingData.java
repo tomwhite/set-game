@@ -1,5 +1,6 @@
 package com.tom_e_white.set_game;
 
+import boofcv.io.image.UtilImageIO;
 import org.ddogleg.nn.FactoryNearestNeighbor;
 import org.ddogleg.nn.NearestNeighbor;
 import org.ddogleg.nn.NnData;
@@ -27,11 +28,11 @@ public class PredictCardShadingOnTrainingData {
         List<File> trainingFiles = files.subList(files.size()/10, files.size());
         for (File file : trainingFiles) {
             System.out.println(file);
-            FindCardShadingFeatures.CardShadingFeatures features = featureFinder.find(file.getAbsolutePath(), false);
+            double[] features = featureFinder.find(UtilImageIO.loadImage(file.getAbsolutePath()), false);
             if (features == null) {
                 continue;
             }
-            points.add(new double[] { features.getMeanPixelValue() });
+            points.add(features);
             labels.add(CardLabel.getShadingNumber(file));
         }
         nn.setPoints(points, labels);
@@ -39,9 +40,9 @@ public class PredictCardShadingOnTrainingData {
         int correct = 0;
         int total = 0;
         for (File testFile : testFiles) {
-            FindCardShadingFeatures.CardShadingFeatures features = featureFinder.find(testFile.getAbsolutePath(), false);
+            double[] features = featureFinder.find(UtilImageIO.loadImage(testFile.getAbsolutePath()), false);
             FastQueue<NnData<Integer>> results = new FastQueue(NnData.class,true);
-            nn.findNearest(new double[] { features.getMeanPixelValue() }, -1, 5, results);
+            nn.findNearest(features, -1, 5, results);
             int predictedNumber = getMostFrequent(results);
             int actualNumber = CardLabel.getShadingNumber(testFile);
             if (predictedNumber == actualNumber) {

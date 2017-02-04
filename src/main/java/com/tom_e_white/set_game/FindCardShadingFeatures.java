@@ -17,42 +17,14 @@ import georegression.struct.shapes.RectangleLength2D_F32;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 /**
  * Find features for shading on a card.
  */
-public class FindCardShadingFeatures implements FeatureFinder<FindCardShadingFeatures.CardShadingFeatures> {
-
-  public static class CardShadingFeatures implements Features {
-    private final int shapeShadingLabel;
-    private double meanPixelValue;
-
-    public CardShadingFeatures(int shapeShadingLabel, double meanPixelValue) {
-      this.shapeShadingLabel = shapeShadingLabel;
-      this.meanPixelValue = meanPixelValue;
-    }
-
-    public double getMeanPixelValue() {
-      return meanPixelValue;
-    }
-
-    @Override
-    public String toString() {
-      return "CardShadingFeatures{" +
-              "shapeShadingLabel=" + shapeShadingLabel +
-              ", meanPixelValue=" + meanPixelValue +
-              '}';
-    }
-
-    @Override
-    public String getSummaryLine() {
-      return shapeShadingLabel + "," +
-              meanPixelValue;
-    }
-
-  }
+public class FindCardShadingFeatures implements FeatureFinder {
 
   @Override
   public int getLabel(String filename) {
@@ -60,11 +32,17 @@ public class FindCardShadingFeatures implements FeatureFinder<FindCardShadingFea
   }
 
   @Override
-  public CardShadingFeatures find(String filename, boolean debug) throws IOException {
+  public String getSummaryLine(String filename, double[] features) {
+    StringBuilder sb = new StringBuilder(getLabel(filename));
+    for (double f : features) {
+      sb.append(",").append(f);
+    }
+    return sb.toString();
+  }
+
+  @Override
+  public double[] find(BufferedImage image, boolean debug) throws IOException {
     // Based on code from http://boofcv.org/index.php?title=Example_Binary_Image
-
-    BufferedImage image = UtilImageIO.loadImage(filename);
-
     ListDisplayPanel panel = debug ? new ListDisplayPanel() : null;
 
     List<Shape> shapes = ImageProcessingPipeline.fromBufferedImage(image, panel)
@@ -86,7 +64,7 @@ public class FindCardShadingFeatures implements FeatureFinder<FindCardShadingFea
             .map(Shape::getBoundingBox)
             .findFirst();
 
-    CardShadingFeatures features = null;
+    double[] features = null;
     if (box.isPresent()) {
       Quadrilateral_F64 quad = new Quadrilateral_F64();
       RectangleLength2D_F32 rect = box.get();
@@ -116,7 +94,7 @@ public class FindCardShadingFeatures implements FeatureFinder<FindCardShadingFea
               .extract(100 - 25, 50 - 12, 50, 25)
               .getImage();
       double meanPixelValue = ImageStatistics.mean(finalImage);
-      features = new CardShadingFeatures(getLabel(filename), meanPixelValue);
+      features = new double[] { meanPixelValue };
     }
 
     if (debug) {
@@ -143,7 +121,10 @@ public class FindCardShadingFeatures implements FeatureFinder<FindCardShadingFea
   }
 
   public static void main(String[] args) throws IOException {
-    CardShadingFeatures cardShadingFeatures = new FindCardShadingFeatures().find(args[0], true);
-    System.out.println(cardShadingFeatures);
+    BufferedImage image = UtilImageIO.loadImage(args[0]);
+    FindCardShadingFeatures featureFinder = new FindCardShadingFeatures();
+    double[] features = featureFinder.find(image, true);
+    System.out.println(featureFinder.getLabel(args[0]));
+    System.out.println(Arrays.toString(features));
   }
 }

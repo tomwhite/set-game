@@ -1,5 +1,6 @@
 package com.tom_e_white.set_game;
 
+import boofcv.io.image.UtilImageIO;
 import org.ddogleg.nn.FactoryNearestNeighbor;
 import org.ddogleg.nn.NearestNeighbor;
 import org.ddogleg.nn.NnData;
@@ -9,7 +10,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -33,9 +37,9 @@ public class PredictCardShadingOnTestData {
             points.add(values);
         }
         FindCardShadingFeatures featureFinder = new FindCardShadingFeatures();
-        FindCardShadingFeatures.CardShadingFeatures features = featureFinder.find(testFile.getAbsolutePath(), false);
+        double[] features = featureFinder.find(UtilImageIO.loadImage(testFile.getAbsolutePath()), false);
         FastQueue<NnData<Integer>> results = new FastQueue(NnData.class,true);
-        nn.findNearest(new double[] { features.getMeanPixelValue() }, -1, 5, results);
+        nn.findNearest(features, -1, 5, results);
         int predictedNumber = getMostFrequent(results);
         int actualNumber = CardLabel.getShadingNumber(testFile);
         return predictedNumber == actualNumber;
