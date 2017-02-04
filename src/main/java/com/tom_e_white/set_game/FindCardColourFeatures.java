@@ -15,6 +15,7 @@ public class FindCardColourFeatures implements FeatureFinder {
 
     @Override
     public String getSummaryLine(String filename, double[] features) {
+        // libsvm format, *not* csv
         StringBuilder sb = new StringBuilder();
         sb.append(getLabel(filename)).append(" ");
         for (int i = 0; i < features.length; i++) {

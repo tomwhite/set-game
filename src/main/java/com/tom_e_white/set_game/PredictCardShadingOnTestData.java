@@ -36,6 +36,8 @@ public class PredictCardShadingOnTestData {
             }
             points.add(values);
         }
+        nn.setPoints(points, labels);
+
         FindCardShadingFeatures featureFinder = new FindCardShadingFeatures();
         double[] features = featureFinder.find(UtilImageIO.loadImage(testFile.getAbsolutePath()), false);
         FastQueue<NnData<Integer>> results = new FastQueue(NnData.class,true);
