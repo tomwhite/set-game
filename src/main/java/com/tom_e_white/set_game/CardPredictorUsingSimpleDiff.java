@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 /**
  * Try to predict cards from a test image using a simple diff (not very effective).
  */
-public class CardPredictor {
+public class CardPredictorUsingSimpleDiff {
 
     public static class ScoredCard implements Comparable<ScoredCard> {
         private String label;
