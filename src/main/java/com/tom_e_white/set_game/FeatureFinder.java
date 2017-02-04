@@ -3,6 +3,7 @@ package com.tom_e_white.set_game;
 import java.io.IOException;
 
 public interface FeatureFinder<F extends Features> {
+    int getLabel(String filename);
     F find(String filename, boolean debug) throws IOException;
     String getFileName();
 }

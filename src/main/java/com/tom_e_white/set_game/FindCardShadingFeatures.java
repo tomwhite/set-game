@@ -55,6 +55,11 @@ public class FindCardShadingFeatures implements FeatureFinder<FindCardShadingFea
   }
 
   @Override
+  public int getLabel(String filename) {
+    return CardLabel.getShadingNumber(new File(filename));
+  }
+
+  @Override
   public CardShadingFeatures find(String filename, boolean debug) throws IOException {
     // Based on code from http://boofcv.org/index.php?title=Example_Binary_Image
 
@@ -111,7 +116,7 @@ public class FindCardShadingFeatures implements FeatureFinder<FindCardShadingFea
               .extract(100 - 25, 50 - 12, 50, 25)
               .getImage();
       double meanPixelValue = ImageStatistics.mean(finalImage);
-      features = new CardShadingFeatures(CardLabel.getShadingNumber(new File(filename)), meanPixelValue);
+      features = new CardShadingFeatures(getLabel(filename), meanPixelValue);
     }
 
     if (debug) {

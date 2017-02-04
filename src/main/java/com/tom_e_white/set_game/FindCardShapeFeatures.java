@@ -55,6 +55,11 @@ public class FindCardShapeFeatures implements FeatureFinder<FindCardShapeFeature
   }
 
   @Override
+  public int getLabel(String filename) {
+    return CardLabel.getShapeNumber(new File(filename));
+  }
+
+  @Override
   public CardShapeFeatures find(String filename, boolean debug) throws IOException {
     // Based on code from http://boofcv.org/index.php?title=Example_Binary_Image
 
@@ -79,7 +84,7 @@ public class FindCardShapeFeatures implements FeatureFinder<FindCardShapeFeature
 
     Optional<CardShapeFeatures> cardShapeFeatures = nonOverlapping.stream()
             .map(Shape::getPolygon)
-            .map(p -> new CardShapeFeatures(CardLabel.getShapeNumber(new File(filename)), p.size(), p.isConvex()))
+            .map(p -> new CardShapeFeatures(getLabel(filename), p.size(), p.isConvex()))
             .findFirst();
 
     if (debug) {

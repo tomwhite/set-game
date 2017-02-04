@@ -29,9 +29,14 @@ public class FindCardColourFeatures implements FeatureFinder<FindCardColourFeatu
     }
 
     @Override
+    public int getLabel(String filename) {
+        return CardLabel.getColourNumber(new File(filename));
+    }
+
+    @Override
     public CardColourFeatures find(String filename, boolean debug) throws IOException {
         double[] vector = ImageUtils.coupledHueSat(UtilImageIO.loadImage(filename));
-        return new CardColourFeatures(CardLabel.getColourNumber(new File(filename)), vector);
+        return new CardColourFeatures(getLabel(filename), vector);
     }
 
     @Override
