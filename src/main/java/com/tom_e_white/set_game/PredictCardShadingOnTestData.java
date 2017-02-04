@@ -19,7 +19,7 @@ public class PredictCardShadingOnTestData {
 
     public static boolean predict(File testFile) throws IOException {
         NearestNeighbor<Integer> nn = FactoryNearestNeighbor.exhaustive();
-        nn.init(5);
+        nn.init(1);
         List<Integer> labels = new ArrayList<>();
         List<double[]> points = new ArrayList<>();
         List<String> lines = Files.lines(Paths.get("data/train-out-shading.csv")).collect(Collectors.toList());

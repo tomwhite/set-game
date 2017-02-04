@@ -1,8 +1,6 @@
 package com.tom_e_white.set_game;
 
-import boofcv.alg.misc.ImageMiscOps;
 import boofcv.alg.misc.ImageStatistics;
-import boofcv.alg.misc.PixelMath;
 import boofcv.gui.ListDisplayPanel;
 import boofcv.gui.image.ShowImages;
 import boofcv.io.image.ConvertBufferedImage;
@@ -29,19 +27,10 @@ public class FindCardShadingFeatures implements FeatureFinder<FindCardShadingFea
 
   public static class CardShadingFeatures implements Features {
     private final int shapeShadingLabel;
-    private final int numEdgeExternalContours;
-    private final int numEdgeInternalContours;
-    private final int numBinaryExternalContours;
-    private final int numBinaryInternalContours;
     private double meanPixelValue;
 
-    public CardShadingFeatures(int shapeShadingLabel, int numEdgeExternalContours, int numEdgeInternalContours,
-                               int numBinaryExternalContours, int numBinaryInternalContours, double meanPixelValue) {
+    public CardShadingFeatures(int shapeShadingLabel, double meanPixelValue) {
       this.shapeShadingLabel = shapeShadingLabel;
-      this.numEdgeExternalContours = numEdgeExternalContours;
-      this.numEdgeInternalContours = numEdgeInternalContours;
-      this.numBinaryExternalContours = numBinaryExternalContours;
-      this.numBinaryInternalContours = numBinaryInternalContours;
       this.meanPixelValue = meanPixelValue;
     }
 
@@ -53,10 +42,6 @@ public class FindCardShadingFeatures implements FeatureFinder<FindCardShadingFea
     public String toString() {
       return "CardShadingFeatures{" +
               "shapeShadingLabel=" + shapeShadingLabel +
-              ", numEdgeExternalContours=" + numEdgeExternalContours +
-              ", numEdgeInternalContours=" + numEdgeInternalContours +
-              ", numBinaryExternalContours=" + numBinaryExternalContours +
-              ", numBinaryInternalContours=" + numBinaryInternalContours +
               ", meanPixelValue=" + meanPixelValue +
               '}';
     }
@@ -64,8 +49,6 @@ public class FindCardShadingFeatures implements FeatureFinder<FindCardShadingFea
     @Override
     public String getSummaryLine() {
       return shapeShadingLabel + "," +
-              numEdgeExternalContours + "," + numEdgeInternalContours + "," +
-              numBinaryExternalContours + "," + numBinaryInternalContours + "," +
               meanPixelValue;
     }
 
@@ -128,19 +111,7 @@ public class FindCardShadingFeatures implements FeatureFinder<FindCardShadingFea
               .extract(100 - 25, 50 - 12, 50, 25)
               .getImage();
       double meanPixelValue = ImageStatistics.mean(finalImage);
-      int shadingNo = CardLabel.getShadingNumber(new File(filename));
-      if ((shadingNo == 1 && meanPixelValue < 0.75)
-        || (shadingNo == 2 && meanPixelValue < 0.25 && meanPixelValue > 0.75)
-              || (shadingNo == 3 && meanPixelValue > 0.25)) {
-        System.out.println(filename + "," + CardLabel.toLabel(new File(filename).getName()) + "," + shadingNo + "," + meanPixelValue);
-      }
-
-
-      features = new CardShadingFeatures(CardLabel.getShadingNumber(new File(filename)),
-              edgeProcessor.getExternalContours().size(), edgeProcessor.getInternalContours().size(),
-              binaryProcessor.getExternalContours().size(), binaryProcessor.getInternalContours().size(),
-              meanPixelValue
-      );
+      features = new CardShadingFeatures(CardLabel.getShadingNumber(new File(filename)), meanPixelValue);
     }
 
     if (debug) {
