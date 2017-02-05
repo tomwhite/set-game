@@ -70,13 +70,17 @@ public class CardLabel {
         }
     }
 
-    static int getShapeNumber(File file) {
-        String shapeString = toLabel(file).split(" ")[3];
+    static int getShapeNumber(String label) {
+        String shapeString = label.split(" ")[3];
         switch (shapeString) {
             case "oval": case "ovals": return 1;
             case "diamond": case "diamonds": return 2;
             case "squiggle": case "squiggles": return 3;
             default: throw new IllegalArgumentException("Unrecognized shape: " + shapeString);
         }
+    }
+
+    static int getShapeNumber(File file) {
+        return getShapeNumber(toLabel(file.getName()));
     }
 }
