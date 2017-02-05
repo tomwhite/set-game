@@ -24,7 +24,7 @@ public class PredictCardShapeOnTestData {
     public static double predict(File testFile) throws IOException {
         FindCardShapeFeatures featureFinder = new FindCardShapeFeatures();
         NearestNeighbor<Integer> nn = FactoryNearestNeighbor.exhaustive();
-        nn.init(1);
+        nn.init(2);
         List<Integer> labels = new ArrayList<>();
         List<double[]> vectors = new ArrayList<>();
         List<String> lines = Files.lines(Paths.get("data/train-out-" + featureFinder.getFileName())).collect(Collectors.toList());
