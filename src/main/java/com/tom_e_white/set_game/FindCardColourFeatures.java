@@ -25,6 +25,17 @@ public class FindCardColourFeatures implements FeatureFinder {
     }
 
     @Override
+    public LabelledVector getLabelledVector(String summaryLine) {
+        // libsvm format, *not* csv
+        String[] split = summaryLine.split(" ");
+        double[] vector = new double[split.length - 1];
+        for (int i = 0; i < split.length - 1; i++) {
+            vector[i] = Double.parseDouble(split[i + 1].split(":")[1]);
+        }
+        return new LabelledVector(Integer.parseInt(split[0]), vector);
+    }
+
+    @Override
     public double[] find(BufferedImage image, boolean debug) throws IOException {
         return ImageUtils.coupledHueSat(image);
     }

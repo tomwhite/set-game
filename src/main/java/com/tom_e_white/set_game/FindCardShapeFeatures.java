@@ -34,6 +34,16 @@ public class FindCardShapeFeatures implements FeatureFinder {
   }
 
   @Override
+  public LabelledVector getLabelledVector(String summaryLine) {
+    String[] split = summaryLine.split(",");
+    double[] vector = new double[split.length - 1];
+    for (int i = 0; i < split.length - 1; i++) {
+      vector[i] = Double.parseDouble(split[i + 1]);
+    }
+    return new LabelledVector(Integer.parseInt(split[0]), vector);
+  }
+
+  @Override
   public double[] find(BufferedImage image, boolean debug) throws IOException {
     // Based on code from http://boofcv.org/index.php?title=Example_Binary_Image
 

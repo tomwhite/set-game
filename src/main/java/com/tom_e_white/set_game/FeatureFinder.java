@@ -8,4 +8,5 @@ public interface FeatureFinder {
     double[] find(BufferedImage image, boolean debug) throws IOException;
     String getFileName();
     String getSummaryLine(String filename, double[] features);
+    LabelledVector getLabelledVector(String summaryLine);
 }

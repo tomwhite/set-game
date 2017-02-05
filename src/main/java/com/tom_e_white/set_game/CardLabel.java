@@ -46,15 +46,18 @@ public class CardLabel {
         return Integer.parseInt(toLabel(file).split(" ")[0]);
     }
 
-
-    static int getShadingNumber(File file) {
-        String shadingString = toLabel(file).split(" ")[1];
+    static int getShadingNumber(String label) {
+        String shadingString = label.split(" ")[1];
         switch (shadingString) {
             case "filled": return 1;
             case "hatched": return 2;
             case "open": return 3;
             default: throw new IllegalArgumentException("Unrecognized shading: " + shadingString);
         }
+    }
+
+    static int getShadingNumber(File file) {
+        return getShadingNumber(toLabel(file.getName()));
     }
 
     static int getColourNumber(File file) {
