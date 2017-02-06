@@ -60,14 +60,18 @@ public class CardLabel {
         return getShadingNumber(toLabel(file.getName()));
     }
 
-    static int getColourNumber(File file) {
-        String colourString = toLabel(file).split(" ")[2];
+    static int getColourNumber(String label) {
+        String colourString = label.split(" ")[2];
         switch (colourString) {
             case "red": return 1;
             case "purple": return 2;
             case "green": return 3;
             default: throw new IllegalArgumentException("Unrecognized colour: " + colourString);
         }
+    }
+
+    static int getColourNumber(File file) {
+        return getColourNumber(toLabel(file.getName()));
     }
 
     static int getShapeNumber(String label) {
