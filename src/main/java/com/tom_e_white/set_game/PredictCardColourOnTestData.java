@@ -4,12 +4,19 @@ import org.ddogleg.nn.FactoryNearestNeighbor;
 import org.ddogleg.nn.NearestNeighbor;
 import org.ddogleg.nn.NnData;
 import org.ddogleg.struct.FastQueue;
+import smile.classification.KNN;
+import smile.data.AttributeDataset;
+import smile.data.NominalAttribute;
+import smile.data.SparseDataset;
+import smile.data.parser.DelimitedTextParser;
+import smile.data.parser.LibsvmParser;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,19 +28,12 @@ import java.util.stream.Collectors;
  */
 public class PredictCardColourOnTestData {
 
-    public static double predict(File testFile) throws IOException {
-        FindCardColourFeatures featureFinder = new FindCardColourFeatures();
-        NearestNeighbor<Integer> nn = FactoryNearestNeighbor.exhaustive();
-        nn.init(144);
-        List<Integer> labels = new ArrayList<>();
-        List<double[]> vectors = new ArrayList<>();
-        List<String> lines = Files.lines(Paths.get("data/train-out-" + featureFinder.getFileName())).collect(Collectors.toList());
-        for (String line : lines) {
-            LabelledVector labelledVector = featureFinder.getLabelledVector(line);
-            labels.add(labelledVector.getLabel());
-            vectors.add(labelledVector.getVector());
-        }
-        nn.setPoints(vectors, labels);
+
+    public static double predict(File testFile) throws IOException, ParseException {
+        LibsvmParser parser = new LibsvmParser();
+        SparseDataset dataset = parser.parse("data/train-out-colour.svm");
+        double[][] vectors = dataset.toArray();
+        int[] label = dataset.toArray(new int[dataset.size()]);
 
         CardDetector cardDetector = new CardDetector();
         List<BufferedImage> images = cardDetector.scan(testFile.getAbsolutePath(), true);
@@ -41,11 +41,12 @@ public class PredictCardColourOnTestData {
 
         int correct = 0;
         int total = 0;
+        FindCardColourFeatures featureFinder = new FindCardColourFeatures();
         for (int i = 0; i < testLabels.size(); i++) {
             double[] features = featureFinder.find(images.get(i), false);
-            FastQueue<NnData<Integer>> results = new FastQueue(NnData.class,true);
-            nn.findNearest(features, -1, 5, results);
-            int predictedLabel = getMostFrequent(results);
+
+            KNN<double[]> knn = KNN.learn(vectors, label, 25);
+            int predictedLabel = knn.predict(features) + 1; // add one as our labels are 1-based
             int actualLabel = CardLabel.getColourNumber(testLabels.get(i));
             if (predictedLabel == actualLabel) {
                 correct++;
@@ -61,20 +62,7 @@ public class PredictCardColourOnTestData {
         return accuracy;
     }
 
-    private static Integer getMostFrequent(FastQueue<NnData<Integer>> results) {
-        Map<Integer, Long> collect = results.toList().stream()
-                .map(d -> d.data)
-                .collect(Collectors.groupingBy(e -> e, Collectors.counting()));
-        Optional<Long> max = collect.values().stream().max(Long::compareTo);
-        for (Map.Entry<Integer, Long> e : collect.entrySet()) {
-            if (e.getValue().equals(max.get())) {
-                return e.getKey();
-            }
-        }
-        return null;
-    }
-
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         System.out.println(predict(new File(args[0])));
     }
 }

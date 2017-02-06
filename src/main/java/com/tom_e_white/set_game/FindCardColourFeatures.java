@@ -19,7 +19,7 @@ public class FindCardColourFeatures implements FeatureFinder {
         StringBuilder sb = new StringBuilder();
         sb.append(getLabel(filename)).append(" ");
         for (int i = 0; i < features.length; i++) {
-            sb.append(i).append(":").append(String.format("%.4f", features[i])).append(" ");
+            sb.append(i + 1).append(":").append(String.format("%.4f", features[i])).append(" ");
         }
         return sb.toString();
     }

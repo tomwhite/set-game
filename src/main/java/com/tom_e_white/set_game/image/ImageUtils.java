@@ -27,7 +27,7 @@ public class ImageUtils {
         Planar<GrayF32> hs = hsv.partialSpectrum(0,1);
 
         // The number of bins is an important parameter.  Try adjusting it
-        Histogram_F64 histogram = new Histogram_F64(12,12);
+        Histogram_F64 histogram = new Histogram_F64(5,5);
         histogram.setRange(0, 0, 2.0*Math.PI); // range of hue is from 0 to 2PI
         histogram.setRange(1, 0, 1.0);         // range of saturation is from 0 to 1
 
