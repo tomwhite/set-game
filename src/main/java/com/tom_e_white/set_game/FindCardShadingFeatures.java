@@ -32,12 +32,22 @@ public class FindCardShadingFeatures implements FeatureFinder {
   }
 
   @Override
-  public String getSummaryLine(String filename, double[] features) {
-    StringBuilder sb = new StringBuilder().append(getLabel(filename));
+  public int getLabelNumberFromLabel(String label) {
+    return CardLabel.getShadingNumber(label);
+  }
+
+  @Override
+  public String getSummaryLine(int label, double[] features) {
+    StringBuilder sb = new StringBuilder().append(label);
     for (double f : features) {
       sb.append(",").append(f);
     }
     return sb.toString();
+  }
+
+  @Override
+  public String getSummaryLine(String filename, double[] features) {
+    return getSummaryLine(getLabel(filename), features);
   }
 
   @Override
