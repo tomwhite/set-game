@@ -15,22 +15,19 @@ public class FindCardColourFeatures implements FeatureFinder {
 
     @Override
     public String getSummaryLine(String filename, double[] features) {
-        // libsvm format, *not* csv
-        StringBuilder sb = new StringBuilder();
-        sb.append(getLabel(filename)).append(" ");
-        for (int i = 0; i < features.length; i++) {
-            sb.append(i + 1).append(":").append(String.format("%.4f", features[i])).append(" ");
+        StringBuilder sb = new StringBuilder().append(getLabel(filename));
+        for (double f : features) {
+            sb.append(",").append(f);
         }
         return sb.toString();
     }
 
     @Override
     public LabelledVector getLabelledVector(String summaryLine) {
-        // libsvm format, *not* csv
-        String[] split = summaryLine.split(" ");
+        String[] split = summaryLine.split(",");
         double[] vector = new double[split.length - 1];
         for (int i = 0; i < split.length - 1; i++) {
-            vector[i] = Double.parseDouble(split[i + 1].split(":")[1]);
+            vector[i] = Double.parseDouble(split[i + 1]);
         }
         return new LabelledVector(Integer.parseInt(split[0]), vector);
     }
@@ -42,6 +39,6 @@ public class FindCardColourFeatures implements FeatureFinder {
 
     @Override
     public String getFileName() {
-        return "colour.svm";
+        return "colour.csv";
     }
 }

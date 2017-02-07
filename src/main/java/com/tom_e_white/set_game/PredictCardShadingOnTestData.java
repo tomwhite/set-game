@@ -22,7 +22,7 @@ public class PredictCardShadingOnTestData {
     public static double predict(File testFile) throws IOException, ParseException {
         DelimitedTextParser parser = new DelimitedTextParser();
         parser.setDelimiter(",");
-        parser.setResponseIndex(new NominalAttribute("shading"), 0);
+        parser.setResponseIndex(new NominalAttribute("shading", new String[] { "1", "2", "3" }), 0);
         AttributeDataset dataset = parser.parse("data/train-out-shading.csv");
         double[][] vectors = dataset.toArray(new double[dataset.size()][]);
         int[] label = dataset.toArray(new int[dataset.size()]);

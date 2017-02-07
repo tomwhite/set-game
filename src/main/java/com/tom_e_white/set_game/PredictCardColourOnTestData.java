@@ -1,15 +1,9 @@
 package com.tom_e_white.set_game;
 
-import org.ddogleg.nn.FactoryNearestNeighbor;
-import org.ddogleg.nn.NearestNeighbor;
-import org.ddogleg.nn.NnData;
-import org.ddogleg.struct.FastQueue;
 import smile.classification.KNN;
 import smile.data.AttributeDataset;
 import smile.data.NominalAttribute;
-import smile.data.SparseDataset;
 import smile.data.parser.DelimitedTextParser;
-import smile.data.parser.LibsvmParser;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -17,10 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -28,11 +19,12 @@ import java.util.stream.Collectors;
  */
 public class PredictCardColourOnTestData {
 
-
     public static double predict(File testFile) throws IOException, ParseException {
-        LibsvmParser parser = new LibsvmParser();
-        SparseDataset dataset = parser.parse("data/train-out-colour.svm");
-        double[][] vectors = dataset.toArray();
+        DelimitedTextParser parser = new DelimitedTextParser();
+        parser.setDelimiter(",");
+        parser.setResponseIndex(new NominalAttribute("colour", new String[] { "1", "2", "3" }), 0);
+        AttributeDataset dataset = parser.parse("data/train-out-colour.csv");
+        double[][] vectors = dataset.toArray(new double[dataset.size()][]);
         int[] label = dataset.toArray(new int[dataset.size()]);
 
         CardDetector cardDetector = new CardDetector();

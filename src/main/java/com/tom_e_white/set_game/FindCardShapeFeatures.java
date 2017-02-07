@@ -26,7 +26,7 @@ public class FindCardShapeFeatures implements FeatureFinder {
 
   @Override
   public String getSummaryLine(String filename, double[] features) {
-    StringBuilder sb = new StringBuilder(getLabel(filename));
+    StringBuilder sb = new StringBuilder().append(getLabel(filename));
     for (double f : features) {
       sb.append(",").append(f);
     }
