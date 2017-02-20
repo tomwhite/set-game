@@ -1,5 +1,5 @@
 require(caret)
-a <- read.csv("/Users/tom/projects-workspace/set-game/data/train-out-shading.csv", col.names = c("label", "v1"))
+a <- read.csv("/Users/tom/projects-workspace/set-game/data/train-out-shading.csv", header = FALSE, col.names = c("label", "v1"))
 a$label <- as.factor(a$label)
 set.seed(1)
 aFit <- train(label ~ ., data = a, method = "svmRadial", preProc = c("center", "scale"),
@@ -19,3 +19,6 @@ predictions <- predict(aFitKnn, newdata = testDataNoLabel)
 predictions
 
 print(postResample(pred=predictions, obs=as.factor(testData$label)))
+
+# Plot data
+stripchart(a$v1 ~ a$label, method="jitter", col=c("red", "blue", "green"), pch=1)

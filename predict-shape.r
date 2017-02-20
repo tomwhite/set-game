@@ -1,5 +1,5 @@
 require(caret)
-a <- read.csv("/Users/tom/projects-workspace/set-game/data/train-out-shape.csv", col.names = c("label", "v1", "v2"))
+a <- read.csv("/Users/tom/projects-workspace/set-game/data/train-out-shape.csv", header = FALSE, col.names = c("label", "v1", "v2"))
 a$label <- as.factor(a$label)
 set.seed(1)
 aFit <- train(label ~ ., data = a, method = "svmRadial", preProc = c("center", "scale"),
@@ -19,3 +19,6 @@ predictions <- predict(aFitKnn, newdata = testDataNoLabel)
 predictions
 
 print(postResample(pred=predictions, obs=as.factor(testData$label)))
+
+# Plot data
+qplot(v1, v2, colour = label, data = a)
