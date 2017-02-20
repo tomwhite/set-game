@@ -42,8 +42,12 @@ public class CardLabel {
         }
     }
 
+    static int getNumber(String label) {
+        return Integer.parseInt(label.split(" ")[0]);
+    }
+
     static int getNumber(File file) {
-        return Integer.parseInt(toLabel(file).split(" ")[0]);
+        return getNumber(toLabel(file));
     }
 
     static int getShadingNumber(String label) {

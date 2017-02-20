@@ -17,9 +17,11 @@ import java.util.List;
 public class FindCardNumberFeatures { // TODO: implement FeatureFinder
 
   public int scan(String filename, boolean debug) throws IOException {
-    // Based on code from http://boofcv.org/index.php?title=Example_Binary_Image
-
     BufferedImage image = UtilImageIO.loadImage(filename);
+    return scan(image, debug);
+  }
+  public int scan(BufferedImage image, boolean debug) throws IOException {
+    // Based on code from http://boofcv.org/index.php?title=Example_Binary_Image
 
     ListDisplayPanel panel = debug ? new ListDisplayPanel() : null;
 
