@@ -1,10 +1,12 @@
 package com.tom_e_white.set_game;
 
+import boofcv.io.image.UtilImageIO;
 import com.tom_e_white.set_game.image.ImageUtils;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class FindCardColourFeatures implements FeatureFinder {
 
@@ -50,5 +52,13 @@ public class FindCardColourFeatures implements FeatureFinder {
     @Override
     public String getFileName() {
         return "colour.csv";
+    }
+
+    public static void main(String[] args) throws IOException {
+        BufferedImage image = UtilImageIO.loadImage(args[0]);
+        FindCardColourFeatures featureFinder = new FindCardColourFeatures();
+        double[] features = featureFinder.find(image, true);
+        System.out.println(featureFinder.getLabel(args[0]));
+        System.out.println(Arrays.toString(features));
     }
 }
