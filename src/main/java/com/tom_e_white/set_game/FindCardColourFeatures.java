@@ -40,7 +40,7 @@ public class FindCardColourFeatures extends FeatureFinder {
         DelimitedTextParser parser = new DelimitedTextParser();
         parser.setDelimiter(",");
         parser.setResponseIndex(new NominalAttribute("colour", new String[] { "1", "2", "3" }), 0);
-        AttributeDataset dataset = parser.parse("data/train-out-colour.csv");
+        AttributeDataset dataset = parser.parse("data/train-out-" + getFileSuffix());
         double[][] vectors = dataset.toArray(new double[dataset.size()][]);
         int[] label = dataset.toArray(new int[dataset.size()]);
         return KNN.learn(vectors, label, 25);

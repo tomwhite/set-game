@@ -115,7 +115,7 @@ public class FindCardShadingFeatures extends FeatureFinder {
     DelimitedTextParser parser = new DelimitedTextParser();
     parser.setDelimiter(",");
     parser.setResponseIndex(new NominalAttribute("shading", new String[] { "1", "2", "3" }), 0);
-    AttributeDataset dataset = parser.parse("data/train-out-shading.csv");
+    AttributeDataset dataset = parser.parse("data/train-out-" + getFileSuffix());
     double[][] vectors = dataset.toArray(new double[dataset.size()][]);
     int[] label = dataset.toArray(new int[dataset.size()]);
     return KNN.learn(vectors, label, 5);
