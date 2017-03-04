@@ -21,12 +21,12 @@ public class FindCardNumberFeatures extends FeatureFinder {
 
   @Override
   public int getLabel(String filename) {
-    return CardLabel.getNumber(new File(filename));
+    return Card.Number.parseFilename(new File(filename)).ordinal();
   }
 
   @Override
   public int getLabelNumberFromLabel(String label) {
-    return CardLabel.getNumber(label);
+    return Card.Number.parseDescription(label).ordinal();
   }
 
   @Override
@@ -66,9 +66,7 @@ public class FindCardNumberFeatures extends FeatureFinder {
 
   @Override
   public Classifier<double[]> getClassifier() throws IOException, ParseException {
-    return doubles -> {
-      return (int) doubles[0] - 1; // TODO: remove need to subtract one
-    };
+    return doubles -> ((int) doubles[0]) % 3; // just return as an int mod 3
   }
 
   public static void main(String[] args) throws IOException {

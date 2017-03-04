@@ -39,7 +39,7 @@ public class PredictCardFeaturesOnTestData {
             int total = 0;
             for (int i = 0; i < testLabels.size(); i++) {
                 double[] features = finder.find(images.get(i), false);
-                int predictedLabel = classifier.predict(features) + 1; // add one as our labels are 1-based
+                int predictedLabel = classifier.predict(features);
                 int actualLabel = finder.getLabelNumberFromLabel(testLabels.get(i));
                 if (predictedLabel == actualLabel) {
                     correct++;

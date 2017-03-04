@@ -17,7 +17,7 @@ public class PredictCardNumberOnTrainingData {
         for (File file : new File("data/train-out").listFiles((dir, name) -> name.matches(".*\\.jpg"))) {
             System.out.println(file);
             int predictedNumber = (int) cardFeatureCounter.find(UtilImageIO.loadImage(file.getAbsolutePath()), false)[0];
-            int actualNumber = CardLabel.getNumber(file);
+            int actualNumber = cardFeatureCounter.getLabel(file.getName());
             if (predictedNumber == actualNumber) {
                 correct++;
             } else {

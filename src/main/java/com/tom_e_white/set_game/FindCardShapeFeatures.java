@@ -26,12 +26,12 @@ public class FindCardShapeFeatures extends FeatureFinder {
 
   @Override
   public int getLabel(String filename) {
-    return CardLabel.getShapeNumber(new File(filename));
+    return Card.Shape.parseFilename(new File(filename)).ordinal();
   }
 
   @Override
   public int getLabelNumberFromLabel(String label) {
-    return CardLabel.getShapeNumber(label);
+    return Card.Shape.parseDescription(label).ordinal();
   }
 
   @Override
@@ -76,7 +76,7 @@ public class FindCardShapeFeatures extends FeatureFinder {
   public Classifier<double[]> getClassifier() throws IOException, ParseException {
     DelimitedTextParser parser = new DelimitedTextParser();
     parser.setDelimiter(",");
-    parser.setResponseIndex(new NominalAttribute("shape", new String[] { "1", "2", "3" }), 0);
+    parser.setResponseIndex(new NominalAttribute("shape", new String[] { "0", "1", "2" }), 0);
     AttributeDataset dataset = parser.parse("data/train-out-" + getFileSuffix());
     double[][] vectors = dataset.toArray(new double[dataset.size()][]);
     int[] label = dataset.toArray(new int[dataset.size()]);

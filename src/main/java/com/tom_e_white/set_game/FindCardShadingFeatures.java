@@ -33,12 +33,12 @@ public class FindCardShadingFeatures extends FeatureFinder {
 
   @Override
   public int getLabel(String filename) {
-    return CardLabel.getShadingNumber(new File(filename));
+    return Card.Shading.parseFilename(new File(filename)).ordinal();
   }
 
   @Override
   public int getLabelNumberFromLabel(String label) {
-    return CardLabel.getShadingNumber(label);
+    return Card.Shading.parseDescription(label).ordinal();
   }
 
   @Override
@@ -114,7 +114,7 @@ public class FindCardShadingFeatures extends FeatureFinder {
   public Classifier<double[]> getClassifier() throws IOException, ParseException {
     DelimitedTextParser parser = new DelimitedTextParser();
     parser.setDelimiter(",");
-    parser.setResponseIndex(new NominalAttribute("shading", new String[] { "1", "2", "3" }), 0);
+    parser.setResponseIndex(new NominalAttribute("shading", new String[] { "0", "1", "2" }), 0);
     AttributeDataset dataset = parser.parse("data/train-out-" + getFileSuffix());
     double[][] vectors = dataset.toArray(new double[dataset.size()][]);
     int[] label = dataset.toArray(new int[dataset.size()]);
