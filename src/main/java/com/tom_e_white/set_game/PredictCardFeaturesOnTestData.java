@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  */
 public class PredictCardFeaturesOnTestData {
 
-    public static void predict(File testFile) throws IOException, ParseException {
+    public static double[] predict(File testFile) throws IOException, ParseException {
 
         FeatureFinder[] finders = new FeatureFinder[] {
                 new FindCardNumberFeatures(),
@@ -24,6 +24,8 @@ public class PredictCardFeaturesOnTestData {
                 new FindCardShadingFeatures(),
                 new FindCardShapeFeatures()
         };
+        double[] accuracies = new double[finders.length];
+        int index = 0;
         for (FeatureFinder finder : finders) {
             System.out.println(finder.getClass().getSimpleName());
 
@@ -49,9 +51,11 @@ public class PredictCardFeaturesOnTestData {
             System.out.println("Correct: " + correct);
             System.out.println("Total: " + total);
             double accuracy = ((double) correct)/total * 100;
+            accuracies[index++] = accuracy;
             System.out.println("Accuracy: " + ((int) accuracy) + " percent");
             System.out.println("------------------------------------------");
         }
+        return accuracies;
     }
 
     public static void main(String[] args) throws Exception {
