@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.text.ParseException;
 
 public abstract class FeatureFinder {
-    public abstract int getLabel(String filename);
-    public abstract int getLabelNumberFromLabel(String label);
+    public abstract int getLabelFromFilename(String filename);
+    public abstract int getLabelFromDescription(String description);
     public abstract double[] find(BufferedImage image, boolean debug) throws IOException;
     public abstract String getFileSuffix();
     public abstract Classifier<double[]> getClassifier() throws IOException, ParseException;
@@ -22,6 +22,6 @@ public abstract class FeatureFinder {
     }
 
     public String getSummaryLine(String filename, double[] features) {
-        return getSummaryLine(getLabel(filename), features);
+        return getSummaryLine(getLabelFromFilename(filename), features);
     }
 }

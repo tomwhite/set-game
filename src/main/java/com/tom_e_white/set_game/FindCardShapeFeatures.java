@@ -25,13 +25,13 @@ import java.util.Optional;
 public class FindCardShapeFeatures extends FeatureFinder {
 
   @Override
-  public int getLabel(String filename) {
+  public int getLabelFromFilename(String filename) {
     return Card.Shape.parseFilename(new File(filename)).ordinal();
   }
 
   @Override
-  public int getLabelNumberFromLabel(String label) {
-    return Card.Shape.parseDescription(label).ordinal();
+  public int getLabelFromDescription(String description) {
+    return Card.Shape.parseDescription(description).ordinal();
   }
 
   @Override

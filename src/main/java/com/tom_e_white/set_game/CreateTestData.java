@@ -26,10 +26,10 @@ public class CreateTestData {
             List<String> summaries = new ArrayList<>();
             CardDetector cardDetector = new CardDetector();
             List<BufferedImage> images = cardDetector.scan(testFile.getAbsolutePath(), false);
-            List<String> testLabels = Files.lines(Paths.get(testFile.getAbsolutePath().replace(".jpg", ".txt"))).collect(Collectors.toList());
-            for (int i = 0; i < testLabels.size(); i++) {
+            List<String> testDescriptions = Files.lines(Paths.get(testFile.getAbsolutePath().replace(".jpg", ".txt"))).collect(Collectors.toList());
+            for (int i = 0; i < testDescriptions.size(); i++) {
                 double[] features = finder.find(images.get(i), false);
-                int label = finder.getLabelNumberFromLabel(testLabels.get(i));
+                int label = finder.getLabelFromDescription(testDescriptions.get(i));
                 if (features != null) {
                     summaries.add(finder.getSummaryLine(label, features));
                 }

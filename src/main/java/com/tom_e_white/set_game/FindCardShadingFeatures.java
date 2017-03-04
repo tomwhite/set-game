@@ -32,13 +32,13 @@ import java.util.Optional;
 public class FindCardShadingFeatures extends FeatureFinder {
 
   @Override
-  public int getLabel(String filename) {
+  public int getLabelFromFilename(String filename) {
     return Card.Shading.parseFilename(new File(filename)).ordinal();
   }
 
   @Override
-  public int getLabelNumberFromLabel(String label) {
-    return Card.Shading.parseDescription(label).ordinal();
+  public int getLabelFromDescription(String description) {
+    return Card.Shading.parseDescription(description).ordinal();
   }
 
   @Override

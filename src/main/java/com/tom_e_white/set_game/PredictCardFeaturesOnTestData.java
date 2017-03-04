@@ -33,14 +33,14 @@ public class PredictCardFeaturesOnTestData {
 
             CardDetector cardDetector = new CardDetector();
             List<BufferedImage> images = cardDetector.scan(testFile.getAbsolutePath(), false);
-            List<String> testLabels = Files.lines(Paths.get(testFile.getAbsolutePath().replace(".jpg", ".txt"))).collect(Collectors.toList());
+            List<String> testDescriptions = Files.lines(Paths.get(testFile.getAbsolutePath().replace(".jpg", ".txt"))).collect(Collectors.toList());
 
             int correct = 0;
             int total = 0;
-            for (int i = 0; i < testLabels.size(); i++) {
+            for (int i = 0; i < testDescriptions.size(); i++) {
                 double[] features = finder.find(images.get(i), false);
                 int predictedLabel = classifier.predict(features);
-                int actualLabel = finder.getLabelNumberFromLabel(testLabels.get(i));
+                int actualLabel = finder.getLabelFromDescription(testDescriptions.get(i));
                 if (predictedLabel == actualLabel) {
                     correct++;
                 } else {

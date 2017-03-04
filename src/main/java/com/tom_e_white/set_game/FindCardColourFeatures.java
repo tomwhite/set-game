@@ -16,13 +16,13 @@ import java.text.ParseException;
 public class FindCardColourFeatures extends FeatureFinder {
 
     @Override
-    public int getLabel(String filename) {
+    public int getLabelFromFilename(String filename) {
         return Card.Color.parseFilename(new File(filename)).ordinal();
     }
 
     @Override
-    public int getLabelNumberFromLabel(String label) {
-        return Card.Color.parseDescription(label).ordinal();
+    public int getLabelFromDescription(String description) {
+        return Card.Color.parseDescription(description).ordinal();
     }
 
     @Override

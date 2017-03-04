@@ -20,13 +20,13 @@ import java.util.List;
 public class FindCardNumberFeatures extends FeatureFinder {
 
   @Override
-  public int getLabel(String filename) {
+  public int getLabelFromFilename(String filename) {
     return Card.Number.parseFilename(new File(filename)).ordinal();
   }
 
   @Override
-  public int getLabelNumberFromLabel(String label) {
-    return Card.Number.parseDescription(label).ordinal();
+  public int getLabelFromDescription(String description) {
+    return Card.Number.parseDescription(description).ordinal();
   }
 
   @Override

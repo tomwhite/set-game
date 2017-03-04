@@ -7,6 +7,7 @@ import java.io.IOException;
 
 /**
  * Use {@link FindCardNumberFeatures} to predict the number of shapes on each card in the training set.
+ * This is OK since we dont actually train a model for number - we just do clever image processing.
  */
 public class PredictCardNumberOnTrainingData {
 
@@ -17,7 +18,7 @@ public class PredictCardNumberOnTrainingData {
         for (File file : new File("data/train-out").listFiles((dir, name) -> name.matches(".*\\.jpg"))) {
             System.out.println(file);
             int predictedNumber = (int) cardFeatureCounter.find(UtilImageIO.loadImage(file.getAbsolutePath()), false)[0];
-            int actualNumber = cardFeatureCounter.getLabel(file.getName());
+            int actualNumber = cardFeatureCounter.getLabelFromFilename(file.getName());
             if (predictedNumber == actualNumber) {
                 correct++;
             } else {
