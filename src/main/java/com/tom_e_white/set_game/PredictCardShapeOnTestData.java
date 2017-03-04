@@ -30,7 +30,7 @@ public class PredictCardShapeOnTestData {
             double[] features = featureFinder.find(images.get(i), false);
 
             int predictedLabel = classifier.predict(features) + 1; // add one as our labels are 1-based
-            int actualLabel = CardLabel.getShapeNumber(testLabels.get(i));
+            int actualLabel = featureFinder.getLabelNumberFromLabel(testLabels.get(i));
             if (predictedLabel == actualLabel) {
                 correct++;
             } else {

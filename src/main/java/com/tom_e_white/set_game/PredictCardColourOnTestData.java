@@ -29,7 +29,7 @@ public class PredictCardColourOnTestData {
         for (int i = 0; i < testLabels.size(); i++) {
             double[] features = featureFinder.find(images.get(i), false);
             int predictedLabel = classifier.predict(features) + 1; // add one as our labels are 1-based
-            int actualLabel = CardLabel.getColourNumber(testLabels.get(i));
+            int actualLabel = featureFinder.getLabelNumberFromLabel(testLabels.get(i));
             if (predictedLabel == actualLabel) {
                 correct++;
             } else {
