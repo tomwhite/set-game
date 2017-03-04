@@ -9,19 +9,16 @@ import java.util.regex.Pattern;
  */
 public class CardLabel {
     static String toLabel(File file) {
-        return toLabel(file.getName());
-    }
-    static String toLabel(String filename) {
         String reg = "([^-]+)-([^-]+).*(\\d)\\.jpg";
         Pattern pattern = Pattern.compile(reg);
-        Matcher matcher = pattern.matcher(filename);
+        Matcher matcher = pattern.matcher(file.getName());
         if (matcher.matches()) {
             String colour = matcher.group(1);
             String number = matcher.group(2);
             String index = matcher.group(3);
             return toLabel(Integer.parseInt(number), colour, Integer.parseInt(index));
         }
-        throw new IllegalArgumentException("Unrecognized file: " + filename);
+        throw new IllegalArgumentException("Unrecognized file: " + file);
     }
 
     private static String toLabel(int number, String colour, int index) {
@@ -61,7 +58,7 @@ public class CardLabel {
     }
 
     static int getShadingNumber(File file) {
-        return getShadingNumber(toLabel(file.getName()));
+        return getShadingNumber(toLabel(file));
     }
 
     static int getColourNumber(String label) {
@@ -75,7 +72,7 @@ public class CardLabel {
     }
 
     static int getColourNumber(File file) {
-        return getColourNumber(toLabel(file.getName()));
+        return getColourNumber(toLabel(file));
     }
 
     static int getShapeNumber(String label) {
@@ -89,6 +86,6 @@ public class CardLabel {
     }
 
     static int getShapeNumber(File file) {
-        return getShapeNumber(toLabel(file.getName()));
+        return getShapeNumber(toLabel(file));
     }
 }
