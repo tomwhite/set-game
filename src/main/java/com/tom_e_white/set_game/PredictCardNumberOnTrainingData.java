@@ -1,5 +1,7 @@
 package com.tom_e_white.set_game;
 
+import boofcv.io.image.UtilImageIO;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -14,7 +16,7 @@ public class PredictCardNumberOnTrainingData {
         int total = 0;
         for (File file : new File("data/train-out").listFiles((dir, name) -> name.matches(".*\\.jpg"))) {
             System.out.println(file);
-            int predictedNumber = cardFeatureCounter.scan(file.getAbsolutePath(), false);
+            int predictedNumber = (int) cardFeatureCounter.find(UtilImageIO.loadImage(file.getAbsolutePath()), false)[0];
             int actualNumber = CardLabel.getNumber(file);
             if (predictedNumber == actualNumber) {
                 correct++;

@@ -19,6 +19,7 @@ public class PredictCardFeaturesOnTestData {
     public static void predict(File testFile) throws IOException, ParseException {
 
         FeatureFinder[] finders = new FeatureFinder[] {
+                new FindCardNumberFeatures(),
                 new FindCardColourFeatures(),
                 new FindCardShadingFeatures(),
                 new FindCardShapeFeatures()
