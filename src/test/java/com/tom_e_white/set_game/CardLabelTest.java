@@ -24,14 +24,4 @@ public class CardLabelTest {
         assertEquals(1, CardLabel.getColourNumber(file));
         assertEquals(3, CardLabel.getShapeNumber(file));
     }
-
-    @Test
-    public void testParseDescription() {
-        String description = "3 solid red squiggles";
-        assertEquals(Card.Number.THREE, Card.Number.parseDescription(description));
-        assertEquals(Card.Shading.SOLID, Card.Shading.parseDescription(description));
-        assertEquals(Card.Color.RED, Card.Color.parseDescription(description));
-        assertEquals(Card.Shape.SQUIGGLE, Card.Shape.parseDescription(description));
-    }
-
 }
