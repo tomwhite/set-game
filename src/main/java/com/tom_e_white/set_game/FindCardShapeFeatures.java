@@ -16,14 +16,13 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 /**
  * Find features for shapes on a card.
  */
-public class FindCardShapeFeatures implements FeatureFinder {
+public class FindCardShapeFeatures extends FeatureFinder {
 
   @Override
   public int getLabel(String filename) {
@@ -33,20 +32,6 @@ public class FindCardShapeFeatures implements FeatureFinder {
   @Override
   public int getLabelNumberFromLabel(String label) {
     return CardLabel.getShapeNumber(label);
-  }
-
-  @Override
-  public String getSummaryLine(int label, double[] features) {
-    StringBuilder sb = new StringBuilder().append(label);
-    for (double f : features) {
-      sb.append(",").append(f);
-    }
-    return sb.toString();
-  }
-
-  @Override
-  public String getSummaryLine(String filename, double[] features) {
-    return getSummaryLine(getLabel(filename), features);
   }
 
   @Override
@@ -83,7 +68,7 @@ public class FindCardShapeFeatures implements FeatureFinder {
   }
 
   @Override
-  public String getFileName() {
+  public String getFileSuffix() {
     return "shape.csv";
   }
 
@@ -102,7 +87,6 @@ public class FindCardShapeFeatures implements FeatureFinder {
     BufferedImage image = UtilImageIO.loadImage(args[0]);
     FindCardShapeFeatures featureFinder = new FindCardShapeFeatures();
     double[] features = featureFinder.find(image, true);
-    System.out.println(featureFinder.getLabel(args[0]));
-    System.out.println(Arrays.toString(features));
+    System.out.println(featureFinder.getSummaryLine(args[0], features));
   }
 }

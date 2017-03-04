@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Take the images created by {@link CreateTrainingSet} and extract useful features from them.
- * The resulting data can be used to train a model for predicting the shapes on a card.
+ * Takes test images and extract useful features from them.
+ * The resulting data can be used to test the predictive accuracy of the model from R.
  */
 public class CreateTestData {
     public static void main(String[] args) throws IOException {
@@ -34,7 +34,7 @@ public class CreateTestData {
                     summaries.add(finder.getSummaryLine(label, features));
                 }
             }
-            Path p = Paths.get("data/test-out-" + finder.getFileName());
+            Path p = Paths.get("data/test-out-" + finder.getFileSuffix());
             Files.write(p, summaries);
         }
     }

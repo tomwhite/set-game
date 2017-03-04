@@ -12,9 +12,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Arrays;
 
-public class FindCardColourFeatures implements FeatureFinder {
+public class FindCardColourFeatures extends FeatureFinder {
 
     @Override
     public int getLabel(String filename) {
@@ -27,26 +26,12 @@ public class FindCardColourFeatures implements FeatureFinder {
     }
 
     @Override
-    public String getSummaryLine(int label, double[] features) {
-        StringBuilder sb = new StringBuilder().append(label);
-        for (double f : features) {
-            sb.append(",").append(f);
-        }
-        return sb.toString();
-    }
-
-    @Override
-    public String getSummaryLine(String filename, double[] features) {
-        return getSummaryLine(getLabel(filename), features);
-    }
-
-    @Override
     public double[] find(BufferedImage image, boolean debug) throws IOException {
         return ImageUtils.coupledHueSat(image);
     }
 
     @Override
-    public String getFileName() {
+    public String getFileSuffix() {
         return "colour.csv";
     }
 
@@ -65,7 +50,6 @@ public class FindCardColourFeatures implements FeatureFinder {
         BufferedImage image = UtilImageIO.loadImage(args[0]);
         FindCardColourFeatures featureFinder = new FindCardColourFeatures();
         double[] features = featureFinder.find(image, true);
-        System.out.println(featureFinder.getLabel(args[0]));
-        System.out.println(Arrays.toString(features));
+        System.out.println(featureFinder.getSummaryLine(args[0], features));
     }
 }

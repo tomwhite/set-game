@@ -31,7 +31,7 @@ public class CreateTrainingData {
                     summaries.add(finder.getSummaryLine(file.getAbsolutePath(), features));
                 }
             }
-            Path p = Paths.get("data/train-out-" + finder.getFileName());
+            Path p = Paths.get("data/train-out-" + finder.getFileSuffix());
             Files.write(p, summaries);
         }
     }
