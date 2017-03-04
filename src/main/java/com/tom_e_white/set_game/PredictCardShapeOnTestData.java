@@ -1,9 +1,6 @@
 package com.tom_e_white.set_game;
 
-import smile.classification.KNN;
-import smile.data.AttributeDataset;
-import smile.data.NominalAttribute;
-import smile.data.parser.DelimitedTextParser;
+import smile.classification.Classifier;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -20,12 +17,8 @@ import java.util.stream.Collectors;
 public class PredictCardShapeOnTestData {
 
     public static double predict(File testFile) throws IOException, ParseException {
-        DelimitedTextParser parser = new DelimitedTextParser();
-        parser.setDelimiter(",");
-        parser.setResponseIndex(new NominalAttribute("shape", new String[] { "1", "2", "3" }), 0);
-        AttributeDataset dataset = parser.parse("data/train-out-shape.csv");
-        double[][] vectors = dataset.toArray(new double[dataset.size()][]);
-        int[] label = dataset.toArray(new int[dataset.size()]);
+        FindCardShapeFeatures featureFinder = new FindCardShapeFeatures();
+        Classifier<double[]> classifier = featureFinder.getClassifier();
 
         CardDetector cardDetector = new CardDetector();
         List<BufferedImage> images = cardDetector.scan(testFile.getAbsolutePath(), true);
@@ -33,12 +26,10 @@ public class PredictCardShapeOnTestData {
 
         int correct = 0;
         int total = 0;
-        FindCardShapeFeatures featureFinder = new FindCardShapeFeatures();
         for (int i = 0; i < testLabels.size(); i++) {
             double[] features = featureFinder.find(images.get(i), false);
 
-            KNN<double[]> knn = KNN.learn(vectors, label, 5);
-            int predictedLabel = knn.predict(features) + 1; // add one as our labels are 1-based
+            int predictedLabel = classifier.predict(features) + 1; // add one as our labels are 1-based
             int actualLabel = CardLabel.getShapeNumber(testLabels.get(i));
             if (predictedLabel == actualLabel) {
                 correct++;

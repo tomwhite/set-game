@@ -2,10 +2,16 @@ package com.tom_e_white.set_game;
 
 import boofcv.io.image.UtilImageIO;
 import com.tom_e_white.set_game.image.ImageUtils;
+import smile.classification.Classifier;
+import smile.classification.KNN;
+import smile.data.AttributeDataset;
+import smile.data.NominalAttribute;
+import smile.data.parser.DelimitedTextParser;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Arrays;
 
 public class FindCardColourFeatures implements FeatureFinder {
@@ -52,6 +58,17 @@ public class FindCardColourFeatures implements FeatureFinder {
     @Override
     public String getFileName() {
         return "colour.csv";
+    }
+
+    @Override
+    public Classifier<double[]> getClassifier() throws IOException, ParseException {
+        DelimitedTextParser parser = new DelimitedTextParser();
+        parser.setDelimiter(",");
+        parser.setResponseIndex(new NominalAttribute("colour", new String[] { "1", "2", "3" }), 0);
+        AttributeDataset dataset = parser.parse("data/train-out-colour.csv");
+        double[][] vectors = dataset.toArray(new double[dataset.size()][]);
+        int[] label = dataset.toArray(new int[dataset.size()]);
+        return KNN.learn(vectors, label, 25);
     }
 
     public static void main(String[] args) throws IOException {

@@ -13,10 +13,16 @@ import com.tom_e_white.set_game.image.ImageProcessingPipeline;
 import com.tom_e_white.set_game.image.Shape;
 import georegression.struct.shapes.Quadrilateral_F64;
 import georegression.struct.shapes.RectangleLength2D_F32;
+import smile.classification.Classifier;
+import smile.classification.KNN;
+import smile.data.AttributeDataset;
+import smile.data.NominalAttribute;
+import smile.data.parser.DelimitedTextParser;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -127,6 +133,17 @@ public class FindCardShadingFeatures implements FeatureFinder {
   @Override
   public String getFileName() {
     return "shading.csv";
+  }
+
+  @Override
+  public Classifier<double[]> getClassifier() throws IOException, ParseException {
+    DelimitedTextParser parser = new DelimitedTextParser();
+    parser.setDelimiter(",");
+    parser.setResponseIndex(new NominalAttribute("shading", new String[] { "1", "2", "3" }), 0);
+    AttributeDataset dataset = parser.parse("data/train-out-shading.csv");
+    double[][] vectors = dataset.toArray(new double[dataset.size()][]);
+    int[] label = dataset.toArray(new int[dataset.size()]);
+    return KNN.learn(vectors, label, 5);
   }
 
   private static void convert(RectangleLength2D_F32 input, Quadrilateral_F64 output) {
