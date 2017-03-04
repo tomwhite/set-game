@@ -13,6 +13,5 @@ public interface FeatureFinder {
     String getFileName();
     String getSummaryLine(int label, double[] features);
     String getSummaryLine(String filename, double[] features);
-    LabelledVector getLabelledVector(String summaryLine);
     Classifier<double[]> getClassifier() throws IOException, ParseException;
 }
