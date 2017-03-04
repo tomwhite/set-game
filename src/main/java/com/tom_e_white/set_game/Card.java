@@ -61,21 +61,25 @@ public class Card {
     }
 
     private static String toDescription(int number, String colour, int index) {
-        // order on how training data cards were laid out
+        // order signifies how training data cards were laid out
         // solid, striped, empty
         // oval, diamond, squiggle
-        String s = number == 1 ? "" : "s";
         switch (index) {
-            case 1: return number + " solid " + colour + " oval" + s;
-            case 2: return number + " solid " + colour + " diamond" + s;
-            case 3: return number + " solid " + colour + " squiggle" + s;
-            case 4: return number + " striped " + colour + " oval" + s;
-            case 5: return number + " striped " + colour + " diamond" + s;
-            case 6: return number + " striped " + colour + " squiggle" + s;
-            case 7: return number + " empty " + colour + " oval" + s;
-            case 8: return number + " empty " + colour + " diamond" + s;
-            case 9: return number + " empty " + colour + " squiggle" + s;
+            case 1: return toDescription(number, Shading.SOLID, colour, Shape.OVAL);
+            case 2: return toDescription(number, Shading.SOLID, colour, Shape.DIAMOND);
+            case 3: return toDescription(number, Shading.SOLID, colour, Shape.SQUIGGLE);
+            case 4: return toDescription(number, Shading.STRIPED, colour, Shape.OVAL);
+            case 5: return toDescription(number, Shading.STRIPED, colour, Shape.DIAMOND);
+            case 6: return toDescription(number, Shading.STRIPED, colour, Shape.SQUIGGLE);
+            case 7: return toDescription(number, Shading.EMPTY, colour, Shape.OVAL);
+            case 8: return toDescription(number, Shading.EMPTY, colour, Shape.DIAMOND);
+            case 9: return toDescription(number, Shading.EMPTY, colour, Shape.SQUIGGLE);
             default: throw new IllegalArgumentException("Unrecognized index " + index);
         }
+    }
+
+    private static String toDescription(int number, Shading shading, String colour, Shape shape) {
+        String s = number == 1 ? "" : "s";
+        return number + " " + shading.name().toLowerCase() + " " + colour + " " + shape.name().toLowerCase() + s;
     }
 }
