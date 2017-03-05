@@ -82,4 +82,55 @@ public class Card {
         String s = number == 1 ? "" : "s";
         return number + " " + shading.name().toLowerCase() + " " + colour + " " + shape.name().toLowerCase() + s;
     }
+
+    private final Number number;
+    private final Shading shading;
+    private final Color color;
+    private final Shape shape;
+
+    public Card(String description) {
+        this.number = Number.parseDescription(description);
+        this.shading = Shading.parseDescription(description);
+        this.color = Color.parseDescription(description);
+        this.shape = Shape.parseDescription(description);
+    }
+
+    public Card(int numberLabel, int shadingLabel, int colorLabel, int shapeLabel) {
+        this.number = Number.values()[numberLabel];
+        this.shading = Shading.values()[shadingLabel];
+        this.color = Color.values()[colorLabel];
+        this.shape = Shape.values()[shapeLabel];
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Card card = (Card) o;
+
+        if (number != card.number) return false;
+        if (shading != card.shading) return false;
+        if (color != card.color) return false;
+        return shape == card.shape;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = number.hashCode();
+        result = 31 * result + shading.hashCode();
+        result = 31 * result + color.hashCode();
+        result = 31 * result + shape.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Card{" +
+                "number=" + number +
+                ", shading=" + shading +
+                ", color=" + color +
+                ", shape=" + shape +
+                '}';
+    }
 }

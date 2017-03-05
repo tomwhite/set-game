@@ -24,6 +24,8 @@ import java.util.Optional;
  */
 public class FindCardShapeFeatures extends FeatureFinder {
 
+  private Classifier<double[]> classifier;
+
   @Override
   public int getLabelFromFilename(String filename) {
     return Card.Shape.parseFilename(new File(filename)).ordinal();
@@ -74,13 +76,17 @@ public class FindCardShapeFeatures extends FeatureFinder {
 
   @Override
   public Classifier<double[]> getClassifier() throws IOException, ParseException {
+    if (classifier != null) {
+      return classifier;
+    }
     DelimitedTextParser parser = new DelimitedTextParser();
     parser.setDelimiter(",");
     parser.setResponseIndex(new NominalAttribute("shape", new String[] { "0", "1", "2" }), 0);
     AttributeDataset dataset = parser.parse("data/train-out-" + getFileSuffix());
     double[][] vectors = dataset.toArray(new double[dataset.size()][]);
     int[] label = dataset.toArray(new int[dataset.size()]);
-    return KNN.learn(vectors, label, 5);
+    classifier = KNN.learn(vectors, label, 5);
+    return classifier;
   }
 
   public static void main(String[] args) throws IOException {

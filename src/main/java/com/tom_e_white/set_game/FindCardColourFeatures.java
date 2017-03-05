@@ -15,6 +15,8 @@ import java.text.ParseException;
 
 public class FindCardColourFeatures extends FeatureFinder {
 
+    private Classifier<double[]> classifier;
+
     @Override
     public int getLabelFromFilename(String filename) {
         return Card.Color.parseFilename(new File(filename)).ordinal();
@@ -38,13 +40,17 @@ public class FindCardColourFeatures extends FeatureFinder {
 
     @Override
     public Classifier<double[]> getClassifier() throws IOException, ParseException {
+        if (classifier != null) {
+            return classifier;
+        }
         DelimitedTextParser parser = new DelimitedTextParser();
         parser.setDelimiter(",");
         parser.setResponseIndex(new NominalAttribute("colour", new String[] { "0", "1", "2" }), 0);
         AttributeDataset dataset = parser.parse("data/train-out-" + getFileSuffix());
         double[][] vectors = dataset.toArray(new double[dataset.size()][]);
         int[] label = dataset.toArray(new int[dataset.size()]);
-        return KNN.learn(vectors, label, 100);
+        classifier = KNN.learn(vectors, label, 100);
+        return classifier;
     }
 
     public static void main(String[] args) throws IOException {

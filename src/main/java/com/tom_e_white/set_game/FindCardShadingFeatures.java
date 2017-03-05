@@ -31,6 +31,8 @@ import java.util.Optional;
  */
 public class FindCardShadingFeatures extends FeatureFinder {
 
+  private Classifier<double[]> classifier;
+
   @Override
   public int getLabelFromFilename(String filename) {
     return Card.Shading.parseFilename(new File(filename)).ordinal();
@@ -112,13 +114,17 @@ public class FindCardShadingFeatures extends FeatureFinder {
 
   @Override
   public Classifier<double[]> getClassifier() throws IOException, ParseException {
+    if (classifier != null) {
+      return classifier;
+    }
     DelimitedTextParser parser = new DelimitedTextParser();
     parser.setDelimiter(",");
     parser.setResponseIndex(new NominalAttribute("shading", new String[] { "0", "1", "2" }), 0);
     AttributeDataset dataset = parser.parse("data/train-out-" + getFileSuffix());
     double[][] vectors = dataset.toArray(new double[dataset.size()][]);
     int[] label = dataset.toArray(new int[dataset.size()]);
-    return KNN.learn(vectors, label, 5);
+    classifier = KNN.learn(vectors, label, 5);
+    return classifier;
   }
 
   private static void convert(RectangleLength2D_F32 input, Quadrilateral_F64 output) {
