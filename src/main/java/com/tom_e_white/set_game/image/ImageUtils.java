@@ -8,12 +8,15 @@ import boofcv.alg.filter.binary.ThresholdImageOps;
 import boofcv.alg.misc.PixelMath;
 import boofcv.core.image.ConvertImage;
 import boofcv.io.image.ConvertBufferedImage;
+import boofcv.struct.feature.TupleDesc_F64;
 import boofcv.struct.image.GrayF32;
 import boofcv.struct.image.GrayU8;
 import boofcv.struct.image.Planar;
 import georegression.metric.UtilAngle;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ImageUtils {
 
@@ -39,6 +42,61 @@ public class ImageUtils {
 
         // Compute the histogram
         GHistogramFeatureOps.histogram(hs, histogram);
+
+        UtilFeature.normalizeL2(histogram); // normalize so that image size doesn't matter
+
+        return histogram.value;
+    }
+
+    /**
+     * Computes two independent 1D histograms from hue and saturation.  Less affects by sparsity, but can produce
+     * worse results since the basic assumption that hue and saturation are decoupled is most of the time false.
+     */
+    public static double[] independentHueSat(BufferedImage image) {
+        // The number of bins is an important parameter.  Try adjusting it
+        TupleDesc_F64 histogramHue = new TupleDesc_F64(5);
+        TupleDesc_F64 histogramValue = new TupleDesc_F64(5);
+
+        List<TupleDesc_F64> histogramList = new ArrayList<>();
+        histogramList.add(histogramHue); histogramList.add(histogramValue);
+
+        Planar<GrayF32> rgb = new Planar<>(GrayF32.class,1,1,3);
+        Planar<GrayF32> hsv = new Planar<>(GrayF32.class,1,1,3);
+
+        rgb.reshape(image.getWidth(), image.getHeight());
+        hsv.reshape(image.getWidth(), image.getHeight());
+        ConvertBufferedImage.convertFrom(image, rgb, true);
+        ColorHsv.rgbToHsv_F32(rgb, hsv);
+
+        GHistogramFeatureOps.histogram(hsv.getBand(0), 0, 2*Math.PI,histogramHue);
+        GHistogramFeatureOps.histogram(hsv.getBand(1), 0, 1, histogramValue);
+
+        // need to combine them into a single descriptor for processing later on
+        TupleDesc_F64 imageHist = UtilFeature.combine(histogramList,null);
+
+        UtilFeature.normalizeL2(imageHist); // normalize so that image size doesn't matter
+
+        return imageHist.value;
+    }
+
+    /**
+     * Constructs a 3D histogram using RGB.  RGB is a popular color space, but the resulting histogram will
+     * depend on lighting conditions and might not produce the accurate results.
+     */
+    public static double[] coupledRGB(BufferedImage image) {
+
+        Planar<GrayF32> rgb = new Planar<>(GrayF32.class,1,1,3);
+
+        rgb.reshape(image.getWidth(), image.getHeight());
+        ConvertBufferedImage.convertFrom(image, rgb, true);
+
+        // The number of bins is an important parameter.  Try adjusting it
+        Histogram_F64 histogram = new Histogram_F64(5,5,5);
+        histogram.setRange(0, 0, 255);
+        histogram.setRange(1, 0, 255);
+        histogram.setRange(2, 0, 255);
+
+        GHistogramFeatureOps.histogram(rgb,histogram);
 
         UtilFeature.normalizeL2(histogram); // normalize so that image size doesn't matter
 
