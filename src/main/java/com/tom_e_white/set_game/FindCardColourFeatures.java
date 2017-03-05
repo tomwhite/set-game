@@ -27,7 +27,8 @@ public class FindCardColourFeatures extends FeatureFinder {
 
     @Override
     public double[] find(BufferedImage image, boolean debug) throws IOException {
-        return ImageUtils.coupledHueSat(image);
+        BufferedImage filtered = ImageUtils.filterBackgroundOut(image);
+        return ImageUtils.coupledHueSat(filtered);
     }
 
     @Override
