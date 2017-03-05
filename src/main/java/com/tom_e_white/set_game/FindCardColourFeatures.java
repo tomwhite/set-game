@@ -44,7 +44,7 @@ public class FindCardColourFeatures extends FeatureFinder {
         AttributeDataset dataset = parser.parse("data/train-out-" + getFileSuffix());
         double[][] vectors = dataset.toArray(new double[dataset.size()][]);
         int[] label = dataset.toArray(new int[dataset.size()]);
-        return KNN.learn(vectors, label, 25);
+        return KNN.learn(vectors, label, 100);
     }
 
     public static void main(String[] args) throws IOException {

@@ -5,6 +5,7 @@ import boofcv.alg.descriptor.UtilFeature;
 import boofcv.alg.feature.color.GHistogramFeatureOps;
 import boofcv.alg.feature.color.Histogram_F64;
 import boofcv.alg.filter.binary.ThresholdImageOps;
+import boofcv.alg.misc.ImageStatistics;
 import boofcv.alg.misc.PixelMath;
 import boofcv.core.image.ConvertImage;
 import boofcv.io.image.ConvertBufferedImage;
@@ -15,8 +16,7 @@ import boofcv.struct.image.Planar;
 import georegression.metric.UtilAngle;
 
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class ImageUtils {
 
@@ -36,12 +36,13 @@ public class ImageUtils {
         Planar<GrayF32> hs = hsv.partialSpectrum(0, 1);
 
         // The number of bins is an important parameter.  Try adjusting it
-        Histogram_F64 histogram = new Histogram_F64(5, 5);
+        Histogram_F64 histogram = new Histogram_F64(10, 10);
         histogram.setRange(0, 0, 2.0 * Math.PI); // range of hue is from 0 to 2PI
         histogram.setRange(1, 0, 1.0);         // range of saturation is from 0 to 1
 
         // Compute the histogram
         GHistogramFeatureOps.histogram(hs, histogram);
+        histogram.value[0] = 0.0; // remove black
 
         UtilFeature.normalizeL2(histogram); // normalize so that image size doesn't matter
 
@@ -97,6 +98,7 @@ public class ImageUtils {
         histogram.setRange(2, 0, 255);
 
         GHistogramFeatureOps.histogram(rgb,histogram);
+        histogram.value[0] = 0.0; // remove black
 
         UtilFeature.normalizeL2(histogram); // normalize so that image size doesn't matter
 
@@ -157,5 +159,23 @@ public class ImageUtils {
             PixelMath.multiply(input.getBand(i), mask, output.getBand(i));
         }
         return ConvertBufferedImage.convertTo_F32(output, null, true);
+    }
+
+    public static BufferedImage removeGray(BufferedImage image) {
+        Planar<GrayF32> input = ConvertBufferedImage.convertFromMulti(image, null, true, GrayF32.class);
+        BufferedImage output = new BufferedImage(input.width, input.height, BufferedImage.TYPE_INT_RGB);
+        for (int y = 0; y < input.height; y++) {
+            for (int x = 0; x < input.width; x++) {
+                float v0 = input.getBand(0).get(x, y);
+                float v1 = input.getBand(1).get(x, y);
+                float v2 = input.getBand(2).get(x, y);
+                int tol = 20;
+                if (!(Math.abs(v0 - v1) < tol && Math.abs(v1 - v2) < tol && Math.abs(v0 - v2) < tol)) {
+                    output.setRGB(x, y, image.getRGB(x, y));
+                }
+            }
+        }
+        return output;
+
     }
 }

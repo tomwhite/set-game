@@ -43,6 +43,7 @@ public class ImageProcessingPipeline {
             this.panel.addImage(original, "Original");
 //            this.panel.addImage(ImageUtils.filterBackgroundOut(original), "Filter background");
 //            this.panel.addImage(ImageUtils.maskBackground(original), "Masked");
+//            this.panel.addImage(ImageUtils.removeGray(original), "No gray");
         }
     }
 
