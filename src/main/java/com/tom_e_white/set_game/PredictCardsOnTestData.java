@@ -1,6 +1,5 @@
 package com.tom_e_white.set_game;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,14 +15,14 @@ public class PredictCardsOnTestData {
 
     public static double predict(File testFile) throws IOException, ParseException {
         CardDetector cardDetector = new CardDetector();
-        List<BufferedImage> images = cardDetector.scan(testFile.getAbsolutePath(), false);
+        List<CardImage> images = cardDetector.detect(testFile.getAbsolutePath(), false);
         List<String> testDescriptions = Files.lines(Paths.get(testFile.getAbsolutePath().replace(".jpg", ".txt"))).collect(Collectors.toList());
 
         CardPredictor cardPredictor = new CardPredictor();
         int correct = 0;
         int total = 0;
         for (int i = 0; i < testDescriptions.size(); i++) {
-            Card predictedCard = cardPredictor.predict(images.get(i));
+            Card predictedCard = cardPredictor.predict(images.get(i).getImage());
             Card actualCard = new Card(testDescriptions.get(i));
             if (predictedCard.equals(actualCard)) {
                 correct++;

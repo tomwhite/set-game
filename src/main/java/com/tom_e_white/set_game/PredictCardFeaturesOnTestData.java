@@ -2,7 +2,6 @@ package com.tom_e_white.set_game;
 
 import smile.classification.Classifier;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,13 +31,13 @@ public class PredictCardFeaturesOnTestData {
             Classifier<double[]> classifier = finder.getClassifier();
 
             CardDetector cardDetector = new CardDetector();
-            List<BufferedImage> images = cardDetector.scan(testFile.getAbsolutePath(), false);
+            List<CardImage> images = cardDetector.detect(testFile.getAbsolutePath(), false);
             List<String> testDescriptions = Files.lines(Paths.get(testFile.getAbsolutePath().replace(".jpg", ".txt"))).collect(Collectors.toList());
 
             int correct = 0;
             int total = 0;
             for (int i = 0; i < testDescriptions.size(); i++) {
-                double[] features = finder.find(images.get(i), false);
+                double[] features = finder.find(images.get(i).getImage(), false);
                 int predictedLabel = classifier.predict(features);
                 int actualLabel = finder.getLabelFromDescription(testDescriptions.get(i));
                 if (predictedLabel == actualLabel) {

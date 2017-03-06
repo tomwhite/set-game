@@ -7,7 +7,7 @@ import java.io.IOException;
 
 /**
  * Use {@link FindCardNumberFeatures} to predict the number of shapes on each card in the training set.
- * This is OK since we dont actually train a model for number - we just do clever image processing.
+ * This is OK since we don't actually train a model for number - we just do clever image processing.
  */
 public class PredictCardNumberOnTrainingData {
 

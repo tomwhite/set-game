@@ -1,6 +1,5 @@
 package com.tom_e_white.set_game;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,10 +24,10 @@ public class CreateTestData {
         for (FeatureFinder finder : finders) {
             List<String> summaries = new ArrayList<>();
             CardDetector cardDetector = new CardDetector();
-            List<BufferedImage> images = cardDetector.scan(testFile.getAbsolutePath(), false);
+            List<CardImage> images = cardDetector.detect(testFile.getAbsolutePath(), false);
             List<String> testDescriptions = Files.lines(Paths.get(testFile.getAbsolutePath().replace(".jpg", ".txt"))).collect(Collectors.toList());
             for (int i = 0; i < testDescriptions.size(); i++) {
-                double[] features = finder.find(images.get(i), false);
+                double[] features = finder.find(images.get(i).getImage(), false);
                 int label = finder.getLabelFromDescription(testDescriptions.get(i));
                 if (features != null) {
                     summaries.add(finder.getSummaryLine(label, features));

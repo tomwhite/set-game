@@ -20,15 +20,15 @@ import java.util.stream.Collectors;
  */
 public class CardDetector {
 
-  public List<BufferedImage> scan(String filename) throws IOException {
-    return scan(filename, false);
+  public List<CardImage> detect(String filename) throws IOException {
+    return detect(filename, false);
   }
 
-  public List<BufferedImage> scan(String filename, boolean debug) throws IOException {
-    return scan(filename, debug, false);
+  public List<CardImage> detect(String filename, boolean debug) throws IOException {
+    return detect(filename, debug, false);
   }
 
-  public List<BufferedImage> scan(String filename, boolean debug, boolean allowRotated) throws IOException {
+  public List<CardImage> detect(String filename, boolean debug, boolean allowRotated) throws IOException {
     // Based on code from http://boofcv.org/index.php?title=Example_Binary_Image
 
     BufferedImage image = UtilImageIO.loadImage(filename);
@@ -52,17 +52,18 @@ public class CardDetector {
     // happen to be quadrilaterals that are not cards (since they are usually a different size).
     List<Quadrilateral_F64> cards = GeometryUtils.filterByArea(quads, 25);
     cards = GeometryUtils.sortRowWise(cards); // sort into a stable order
-    List<BufferedImage> cardImages = cards.stream().map(q -> {
+    List<CardImage> cardImages = cards.stream().map(q -> {
               // Remove perspective distortion
               Planar<GrayF32> output = GeometryUtils.removePerspectiveDistortion(image, q, 57 * 3, 89 * 3); // actual cards measure 57 mm x 89 mm
-              return ConvertBufferedImage.convertTo_F32(output, null, true);
+              BufferedImage im = ConvertBufferedImage.convertTo_F32(output, null, true);
+              return new CardImage(im, q);
             }
     ).collect(Collectors.toList());
 
     if (debug) {
       int i = 1;
-      for (BufferedImage card : cardImages) {
-        panel.addImage(card, "Card " + i++);
+      for (CardImage card : cardImages) {
+        panel.addImage(card.getImage(), "Card " + i++);
       }
       ShowImages.showWindow(panel, getClass().getSimpleName(), true);
     }
@@ -72,6 +73,6 @@ public class CardDetector {
   }
 
   public static void main(String[] args) throws IOException {
-    new CardDetector().scan(args[0], true);
+    new CardDetector().detect(args[0], true);
   }
 }

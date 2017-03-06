@@ -5,7 +5,6 @@ import boofcv.alg.descriptor.UtilFeature;
 import boofcv.alg.feature.color.GHistogramFeatureOps;
 import boofcv.alg.feature.color.Histogram_F64;
 import boofcv.alg.filter.binary.ThresholdImageOps;
-import boofcv.alg.misc.ImageStatistics;
 import boofcv.alg.misc.PixelMath;
 import boofcv.core.image.ConvertImage;
 import boofcv.io.image.ConvertBufferedImage;
@@ -16,7 +15,8 @@ import boofcv.struct.image.Planar;
 import georegression.metric.UtilAngle;
 
 import java.awt.image.BufferedImage;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ImageUtils {
 

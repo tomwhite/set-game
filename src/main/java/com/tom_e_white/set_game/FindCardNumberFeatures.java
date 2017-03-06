@@ -56,7 +56,7 @@ public class FindCardNumberFeatures extends FeatureFinder {
       System.out.println(nonOverlapping);
       ShowImages.showWindow(panel, "Binary Operations", true);
     }
-    return new double[] { nonOverlapping.size() };
+    return new double[] { nonOverlapping.size() % 3 };  // just return as an int mod 3
   }
 
   @Override
