@@ -102,6 +102,11 @@ public class Card {
         this.shape = Shape.values()[shapeLabel];
     }
 
+    public Number number() { return number; }
+    public Shading shading() { return shading; }
+    public Color color() { return color; }
+    public Shape shape() { return shape; }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
