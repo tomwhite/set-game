@@ -19,13 +19,17 @@ public class GeometryUtilsTest {
         Quadrilateral_F64 q11 = new Quadrilateral_F64(20, 100, 30, 100, 30, 110, 20, 110);
         Quadrilateral_F64 q12 = new Quadrilateral_F64(40, 102, 50, 102, 50, 112, 50, 112);
 
-        List<Quadrilateral_F64> sorted = new ArrayList<>();
-        sorted.add(q00);
-        sorted.add(q01);
-        sorted.add(q02);
-        sorted.add(q10);
-        sorted.add(q11);
-        sorted.add(q12);
+        List<Quadrilateral_F64> row0 = new ArrayList<>();
+        row0.add(q00);
+        row0.add(q01);
+        row0.add(q02);
+        List<Quadrilateral_F64> row1 = new ArrayList<>();
+        row1.add(q10);
+        row1.add(q11);
+        row1.add(q12);
+        List<List<Quadrilateral_F64>> sorted = new ArrayList<>();
+        sorted.add(row0);
+        sorted.add(row1);
 
         List<Quadrilateral_F64> unsorted = new ArrayList<>();
         unsorted.add(q02);

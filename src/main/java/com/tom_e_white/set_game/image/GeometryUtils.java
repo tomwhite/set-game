@@ -115,9 +115,9 @@ public class GeometryUtils {
         return removePerspective.getOutput();
     }
 
-    public static List<Quadrilateral_F64> sortRowWise(List<Quadrilateral_F64> quads) {
+    public static List<List<Quadrilateral_F64>> sortRowWise(List<Quadrilateral_F64> quads) {
         List<Quadrilateral_F64> copy = new ArrayList<>(quads); // this will be mutated as we find rows
-        List<Quadrilateral_F64> sorted = new ArrayList<>();
+        List<List<Quadrilateral_F64>> sorted = new ArrayList<>();
 
         while (!copy.isEmpty()) {
             // find centers so we can find quadrilateral that is closest to the origin
@@ -136,17 +136,19 @@ public class GeometryUtils {
             Quadrilateral_F64 firstInRow = copy.remove(minIndex);
             Rectangle2D_F64 bounds = new Rectangle2D_F64();
             UtilPolygons2D_F64.bounding(firstInRow, bounds);
-            sorted.add(firstInRow);
+            List<Quadrilateral_F64> row = new ArrayList<>();
+            row.add(firstInRow);
 
             // find the rest of the quadrilaterals in the row - these are the ones whose centers are
             // between the first card’s min and max y, then sort by x coordinate
-            List<Quadrilateral_F64> row = copy.stream().filter(q -> {
+            List<Quadrilateral_F64> restOfRow = copy.stream().filter(q -> {
                 Point2D_F64 center = UtilPolygons2D_F64.center(q, null);
                 return bounds.getP0().getY() <= center.getY() && center.getY() <= bounds.getP1().getY();
             }).sorted(Comparator.comparingDouble(q -> UtilPolygons2D_F64.center(q, null).getX()))
                     .collect(Collectors.toList());
-            copy.removeAll(row);
-            sorted.addAll(row);
+            copy.removeAll(restOfRow);
+            row.addAll(restOfRow);
+            sorted.add(row);
         }
 
         return sorted;
