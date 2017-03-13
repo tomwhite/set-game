@@ -1,4 +1,4 @@
-package com.tom_e_white.set_game;
+package com.tom_e_white.set_game.model;
 
 import com.tom_e_white.set_game.model.Card;
 import org.junit.Test;

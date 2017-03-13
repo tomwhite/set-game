@@ -1,4 +1,4 @@
-package com.tom_e_white.set_game;
+package com.tom_e_white.set_game.preprocess;
 
 import com.tom_e_white.set_game.preprocess.CardDetector;
 import com.tom_e_white.set_game.preprocess.CardImage;

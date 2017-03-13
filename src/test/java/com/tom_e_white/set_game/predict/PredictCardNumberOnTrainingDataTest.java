@@ -1,4 +1,4 @@
-package com.tom_e_white.set_game;
+package com.tom_e_white.set_game.predict;
 
 import com.tom_e_white.set_game.predict.PredictCardNumberOnTrainingData;
 import org.junit.Test;
