@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Use {@link CardDetector} to create a training set of cards.
  */
-public class CreateTrainingSet {
+public class CreateTrainingSetV1 {
     public static void main(String[] args) {
         CardDetector cardDetector = new CardDetector();
         File outDir = new File("data/train-out");

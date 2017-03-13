@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Take the images created by {@link CreateTrainingSet} and extract useful features from them.
+ * Take the images created by {@link CreateTrainingSetV1} and extract useful features from them.
  * The resulting data can be used to train a model for predicting the shapes on a card.
  */
 public class CreateTrainingData {
