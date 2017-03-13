@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.tom_e_white.set_game;
+package com.tom_e_white.set_game.model;
 
 /**
  * A set of three {@link Card}s, not necessarily a Set.

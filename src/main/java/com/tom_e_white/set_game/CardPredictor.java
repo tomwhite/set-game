@@ -1,5 +1,7 @@
 package com.tom_e_white.set_game;
 
+import com.tom_e_white.set_game.model.Card;
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.text.ParseException;

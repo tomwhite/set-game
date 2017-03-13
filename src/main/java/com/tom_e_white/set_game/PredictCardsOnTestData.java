@@ -1,5 +1,7 @@
 package com.tom_e_white.set_game;
 
+import com.tom_e_white.set_game.model.Card;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;

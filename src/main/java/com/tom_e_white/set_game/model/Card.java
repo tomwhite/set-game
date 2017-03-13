@@ -1,4 +1,4 @@
-package com.tom_e_white.set_game;
+package com.tom_e_white.set_game.model;
 
 import java.io.File;
 import java.util.regex.Matcher;

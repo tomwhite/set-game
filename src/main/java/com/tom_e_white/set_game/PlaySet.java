@@ -4,6 +4,9 @@ import boofcv.gui.ListDisplayPanel;
 import boofcv.gui.feature.VisualizeShapes;
 import boofcv.gui.image.ShowImages;
 import boofcv.io.image.UtilImageIO;
+import com.tom_e_white.set_game.model.Card;
+import com.tom_e_white.set_game.model.Cards;
+import com.tom_e_white.set_game.model.Triple;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

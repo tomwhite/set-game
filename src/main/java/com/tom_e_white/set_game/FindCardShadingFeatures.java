@@ -11,6 +11,7 @@ import boofcv.struct.image.Planar;
 import com.tom_e_white.set_game.image.GeometryUtils;
 import com.tom_e_white.set_game.image.ImageProcessingPipeline;
 import com.tom_e_white.set_game.image.Shape;
+import com.tom_e_white.set_game.model.Card;
 import georegression.struct.shapes.Quadrilateral_F64;
 import georegression.struct.shapes.RectangleLength2D_F32;
 import smile.classification.Classifier;

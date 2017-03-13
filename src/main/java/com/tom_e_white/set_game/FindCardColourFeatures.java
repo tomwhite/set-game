@@ -2,6 +2,7 @@ package com.tom_e_white.set_game;
 
 import boofcv.io.image.UtilImageIO;
 import com.tom_e_white.set_game.image.ImageUtils;
+import com.tom_e_white.set_game.model.Card;
 import smile.classification.Classifier;
 import smile.classification.KNN;
 import smile.data.AttributeDataset;

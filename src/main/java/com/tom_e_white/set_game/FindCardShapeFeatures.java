@@ -6,6 +6,7 @@ import boofcv.io.image.UtilImageIO;
 import com.tom_e_white.set_game.image.GeometryUtils;
 import com.tom_e_white.set_game.image.ImageProcessingPipeline;
 import com.tom_e_white.set_game.image.Shape;
+import com.tom_e_white.set_game.model.Card;
 import smile.classification.Classifier;
 import smile.classification.KNN;
 import smile.data.AttributeDataset;
