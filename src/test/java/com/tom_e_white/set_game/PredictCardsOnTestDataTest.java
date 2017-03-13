@@ -1,5 +1,6 @@
 package com.tom_e_white.set_game;
 
+import com.tom_e_white.set_game.predict.PredictCardsOnTestData;
 import org.junit.Test;
 
 import java.io.File;

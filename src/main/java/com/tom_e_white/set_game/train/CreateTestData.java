@@ -1,4 +1,11 @@
-package com.tom_e_white.set_game;
+package com.tom_e_white.set_game.train;
+
+import com.tom_e_white.set_game.preprocess.CardDetector;
+import com.tom_e_white.set_game.preprocess.CardImage;
+import com.tom_e_white.set_game.train.FeatureFinder;
+import com.tom_e_white.set_game.train.FindCardColourFeatures;
+import com.tom_e_white.set_game.train.FindCardShadingFeatures;
+import com.tom_e_white.set_game.train.FindCardShapeFeatures;
 
 import java.io.File;
 import java.io.IOException;

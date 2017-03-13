@@ -1,6 +1,7 @@
-package com.tom_e_white.set_game;
+package com.tom_e_white.set_game.predict;
 
 import com.tom_e_white.set_game.model.Card;
+import com.tom_e_white.set_game.train.*;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;

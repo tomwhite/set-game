@@ -1,6 +1,7 @@
-package com.tom_e_white.set_game;
+package com.tom_e_white.set_game.predict;
 
 import boofcv.io.image.UtilImageIO;
+import com.tom_e_white.set_game.train.FindCardNumberFeatures;
 
 import java.io.File;
 import java.io.IOException;

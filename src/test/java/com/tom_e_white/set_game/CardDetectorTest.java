@@ -1,5 +1,7 @@
 package com.tom_e_white.set_game;
 
+import com.tom_e_white.set_game.preprocess.CardDetector;
+import com.tom_e_white.set_game.preprocess.CardImage;
 import org.junit.Test;
 
 import java.io.File;

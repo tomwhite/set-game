@@ -1,16 +1,17 @@
-package com.tom_e_white.set_game;
+package com.tom_e_white.set_game.preprocess;
 
 import boofcv.io.image.UtilImageIO;
+import com.tom_e_white.set_game.preprocess.CardDetector;
+import com.tom_e_white.set_game.preprocess.CardImage;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 /**
  * Use {@link CardDetector} to create a test set of cards.
  */
-public class CreateTestSet {
+public class CreateTestSetV1 {
     public static void main(String[] args) {
         CardDetector cardDetector = new CardDetector();
         File outDir = new File("data/test-out");

@@ -1,4 +1,4 @@
-package com.tom_e_white.set_game;
+package com.tom_e_white.set_game.preprocess;
 
 import georegression.struct.shapes.Quadrilateral_F64;
 

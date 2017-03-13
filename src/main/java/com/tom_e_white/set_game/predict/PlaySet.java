@@ -1,4 +1,4 @@
-package com.tom_e_white.set_game;
+package com.tom_e_white.set_game.predict;
 
 import boofcv.gui.ListDisplayPanel;
 import boofcv.gui.feature.VisualizeShapes;
@@ -7,6 +7,8 @@ import boofcv.io.image.UtilImageIO;
 import com.tom_e_white.set_game.model.Card;
 import com.tom_e_white.set_game.model.Cards;
 import com.tom_e_white.set_game.model.Triple;
+import com.tom_e_white.set_game.preprocess.CardDetector;
+import com.tom_e_white.set_game.preprocess.CardImage;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

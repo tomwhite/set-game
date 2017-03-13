@@ -61,7 +61,7 @@ public class Card {
     }
 
     private static String toDescription(int number, String colour, int index) {
-        // order signifies how training data cards were laid out
+        // order signifies how v1 training data cards were laid out
         // solid, striped, empty
         // oval, diamond, squiggle
         switch (index) {

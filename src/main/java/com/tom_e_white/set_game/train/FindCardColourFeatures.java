@@ -1,4 +1,4 @@
-package com.tom_e_white.set_game;
+package com.tom_e_white.set_game.train;
 
 import boofcv.io.image.UtilImageIO;
 import com.tom_e_white.set_game.image.ImageUtils;

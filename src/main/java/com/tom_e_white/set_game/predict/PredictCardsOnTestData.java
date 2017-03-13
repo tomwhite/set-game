@@ -1,6 +1,9 @@
-package com.tom_e_white.set_game;
+package com.tom_e_white.set_game.predict;
 
 import com.tom_e_white.set_game.model.Card;
+import com.tom_e_white.set_game.predict.CardPredictor;
+import com.tom_e_white.set_game.preprocess.CardDetector;
+import com.tom_e_white.set_game.preprocess.CardImage;
 
 import java.io.File;
 import java.io.IOException;

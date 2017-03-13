@@ -1,6 +1,11 @@
-package com.tom_e_white.set_game;
+package com.tom_e_white.set_game.train;
 
 import boofcv.io.image.UtilImageIO;
+import com.tom_e_white.set_game.preprocess.CreateTrainingSetV1;
+import com.tom_e_white.set_game.train.FeatureFinder;
+import com.tom_e_white.set_game.train.FindCardColourFeatures;
+import com.tom_e_white.set_game.train.FindCardShadingFeatures;
+import com.tom_e_white.set_game.train.FindCardShapeFeatures;
 
 import java.awt.image.BufferedImage;
 import java.io.File;

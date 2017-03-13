@@ -1,4 +1,6 @@
-package com.tom_e_white.set_game;
+package com.tom_e_white.set_game.preprocess;
+
+import com.tom_e_white.set_game.train.FindCardNumberFeatures;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,7 +9,7 @@ import java.util.*;
 
 /**
  * Uses {@link FindCardNumberFeatures} to sort the raw training images by the number of shapes on each card (board).
- * Images are moved to <i>raw-sorted/&lt;num<gt;</i> directories.
+ * Images are moved to <i>raw-sorted/&lt;num<gt;</i> directories, where they can be visually checked by a human.
  */
 public class SortRawTrainingImagesV2 {
     public static void main(String[] args) throws IOException {

@@ -1,5 +1,8 @@
-package com.tom_e_white.set_game;
+package com.tom_e_white.set_game.predict;
 
+import com.tom_e_white.set_game.preprocess.CardDetector;
+import com.tom_e_white.set_game.preprocess.CardImage;
+import com.tom_e_white.set_game.train.*;
 import smile.classification.Classifier;
 
 import java.io.File;
