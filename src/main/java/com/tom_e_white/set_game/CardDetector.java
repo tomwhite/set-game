@@ -20,6 +20,18 @@ import java.util.stream.Collectors;
  */
 public class CardDetector {
 
+  private final int medianBlur;
+  private final int areaTolerancePct;
+
+  public CardDetector() {
+    this(16, 25);
+  }
+
+  public CardDetector(int medianBlur, int areaTolerancePct) {
+    this.medianBlur = medianBlur;
+    this.areaTolerancePct = areaTolerancePct;
+  }
+
   public List<CardImage> detect(String filename) throws IOException {
     return detect(filename, false);
   }
@@ -29,6 +41,10 @@ public class CardDetector {
   }
 
   public List<CardImage> detect(String filename, boolean debug, boolean allowRotated) throws IOException {
+    return detect(filename, debug, allowRotated, -1, -1);
+  }
+
+  public List<CardImage> detect(String filename, boolean debug, boolean allowRotated, int expectedRows, int expectedColumns) throws IOException {
     // Based on code from http://boofcv.org/index.php?title=Example_Binary_Image
 
     BufferedImage image = UtilImageIO.loadImage(filename);
@@ -40,7 +56,7 @@ public class CardDetector {
 
     List<Quadrilateral_F64> quads = ImageProcessingPipeline.fromBufferedImage(image, panel)
             .gray()
-            .medianBlur(16)
+            .medianBlur(medianBlur)
             .binarize(0, 255)
             .erode()
             .dilate()
@@ -50,8 +66,18 @@ public class CardDetector {
 
     // Only include shapes that are within given percentage of the mean area. This filters out image artifacts that
     // happen to be quadrilaterals that are not cards (since they are usually a different size).
-    List<Quadrilateral_F64> cards = GeometryUtils.filterByArea(quads, 25);
+    List<Quadrilateral_F64> cards = GeometryUtils.filterByArea(quads, areaTolerancePct);
     List<List<Quadrilateral_F64>> rows = GeometryUtils.sortRowWise(cards);// sort into a stable order
+    if (expectedRows != -1 && rows.size() != expectedRows) {
+      throw new IllegalArgumentException(String.format("Expected %s rows, but detected %s: %s", expectedRows, rows.size(), filename));
+    }
+    if (expectedColumns != -1) {
+      rows.forEach(row -> {
+        if (row.size() != expectedColumns) {
+          throw new IllegalArgumentException(String.format("Expected %s columns, but detected %s: %s", expectedColumns, row.size(), filename));
+        }
+      });
+    }
     List<CardImage> cardImages = rows.stream()
             .flatMap(List::stream)
             .map(q -> {

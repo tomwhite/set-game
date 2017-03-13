@@ -162,7 +162,12 @@ public class GeometryUtils {
         OptionalDouble meanArea = quads.stream().mapToDouble(Area2D_F64::quadrilateral).average();
         return quads.stream().filter(q -> {
             double m = meanArea.getAsDouble();
-            return Math.abs(Area2D_F64.quadrilateral(q) - m) / m <= areaTolerancePct / 100.0;
+            double quadSizeAsPercentageOfMean = 100.0 * Math.abs(Area2D_F64.quadrilateral(q) - m) / m;
+            boolean withinTolerance = quadSizeAsPercentageOfMean <= areaTolerancePct;
+//            if (!withinTolerance) {
+//                System.out.println(String.format("Filtering out quadrilateral with percentage %s of mean size.", quadSizeAsPercentageOfMean));
+//            }
+            return withinTolerance;
         }).collect(Collectors.toList());
     }
 
