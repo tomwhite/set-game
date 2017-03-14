@@ -7,17 +7,19 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
 
+import static com.tom_e_white.set_game.preprocess.TrainingDataV2.RAW_NEW_DIRECTORY;
+import static com.tom_e_white.set_game.preprocess.TrainingDataV2.RAW_SORTED_DIRECTORY;
+
 /**
  * Uses {@link FindCardNumberFeatures} to sort the raw training images by the number of shapes on each card (board).
  * Images are moved to <i>raw-sorted/&lt;num<gt;</i> directories, where they can be visually checked by a human.
  */
 public class SortRawTrainingImagesV2 {
     public static void main(String[] args) throws IOException {
-        File sortedDir = new File("data/train-v2/raw-sorted");
-        sortedDir.mkdirs();
+        RAW_SORTED_DIRECTORY.mkdirs();
         FindCardNumberFeatures cardFeatureCounter = new FindCardNumberFeatures();
         CardDetector cardDetector = new CardDetector(4, 66);
-        for (File file : new File("data/train-v2/raw").listFiles((dir, name) -> name.matches(".*\\.jpg"))) {
+        for (File file : RAW_NEW_DIRECTORY.listFiles((dir, name) -> name.matches(".*\\.jpg"))) {
             System.out.println(file);
             List<CardImage> cardImages = cardDetector.detect(file.getAbsolutePath(), false, true, 3, 9);
             Map<Integer, Integer> counts = new HashMap<>();
@@ -30,7 +32,7 @@ public class SortRawTrainingImagesV2 {
                     .max(Comparator.comparing(Map.Entry::getValue))
                     .get()
                     .getKey();
-            File targetDir = new File(sortedDir, Integer.toString(modalNumber));
+            File targetDir = new File(RAW_SORTED_DIRECTORY, Integer.toString(modalNumber));
             targetDir.mkdirs();
             Files.move(file.toPath(), new File(targetDir, file.getName()).toPath());
         }
