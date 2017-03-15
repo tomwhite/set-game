@@ -107,6 +107,11 @@ public class Card {
     public Color color() { return color; }
     public Shape shape() { return shape; }
 
+    public String getDescription() {
+        int num = number.ordinal() == 0 ? 3 : number.ordinal();
+        return toDescription(num, shading, color.name().toLowerCase(), shape);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
