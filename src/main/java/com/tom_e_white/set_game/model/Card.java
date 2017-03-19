@@ -16,23 +16,23 @@ public class Card {
             return parseDescription(toDescription(file));
         }
     }
-    public enum Shading {
-        EMPTY, STRIPED, SOLID;
-
-        public static Shading parseDescription(String description) {
-            return valueOf(description.split(" ")[1].toUpperCase());
-        }
-        public static Shading parseFilename(File file) {
-            return parseDescription(toDescription(file));
-        }
-    }
     public enum Color {
         GREEN, PURPLE, RED;
 
         public static Color parseDescription(String description) {
-            return valueOf(description.split(" ")[2].toUpperCase());
+            return valueOf(description.split(" ")[1].toUpperCase());
         }
         public static Color parseFilename(File file) {
+            return parseDescription(toDescription(file));
+        }
+    }
+    public enum Shading {
+        EMPTY, STRIPED, SOLID;
+
+        public static Shading parseDescription(String description) {
+            return valueOf(description.split(" ")[2].toUpperCase());
+        }
+        public static Shading parseFilename(File file) {
             return parseDescription(toDescription(file));
         }
     }
@@ -65,51 +65,51 @@ public class Card {
         // solid, striped, empty
         // oval, diamond, squiggle
         switch (index) {
-            case 1: return toDescription(number, Shading.SOLID, colour, Shape.OVAL);
-            case 2: return toDescription(number, Shading.SOLID, colour, Shape.DIAMOND);
-            case 3: return toDescription(number, Shading.SOLID, colour, Shape.SQUIGGLE);
-            case 4: return toDescription(number, Shading.STRIPED, colour, Shape.OVAL);
-            case 5: return toDescription(number, Shading.STRIPED, colour, Shape.DIAMOND);
-            case 6: return toDescription(number, Shading.STRIPED, colour, Shape.SQUIGGLE);
-            case 7: return toDescription(number, Shading.EMPTY, colour, Shape.OVAL);
-            case 8: return toDescription(number, Shading.EMPTY, colour, Shape.DIAMOND);
-            case 9: return toDescription(number, Shading.EMPTY, colour, Shape.SQUIGGLE);
+            case 1: return toDescription(number, colour, Shading.SOLID, Shape.OVAL);
+            case 2: return toDescription(number, colour, Shading.SOLID, Shape.DIAMOND);
+            case 3: return toDescription(number, colour, Shading.SOLID, Shape.SQUIGGLE);
+            case 4: return toDescription(number, colour, Shading.STRIPED, Shape.OVAL);
+            case 5: return toDescription(number, colour, Shading.STRIPED, Shape.DIAMOND);
+            case 6: return toDescription(number, colour, Shading.STRIPED, Shape.SQUIGGLE);
+            case 7: return toDescription(number, colour, Shading.EMPTY, Shape.OVAL);
+            case 8: return toDescription(number, colour, Shading.EMPTY, Shape.DIAMOND);
+            case 9: return toDescription(number, colour, Shading.EMPTY, Shape.SQUIGGLE);
             default: throw new IllegalArgumentException("Unrecognized index " + index);
         }
     }
 
-    private static String toDescription(int number, Shading shading, String colour, Shape shape) {
+    private static String toDescription(int number, String colour, Shading shading, Shape shape) {
         String s = number == 1 ? "" : "s";
-        return number + " " + shading.name().toLowerCase() + " " + colour + " " + shape.name().toLowerCase() + s;
+        return number + " " + colour + " " + shading.name().toLowerCase() + " " + shape.name().toLowerCase() + s;
     }
 
     private final Number number;
-    private final Shading shading;
     private final Color color;
+    private final Shading shading;
     private final Shape shape;
 
     public Card(String description) {
         this.number = Number.parseDescription(description);
-        this.shading = Shading.parseDescription(description);
         this.color = Color.parseDescription(description);
+        this.shading = Shading.parseDescription(description);
         this.shape = Shape.parseDescription(description);
     }
 
-    public Card(int numberLabel, int shadingLabel, int colorLabel, int shapeLabel) {
+    public Card(int numberLabel, int colorLabel, int shadingLabel, int shapeLabel) {
         this.number = Number.values()[numberLabel];
-        this.shading = Shading.values()[shadingLabel];
         this.color = Color.values()[colorLabel];
+        this.shading = Shading.values()[shadingLabel];
         this.shape = Shape.values()[shapeLabel];
     }
 
     public Number number() { return number; }
-    public Shading shading() { return shading; }
     public Color color() { return color; }
+    public Shading shading() { return shading; }
     public Shape shape() { return shape; }
 
     public String getDescription() {
         int num = number.ordinal() == 0 ? 3 : number.ordinal();
-        return toDescription(num, shading, color.name().toLowerCase(), shape);
+        return toDescription(num, color.name().toLowerCase(), shading, shape);
     }
 
     @Override
@@ -120,27 +120,22 @@ public class Card {
         Card card = (Card) o;
 
         if (number != card.number) return false;
-        if (shading != card.shading) return false;
         if (color != card.color) return false;
+        if (shading != card.shading) return false;
         return shape == card.shape;
     }
 
     @Override
     public int hashCode() {
         int result = number.hashCode();
-        result = 31 * result + shading.hashCode();
         result = 31 * result + color.hashCode();
+        result = 31 * result + shading.hashCode();
         result = 31 * result + shape.hashCode();
         return result;
     }
 
     @Override
     public String toString() {
-        return "Card{" +
-                "number=" + number +
-                ", shading=" + shading +
-                ", color=" + color +
-                ", shape=" + shape +
-                '}';
+        return getDescription();
     }
 }

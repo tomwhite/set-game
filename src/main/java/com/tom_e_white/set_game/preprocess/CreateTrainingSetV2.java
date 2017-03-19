@@ -33,7 +33,7 @@ public class CreateTrainingSetV2 {
                     int i = 0;
                     for (CardImage image : images) {
                         String numberLabel = file.getParentFile().getName();
-                        Card card = new Card(Integer.valueOf(numberLabel), i / 9, (i % 9) / 3, i % 3);
+                        Card card = new Card(Integer.valueOf(numberLabel), (i % 9) / 3, i / 9, i % 3);
                         File labelledDirectory = new File(outDir, card.getDescription().replace(" ", "-"));
                         labelledDirectory.mkdirs();
                         File newFile = new File(labelledDirectory, file.getName().replace(".jpg", "_" + i + ".jpg"));

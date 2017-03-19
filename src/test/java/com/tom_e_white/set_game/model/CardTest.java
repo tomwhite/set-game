@@ -10,10 +10,10 @@ import static org.junit.Assert.assertEquals;
 public class CardTest {
     @Test
     public void testParseDescription() {
-        String description = "3 solid red squiggles";
+        String description = "3 red solid squiggles";
         assertEquals(Card.Number.THREE, Card.Number.parseDescription(description));
-        assertEquals(Card.Shading.SOLID, Card.Shading.parseDescription(description));
         assertEquals(Card.Color.RED, Card.Color.parseDescription(description));
+        assertEquals(Card.Shading.SOLID, Card.Shading.parseDescription(description));
         assertEquals(Card.Shape.SQUIGGLE, Card.Shape.parseDescription(description));
     }
 
