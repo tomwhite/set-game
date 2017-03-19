@@ -18,27 +18,27 @@ public class CardDetectorTest {
 
     @Test
     public void testNoCards() throws IOException {
-        List<CardImage> images = cardDetector.detect("data/egg.jpg");
+        List<CardImage> images = cardDetector.detect("src/test/resources/data/egg.jpg");
         assertTrue(images.isEmpty());
     }
 
     @Test
     public void testSingleCard() throws IOException {
-        List<CardImage> images = cardDetector.detect("data/one-card-20161230_192626.jpg", false, true);
+        List<CardImage> images = cardDetector.detect("src/test/resources/data/one-card-20161230_192626.jpg", false, true);
         assertEquals(1, images.size());
     }
 
     @Test
     public void testErrantBorder() throws IOException {
         // this image has a border with some artifacts that may be detected as quadrilaterals
-        List<CardImage> images = cardDetector.detect("data/purple-1-20170101_124559.jpg");
+        List<CardImage> images = cardDetector.detect("src/test/resources/data/purple-1-20170101_124559.jpg");
         assertEquals(9, images.size());
     }
 
     @Test
     public void testRotated() throws IOException {
         // this image is rotated through 90 degrees
-        List<CardImage> images = cardDetector.detect("data/green-2-rotated-20161231_114543.jpg", false, true);
+        List<CardImage> images = cardDetector.detect("src/test/resources/data/green-2-rotated-20161231_114543.jpg", false, true);
         assertEquals(9, images.size());
     }
 
