@@ -22,7 +22,7 @@ import static com.tom_e_white.set_game.preprocess.TrainingDataV2.RAW_SORTED_DIRE
  */
 public class CreateTrainingSetV2 {
     public static void main(String[] args) throws IOException {
-        if (!(args.length > 0 && args[0].equals("-viewOnly"))) {
+        if (!(args.length > 0 && args[0].equals("--view-only"))) {
             CardDetector cardDetector = new CardDetector(4, 66);
             File outDir = RAW_LABELLED_DIRECTORY;
             outDir.mkdirs();
@@ -37,7 +37,6 @@ public class CreateTrainingSetV2 {
                         File labelledDirectory = new File(outDir, card.getDescription().replace(" ", "-"));
                         labelledDirectory.mkdirs();
                         File newFile = new File(labelledDirectory, file.getName().replace(".jpg", "_" + i + ".jpg"));
-                        System.out.println(newFile);
                         UtilImageIO.saveImage(image.getImage(), newFile.getAbsolutePath());
                         i++;
                     }
@@ -48,6 +47,8 @@ public class CreateTrainingSetV2 {
         ListDisplayPanel panel = new ListDisplayPanel();
         int numCols = 15;
 
+        int numImagesPerLabel = -1;
+        char prevNumLabel = ' ';
         for (File d : RAW_LABELLED_DIRECTORY.listFiles((dir, name) -> !name.matches("\\..*"))) {
             String label = d.getName();
             BufferedImage[] bufferedImages = Arrays.stream(d.listFiles((dir, name) -> name.matches(".*\\.jpg")))
@@ -56,6 +57,13 @@ public class CreateTrainingSetV2 {
                     .collect(Collectors.toList())
                     .toArray(new BufferedImage[0]);
             panel.addItem(new ImageGridPanel((bufferedImages.length / numCols) + 1, numCols, bufferedImages), label);
+            System.out.println(label + "\t" + bufferedImages.length);
+            if (prevNumLabel != label.charAt(0)) {
+                numImagesPerLabel = bufferedImages.length;
+                prevNumLabel = label.charAt(0);
+            } else if (numImagesPerLabel != bufferedImages.length) {
+                throw new IllegalStateException("Expected " + numImagesPerLabel + " images, but only found " + bufferedImages.length + " for " + label);
+            }
         }
 
         ShowImages.showWindow(panel, CreateTrainingSetV2.class.getSimpleName(), true);

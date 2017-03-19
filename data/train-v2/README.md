@@ -19,7 +19,7 @@ are not the right way up.
 individual cards can be detected.
 5. If there are problematic images, then copy them to _raw-problem_. These will not be used, but
 keep them as future versions of the code may be able to handle them.
-6. Run `SortRawTrainingImagesV2`. This will programatically detect the number of features on
+6. Run `SortRawTrainingImagesV2`. This will programmatically detect the number of features on
 each card so that it can sort the training boards with 1, 2, or 3 number cards. (Note 3 is called 0.)
 7. Open each directory in _raw-sorted_ and visually check that each board is in the correct
 directory. Move any that are not.
