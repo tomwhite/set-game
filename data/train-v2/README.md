@@ -28,6 +28,7 @@ individual cards and store them in _raw-labelled_, then open a window showing ea
 cards. Visually inspect these to check they are correct. Move any images that are not.
 9. Run 
 ```
+mkdir -p data/train-v2/labelled/
 rsync -a data/train-v2/raw-labelled/ data/train-v2/labelled/
 rm -rf data/train-v2/raw-{new,sorted,labelled}
 ```
