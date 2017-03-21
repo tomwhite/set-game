@@ -22,7 +22,7 @@ import static com.tom_e_white.set_game.preprocess.TrainingDataV2.RAW_SORTED_DIRE
  */
 public class CreateTrainingSetV2 {
     public static void main(String[] args) throws IOException {
-        if (!(args.length > 0 && args[0].equals("--view-only"))) {
+        if (!RAW_LABELLED_DIRECTORY.exists()) {
             CardDetector cardDetector = new CardDetector(4, 66);
             File outDir = RAW_LABELLED_DIRECTORY;
             outDir.mkdirs();
