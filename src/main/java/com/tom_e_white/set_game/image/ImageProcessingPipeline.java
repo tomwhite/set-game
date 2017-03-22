@@ -253,8 +253,6 @@ public class ImageProcessingPipeline {
     }
 
     private void addImageToPanel(GrayU8 image, String name) {
-        if (panel != null) {
-            panel.addImage(VisualizeBinaryData.renderBinary(image, false, null), name);
-        }
+        addImageToPanel(VisualizeBinaryData.renderBinary(image, false, null), name);
     }
 }
