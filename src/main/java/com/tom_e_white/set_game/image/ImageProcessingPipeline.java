@@ -48,14 +48,30 @@ public class ImageProcessingPipeline {
     }
 
     public static BufferedImageProcessor fromBufferedImage(BufferedImage original, ListDisplayPanel panel) {
-        return new ImageProcessingPipeline(original, panel).new BufferedImageProcessor();
+        return new ImageProcessingPipeline(original, panel).new BufferedImageProcessor(original);
     }
 
     public class BufferedImageProcessor {
+        private final BufferedImage image;
+
+        public BufferedImageProcessor(BufferedImage image) {
+            this.image = image;
+        }
+
+        public BufferedImageProcessor maskBackground() {
+            BufferedImage newImage = ImageUtils.maskBackground(image);
+            if (panel != null) {
+                panel.addImage(newImage, "Mask background");
+            }
+            return new BufferedImageProcessor(newImage);
+        }
         public GrayImageProcessor gray() {
-            GrayU8 image = ConvertBufferedImage.convertFromSingle(original, null, GrayU8.class);
-            addImageToPanel(image, "Gray");
-            return new GrayImageProcessor(image);
+            GrayU8 newImage = ConvertBufferedImage.convertFromSingle(image, null, GrayU8.class);
+            addImageToPanel(newImage, "Gray");
+            return new GrayImageProcessor(newImage);
+        }
+        public double[] coupledHueSat() {
+            return ImageUtils.coupledHueSat(image);
         }
     }
 
