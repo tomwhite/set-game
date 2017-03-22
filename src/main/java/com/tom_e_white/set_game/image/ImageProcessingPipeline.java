@@ -32,19 +32,11 @@ import java.util.stream.Collectors;
 
 public class ImageProcessingPipeline {
 
-    private final BufferedImage original;
-
     private final ListDisplayPanel panel;
 
     private ImageProcessingPipeline(BufferedImage original, ListDisplayPanel panel) {
-        this.original = original;
         this.panel = panel;
-        if (panel != null) {
-            this.panel.addImage(original, "Original");
-//            this.panel.addImage(ImageUtils.filterBackgroundOut(original), "Filter background");
-//            this.panel.addImage(ImageUtils.maskBackground(original), "Masked");
-//            this.panel.addImage(ImageUtils.removeGray(original), "No gray");
-        }
+        addImageToPanel(original, "Original");
     }
 
     public static BufferedImageProcessor fromBufferedImage(BufferedImage original, ListDisplayPanel panel) {
@@ -60,9 +52,7 @@ public class ImageProcessingPipeline {
 
         public BufferedImageProcessor maskBackground() {
             BufferedImage newImage = ImageUtils.maskBackground(image);
-            if (panel != null) {
-                panel.addImage(newImage, "Mask background");
-            }
+            addImageToPanel(newImage, "Mask background");
             return new BufferedImageProcessor(newImage);
         }
         public GrayImageProcessor gray() {
@@ -253,6 +243,12 @@ public class ImageProcessingPipeline {
                         return new Shape(points);
                     })
                     .collect(Collectors.toList());
+        }
+    }
+
+    private void addImageToPanel(BufferedImage image, String name) {
+        if (panel != null) {
+            panel.addImage(image, name);
         }
     }
 
