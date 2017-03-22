@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * Takes test images and extract useful features from them.
  * The resulting data can be used to test the predictive accuracy of the model from R.
  */
-public class CreateTestData {
+public class CreateTestDataV1 {
     public static void main(String[] args) throws IOException {
         File testFile = new File("data/20170106_205743.jpg");
         FeatureFinder[] finders = new FeatureFinder[] {
