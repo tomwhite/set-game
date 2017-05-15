@@ -12,10 +12,21 @@ import java.text.ParseException;
  */
 public class CardPredictor {
 
-    private final FeatureFinder numberFinder = new FindCardNumberFeatures();
-    private final FeatureFinder colourFinder = new FindCardColourFeatures();
-    private final FeatureFinder shadingFinder = new FindCardShadingFeatures();
-    private final FeatureFinder shapeFinder = new FindCardShapeFeatures();
+    private final FeatureFinder numberFinder;
+    private final FeatureFinder colourFinder;
+    private final FeatureFinder shadingFinder;
+    private final FeatureFinder shapeFinder;
+
+    public CardPredictor() {
+        this(1);
+    }
+
+    public CardPredictor(int version) {
+        this.numberFinder = new FindCardNumberFeatures();
+        this.colourFinder = new FindCardColourFeatures(version);
+        this.shadingFinder = new FindCardShadingFeatures();
+        this.shapeFinder = new FindCardShapeFeatures();
+    }
 
     public Card predict(BufferedImage image) throws IOException, ParseException {
         return new Card(predict(numberFinder, image), predict(colourFinder, image),
