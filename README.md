@@ -101,3 +101,38 @@ classes to recognize the cards in new or test images.
 
 Prediction is carried out by the classes in `com.tom_e_white.set_game.predict`, including
 `PlaySet` which takes an image and highlights the Sets in it.
+
+`PredictCardFeaturesOnTestData`
+calculates the accuracy of predicting each feature (number, colour, shading, shape) for each
+card in a test set. Here's a sample run:
+
+```
+FindCardNumberFeatures
+Correct: 15
+Total: 15
+Accuracy: 100 percent
+------------------------------------------
+FindCardColourFeatures
+Correct: 7
+Total: 15
+Accuracy: 46 percent
+------------------------------------------
+FindCardShadingFeatures
+Correct: 14
+Total: 15
+Accuracy: 93 percent
+------------------------------------------
+FindCardShapeFeatures
+Correct: 15
+Total: 15
+Accuracy: 100 percent
+------------------------------------------
+```
+
+Notice that all but colour are predicted with high accuracy. I was initially very
+surprised that detecting colour was so hard, but it turns out that the human eye
+is very adept at colour detection: it is not just a question of measuring RGB
+values in an image. Even controlling for lighting using HSB doesn't help much.
+The main problem was that the training data in the first dataset was from a fairly
+restricted range of lighting conditions, so it couldn't generalize well to the test
+data. This is why I gathered the second dataset.
