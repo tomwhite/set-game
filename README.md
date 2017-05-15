@@ -136,3 +136,8 @@ values in an image. Even controlling for lighting using HSB doesn't help much.
 The main problem was that the training data in the first dataset was from a fairly
 restricted range of lighting conditions, so it couldn't generalize well to the test
 data. This is why I gathered the second dataset.
+
+## References
+
+* [BoofCV Java Computer Vision library](http://boofcv.org/index.php?title=Manual)
+* [Vehicle Color Recognition using Convolutional Neural Network](https://arxiv.org/pdf/1510.07391.pdf)
