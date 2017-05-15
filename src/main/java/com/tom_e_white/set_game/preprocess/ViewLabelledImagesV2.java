@@ -38,7 +38,7 @@ public class ViewLabelledImagesV2 {
             }
         }
 
-        ShowImages.showWindow(panel, CreateTrainingSetV2.class.getSimpleName(), true);
+        ShowImages.showWindow(panel, ViewLabelledImagesV2.class.getSimpleName(), true);
     }
 
     private static BufferedImage resize(BufferedImage img, int newW, int newH) {
