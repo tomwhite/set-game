@@ -50,6 +50,11 @@ public class ImageProcessingPipeline {
             this.image = image;
         }
 
+        public BufferedImageProcessor filterBackgroundOut() {
+            BufferedImage newImage = ImageUtils.filterBackgroundOut(image);
+            addImageToPanel(newImage, "Filter background out");
+            return new BufferedImageProcessor(newImage);
+        }
         public BufferedImageProcessor maskBackground() {
             BufferedImage newImage = ImageUtils.maskBackground(image);
             addImageToPanel(newImage, "Mask background");

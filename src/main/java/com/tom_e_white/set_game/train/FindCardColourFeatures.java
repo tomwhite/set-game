@@ -46,7 +46,7 @@ public class FindCardColourFeatures extends FeatureFinder {
     public double[] find(BufferedImage image, boolean debug) throws IOException {
         ListDisplayPanel panel = debug ? new ListDisplayPanel() : null;
         double[] features = ImageProcessingPipeline.fromBufferedImage(image, panel)
-                .maskBackground()
+                .filterBackgroundOut()
                 .coupledHueSat();
         if (debug) {
             ShowImages.showWindow(panel, getClass().getSimpleName(), true);
