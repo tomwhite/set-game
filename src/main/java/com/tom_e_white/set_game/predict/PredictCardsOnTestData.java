@@ -19,11 +19,15 @@ import java.util.stream.Collectors;
 public class PredictCardsOnTestData {
 
     public static double predict(File testFile) throws IOException, ParseException {
+        return predict(testFile, 1);
+    }
+
+    public static double predict(File testFile, int version) throws IOException, ParseException {
         CardDetector cardDetector = new CardDetector();
         List<CardImage> images = cardDetector.detect(testFile.getAbsolutePath(), false);
         List<String> testDescriptions = Files.lines(Paths.get(testFile.getAbsolutePath().replace(".jpg", ".txt"))).collect(Collectors.toList());
 
-        CardPredictor cardPredictor = new CardPredictor();
+        CardPredictor cardPredictor = new CardPredictor(version);
         int correct = 0;
         int total = 0;
         for (int i = 0; i < testDescriptions.size(); i++) {
@@ -45,6 +49,7 @@ public class PredictCardsOnTestData {
     }
 
     public static void main(String[] args) throws Exception {
-        predict(new File(args[0]));
+        int version = args.length > 1 ? Integer.parseInt(args[1]) : 1;
+        predict(new File(args[0]), version);
     }
 }

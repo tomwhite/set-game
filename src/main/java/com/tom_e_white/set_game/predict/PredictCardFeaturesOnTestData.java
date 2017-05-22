@@ -19,10 +19,14 @@ import java.util.stream.Collectors;
 public class PredictCardFeaturesOnTestData {
 
     public static double[] predict(File testFile) throws IOException, ParseException {
+        return predict(testFile, 1);
+    }
+
+    public static double[] predict(File testFile, int version) throws IOException, ParseException {
 
         FeatureFinder[] finders = new FeatureFinder[] {
                 new FindCardNumberFeatures(),
-                new FindCardColourFeatures(),
+                new FindCardColourFeatures(version),
                 new FindCardShadingFeatures(),
                 new FindCardShapeFeatures()
         };
@@ -61,6 +65,8 @@ public class PredictCardFeaturesOnTestData {
     }
 
     public static void main(String[] args) throws Exception {
-        predict(new File(args[0]));
+        int version = args.length > 1 ? Integer.parseInt(args[1]) : 1;
+        predict(new File(args[0]), version);
+
     }
 }

@@ -113,11 +113,12 @@ Total: 15
 Accuracy: 100 percent
 ------------------------------------------
 FindCardColourFeatures
-Correct: 7
+Correct: 10
 Total: 15
-Accuracy: 46 percent
+Accuracy: 66 percent
 ------------------------------------------
 FindCardShadingFeatures
+Incorrect, predicted 0 but was 1 for card 3
 Correct: 14
 Total: 15
 Accuracy: 93 percent
@@ -136,6 +137,19 @@ values in an image. Even controlling for lighting using HSB doesn't help much.
 The main problem was that the training data in the first dataset was from a fairly
 restricted range of lighting conditions, so it couldn't generalize well to the test
 data. This is why I gathered the second dataset.
+
+After training on the second dataset, the accuracy for colour prediction improves,
+but it's still not as good as for the other features.
+
+```
+FindCardColourFeatures
+Correct: 12
+Total: 15
+Accuracy: 80 percent
+```
+
+The next thing to try is using more advanced colour prediction techniques, possibly
+using a neural network.
 
 ## References
 

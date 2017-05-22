@@ -11,8 +11,14 @@ import static org.junit.Assert.assertArrayEquals;
 
 public class PredictCardFeaturesOnTestDataTest {
     @Test
-    public void test() throws IOException, ParseException {
+    public void testV1() throws IOException, ParseException {
         double[] accuracies = PredictCardFeaturesOnTestData.predict(new File("data/20170106_205743.jpg"));
         assertArrayEquals(new double[] { 100, 66, 93, 100 }, accuracies, 1);
+    }
+
+    @Test
+    public void testV2() throws IOException, ParseException {
+        double[] accuracies = PredictCardFeaturesOnTestData.predict(new File("data/20170106_205743.jpg"), 2);
+        assertArrayEquals(new double[] { 100, 80, 93, 100 }, accuracies, 1);
     }
 }
