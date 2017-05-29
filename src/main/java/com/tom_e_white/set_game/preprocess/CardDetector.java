@@ -45,11 +45,20 @@ public class CardDetector {
   }
 
   public List<CardImage> detect(String filename, boolean debug, boolean allowRotated, int expectedRows, int expectedColumns) throws IOException {
+    return detect(UtilImageIO.loadImage(filename), filename, debug, allowRotated, expectedRows, expectedColumns);
+  }
+
+  public List<CardImage> detect(BufferedImage image, String filename, boolean debug, boolean allowRotated) throws IOException {
+    return detect(image, filename, debug, allowRotated, -1, -1);
+  }
+
+  public List<CardImage> detect(BufferedImage image, String filename, boolean debug, boolean allowRotated, int expectedRows, int expectedColumns) throws IOException {
     // Based on code from http://boofcv.org/index.php?title=Example_Binary_Image
 
-    BufferedImage image = UtilImageIO.loadImage(filename);
+    String imageInfo = filename == null ? image.toString() : filename;
+
     if (!allowRotated && image.getWidth() > image.getHeight()) {
-      throw new IllegalArgumentException("Image height must be greater than width: " + filename);
+      throw new IllegalArgumentException("Image height must be greater than width: " + imageInfo);
     }
 
     ListDisplayPanel panel = debug ? new ListDisplayPanel() : null;
@@ -69,12 +78,12 @@ public class CardDetector {
     List<Quadrilateral_F64> cards = GeometryUtils.filterByArea(quads, areaTolerancePct);
     List<List<Quadrilateral_F64>> rows = GeometryUtils.sortRowWise(cards);// sort into a stable order
     if (expectedRows != -1 && rows.size() != expectedRows) {
-      throw new IllegalArgumentException(String.format("Expected %s rows, but detected %s: %s", expectedRows, rows.size(), filename));
+      throw new IllegalArgumentException(String.format("Expected %s rows, but detected %s: %s", expectedRows, rows.size(), imageInfo));
     }
     if (expectedColumns != -1) {
       rows.forEach(row -> {
         if (row.size() != expectedColumns) {
-          throw new IllegalArgumentException(String.format("Expected %s columns, but detected %s: %s", expectedColumns, row.size(), filename));
+          throw new IllegalArgumentException(String.format("Expected %s columns, but detected %s: %s", expectedColumns, row.size(), imageInfo));
         }
       });
     }
