@@ -21,7 +21,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -88,11 +90,20 @@ public class PlaySetWebcam {
 
     public static void main(String[] args) throws Exception {
         // "http://192.168.1.92:8080/shot.jpg"
-        boolean debug = false;
-        File file = new File("playsetwebcam.png");
+        boolean debug = true;
+        File webcamDir = new File("data/webcam");
         if (debug) {
-            play(file, debug);
+            Optional<File> mostRecent = Arrays
+                            .stream(webcamDir.listFiles())
+                            .max(Comparator.comparingLong(File::lastModified));
+            if (mostRecent.isPresent()) {
+                play(mostRecent.get(), debug);
+            } else {
+                System.out.println("No files to debug in " + webcamDir);
+            }
         } else {
+            DateFormat format = new SimpleDateFormat("yyyyMMdd_HHmmss");
+            File file = new File(webcamDir, format.format(new Date()) + ".png");
             Webcam webcam = findWebcam(args.length == 0 ? null : args[0]);
             ImageIO.write(webcam.getImage(), "PNG", file);
             play(webcam.getImage(), debug);
