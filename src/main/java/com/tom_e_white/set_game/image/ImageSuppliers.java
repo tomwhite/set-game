@@ -6,6 +6,7 @@ import com.github.sarxos.webcam.Webcam;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -23,7 +24,7 @@ public class ImageSuppliers {
         private int index = files.length - 1;
 
         static File[] listSorted() {
-            File[] files = WEBCAM_DIR.listFiles();
+            File[] files = WEBCAM_DIR.listFiles((dir, name) -> name.toLowerCase().endsWith(".jpg") || name.toLowerCase().endsWith(".png"));
             Arrays.sort(files);
             return files;
         }

@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Card {
+    // The ordinal values follow "The Joy of Set"
     public enum Number {
         THREE, ONE, TWO; // so that the ordinals make sense (mod 3)
 

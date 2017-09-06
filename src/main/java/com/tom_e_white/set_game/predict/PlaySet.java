@@ -10,7 +10,6 @@ import com.github.sarxos.webcam.ds.ipcam.IpCamDriver;
 import com.github.sarxos.webcam.ds.ipcam.IpCamMode;
 import com.tom_e_white.set_game.image.ImageSuppliers;
 import com.tom_e_white.set_game.model.Card;
-import com.tom_e_white.set_game.model.Cards;
 import com.tom_e_white.set_game.model.Triple;
 import com.tom_e_white.set_game.preprocess.CardDetector;
 import com.tom_e_white.set_game.preprocess.CardImage;
@@ -74,7 +73,7 @@ public class PlaySet {
 
     public static BufferedImage annotateImage(BufferedImage image, boolean debug) {
         CardDetector cardDetector = new CardDetector(4, 66); // TODO: blur radius should be a function of image size
-        CardPredictor cardPredictor = new CardPredictor(2);
+        CardPredictor cardPredictor = new CardPredictorConvNetPerAttribute();
         List<CardImage> images;
         try {
             images = cardDetector.detect(image, null, debug, true);
@@ -82,33 +81,33 @@ public class PlaySet {
             throw new RuntimeException(e);
         }
 
-        List<Card> cards = images.stream().map(cardImage -> {
+        List<CardPrediction> cardPredictions = images.stream().map(cardImage -> {
             try {
-                return cardPredictor.predict(cardImage.getImage());
+                return cardPredictor.predict(cardImage);
             } catch (IOException | ParseException e) {
                 throw new RuntimeException(e);
             }
         }).collect(Collectors.toList());
 
-        Map<Card, CardImage> cardToImageMap = new LinkedHashMap<>();
-        for (int i = 0; i < cards.size(); i++) {
-            cardToImageMap.put(cards.get(i), images.get(i));
-        }
-
         Graphics2D g2 = image.createGraphics();
         g2.setStroke(new BasicStroke(10));
         g2.setColor(Color.BLUE);
 
-        if (cards.isEmpty()) {
+        if (cardPredictions.isEmpty()) {
             System.out.println("No cards found in image");
         } else {
-            System.out.println(cards);
-            Set<Triple> sets = Cards.sets(cards);
-            sets.forEach(System.out::println);
-            if (sets.isEmpty()) {
+            System.out.println(cardPredictions);
+            SetPredictor setPredictor = new SetPredictor();
+            List<SetPrediction> setPredictions = setPredictor.predict(cardPredictions);
+            setPredictions.forEach(System.out::println);
+            if (setPredictions.isEmpty()) {
                 System.out.println("No sets found");
             } else {
-                Triple set = new ArrayList<>(sets).get(0);
+                Triple set = setPredictions.get(0).getSet();
+                Map<Card, CardImage> cardToImageMap = new LinkedHashMap<>();
+                for (int i = 0; i < cardPredictions.size(); i++) {
+                    cardToImageMap.put(cardPredictions.get(i).getCard(), images.get(i));
+                }
                 VisualizeShapes.draw(cardToImageMap.get(set.first()).getExternalQuadrilateral(), g2);
                 VisualizeShapes.draw(cardToImageMap.get(set.second()).getExternalQuadrilateral(), g2);
                 VisualizeShapes.draw(cardToImageMap.get(set.third()).getExternalQuadrilateral(), g2);

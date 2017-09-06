@@ -33,7 +33,7 @@ Each image has cards of the same colour, and laid out in the same way.
 The program `CreateTrainingSetV1` processes the raw training images and creates
 a training set of images with one card in each image. See _data/train_out_.
 
-The small size of the first dataset meant that colour detection in particular wa
+The small size of the first dataset meant that colour detection in particular was
 lacking, so I created a new, larger second dataset with more varied lighting conditions.
 
 ### Dataset 2
