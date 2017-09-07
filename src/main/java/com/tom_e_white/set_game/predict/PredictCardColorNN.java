@@ -1,15 +1,17 @@
 package com.tom_e_white.set_game.predict;
 
-import boofcv.io.image.UtilImageIO;
 import com.tom_e_white.set_game.preprocess.CardDetector;
 import com.tom_e_white.set_game.preprocess.CardImage;
+import com.tom_e_white.set_game.train.FindCardColourFeatures;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import org.tensorflow.DataType;
 import org.tensorflow.Graph;
@@ -22,38 +24,38 @@ public class PredictCardColorNN {
     File testFile = new File(args[0]);
     CardDetector cardDetector = new CardDetector();
     List<CardImage> images = cardDetector.detect(testFile.getAbsolutePath(), false);
-    CardImage cardImage = images.get(7);
-
-    File tempJpeg = File.createTempFile("image", ".jpg");
-    //tempJpeg.deleteOnExit();
-    System.out.println(tempJpeg);
-    ImageIO.write(cardImage.getImage(), "jpg", tempJpeg);
-
-    String modelPb = "set_color.pb"; // TODO
-    String imageFile = tempJpeg.getAbsolutePath();
-
-    byte[] graphDef = readAllBytesOrExit(Paths.get(modelPb));
-    List<String> labels = Arrays.asList(new String[] {"green", "purple", "red"});
-    byte[] imageBytes = readAllBytesOrExit(Paths.get(imageFile));
-
-    try (Tensor image = constructAndExecuteGraphToNormalizeImage(imageBytes)) {
-      float[] labelProbabilities = executeInceptionGraph(graphDef, image);
-      int bestLabelIdx = maxIndex(labelProbabilities);
-      System.out.println(
-          String.format(
-              "BEST MATCH: %s (%.2f%% likely)",
-              labels.get(bestLabelIdx), labelProbabilities[bestLabelIdx] * 100f));
+    List<String> testDescriptions = Files.lines(Paths.get(testFile.getAbsolutePath().replace(".jpg", ".txt"))).collect(Collectors.toList());
+    FindCardColourFeatures colourFinder = new FindCardColourFeatures(2); // to parse description
+    int correct = 0;
+    int total = 0;
+    for (int i = 0; i < testDescriptions.size(); i++) {
+      float[] labelProbabilities = predict(images.get(i).getImage());
+      //System.out.println(Arrays.toString(labelProbabilities));
+      int predictedLabel = maxIndex(labelProbabilities);
+      int actualLabel = colourFinder.getLabelFromDescription(testDescriptions.get(i));
+      if (predictedLabel == actualLabel) {
+        correct++;
+      } else {
+        System.out.println("Incorrect, predicted " + predictedLabel + " but was " + actualLabel + " for card " + (i + 1));
+      }
+      total++;
     }
+    System.out.println("Correct: " + correct);
+    System.out.println("Total: " + total);
+    double accuracy = ((double) correct)/total * 100;
+    System.out.println("Accuracy: " + ((int) accuracy) + " percent");
+    System.out.println("------------------------------------------");
   }
 
-  private static byte[] readAllBytesOrExit(Path path) {
-    try {
-      return Files.readAllBytes(path);
-    } catch (IOException e) {
-      System.err.println("Failed to read [" + path + "]: " + e.getMessage());
-      System.exit(1);
+  private static float[] predict(BufferedImage image) throws IOException {
+    byte[] graphDef = Files.readAllBytes(Paths.get("set_color.pb"));
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    ImageIO.write(image, "jpg", out);
+    byte[] imageBytes = out.toByteArray();
+
+    try (Tensor imageTensor = constructAndExecuteGraphToNormalizeImage(imageBytes)) {
+      return executeCnnGraph(graphDef, imageTensor);
     }
-    return null;
   }
 
   private static Tensor constructAndExecuteGraphToNormalizeImage(byte[] imageBytes) {
@@ -90,10 +92,9 @@ public class PredictCardColorNN {
     }
   }
 
-  private static float[] executeInceptionGraph(byte[] graphDef, Tensor image) {
+  private static float[] executeCnnGraph(byte[] graphDef, Tensor image) {
     try (Graph g = new Graph()) {
       g.importGraphDef(graphDef);
-      System.out.println("tw: dense_2/Softmax " + g.operation("dense_2/Softmax"));
       try (Session s = new Session(g);
            Tensor result = s.runner()
                .feed("conv2d_1_input", image)
