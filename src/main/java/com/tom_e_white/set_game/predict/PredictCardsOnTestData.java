@@ -27,7 +27,7 @@ public class PredictCardsOnTestData {
         List<CardImage> images = cardDetector.detect(testFile.getAbsolutePath(), false);
         List<String> testDescriptions = Files.lines(Paths.get(testFile.getAbsolutePath().replace(".jpg", ".txt"))).collect(Collectors.toList());
 
-        CardPredictor cardPredictor = new CardPredictor(version);
+        CardPredictor cardPredictor = new CardPredictorNN();
         int correct = 0;
         int total = 0;
         for (int i = 0; i < testDescriptions.size(); i++) {

@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -29,7 +30,7 @@ public class PredictCardColorNN {
     int correct = 0;
     int total = 0;
     for (int i = 0; i < testDescriptions.size(); i++) {
-      float[] labelProbabilities = predict(images.get(i).getImage());
+      float[] labelProbabilities = predict(images.get(i).getImage(), "set_color.pb");
       //System.out.println(Arrays.toString(labelProbabilities));
       int predictedLabel = maxIndex(labelProbabilities);
       int actualLabel = colourFinder.getLabelFromDescription(testDescriptions.get(i));
@@ -47,8 +48,8 @@ public class PredictCardColorNN {
     System.out.println("------------------------------------------");
   }
 
-  private static float[] predict(BufferedImage image) throws IOException {
-    byte[] graphDef = Files.readAllBytes(Paths.get("set_color.pb"));
+  static float[] predict(BufferedImage image, String file) throws IOException {
+    byte[] graphDef = Files.readAllBytes(Paths.get(file));
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     ImageIO.write(image, "jpg", out);
     byte[] imageBytes = out.toByteArray();
@@ -58,7 +59,11 @@ public class PredictCardColorNN {
     }
   }
 
-  private static Tensor constructAndExecuteGraphToNormalizeImage(byte[] imageBytes) {
+  static List<String> readLabels(String file) throws IOException {
+    return Files.readAllLines(Paths.get(file), Charset.forName("UTF-8"));
+  }
+
+  static Tensor constructAndExecuteGraphToNormalizeImage(byte[] imageBytes) {
     try (Graph g = new Graph()) {
       LabelImage.GraphBuilder b = new LabelImage.GraphBuilder(g);
       // Some constants specific to the pre-trained model at:
@@ -92,14 +97,14 @@ public class PredictCardColorNN {
     }
   }
 
-  private static float[] executeCnnGraph(byte[] graphDef, Tensor image) {
+  static float[] executeCnnGraph(byte[] graphDef, Tensor image) {
     try (Graph g = new Graph()) {
       g.importGraphDef(graphDef);
       try (Session s = new Session(g);
            Tensor result = s.runner()
-               .feed("conv2d_1_input", image)
+               .feed("conv2d_1_input_1", image) // TODO: how to get reliably?
                .feed("dropout_1/keras_learning_phase", Tensor.create(false))
-               .fetch("dense_2/Softmax").run().get(0)) {
+               .fetch("dense_2_1/BiasAdd").run().get(0)) { // TODO: this should be softmax
         final long[] rshape = result.shape();
         if (result.numDimensions() != 2 || rshape[0] != 1) {
           throw new RuntimeException(
@@ -113,7 +118,7 @@ public class PredictCardColorNN {
     }
   }
 
-  private static int maxIndex(float[] probabilities) {
+  static int maxIndex(float[] probabilities) {
     int best = 0;
     for (int i = 1; i < probabilities.length; ++i) {
       if (probabilities[i] > probabilities[best]) {
