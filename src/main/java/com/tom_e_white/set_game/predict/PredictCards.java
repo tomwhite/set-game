@@ -20,7 +20,7 @@ public class PredictCards {
         List<CardImage> images = cardDetector.detect(testFile.getAbsolutePath(), false, true);
         images.stream().map(cardImage -> {
             try {
-                return cardPredictor.predict(cardImage.getImage());
+                return cardPredictor.predict(cardImage);
             } catch (IOException | ParseException e) {
                 throw new RuntimeException(e);
             }

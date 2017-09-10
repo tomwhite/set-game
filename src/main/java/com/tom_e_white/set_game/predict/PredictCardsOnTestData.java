@@ -31,7 +31,7 @@ public class PredictCardsOnTestData {
         int correct = 0;
         int total = 0;
         for (int i = 0; i < testDescriptions.size(); i++) {
-            Card predictedCard = cardPredictor.predict(images.get(i).getImage()).getCard();
+            Card predictedCard = cardPredictor.predict(images.get(i)).getCard();
             Card actualCard = new Card(testDescriptions.get(i));
             if (predictedCard.equals(actualCard)) {
                 correct++;
