@@ -22,4 +22,9 @@ public class CardPrediction {
     public float getProbability() {
         return probability;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s (p=%.2f)", card, probability);
+    }
 }
