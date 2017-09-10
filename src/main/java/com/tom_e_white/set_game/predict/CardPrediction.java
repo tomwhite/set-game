@@ -2,6 +2,9 @@ package com.tom_e_white.set_game.predict;
 
 import com.tom_e_white.set_game.model.Card;
 
+/**
+ * A predicted card class, along with the confidence probability of the prediction.
+ */
 public class CardPrediction {
     private final Card card;
     private final float probability;
