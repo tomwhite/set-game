@@ -84,7 +84,7 @@ public class PlaySet {
 
         List<Card> cards = images.stream().map(cardImage -> {
             try {
-                return cardPredictor.predict(cardImage.getImage());
+                return cardPredictor.predict(cardImage.getImage()).getCard();
             } catch (IOException | ParseException e) {
                 throw new RuntimeException(e);
             }

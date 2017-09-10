@@ -28,9 +28,9 @@ public class CardPredictor {
         this.shapeFinder = new FindCardShapeFeatures();
     }
 
-    public Card predict(BufferedImage image) throws IOException, ParseException {
-        return new Card(predict(numberFinder, image), predict(colourFinder, image),
-                predict(shadingFinder, image), predict(shapeFinder, image));
+    public CardPrediction predict(BufferedImage image) throws IOException, ParseException {
+        return new CardPrediction(new Card(predict(numberFinder, image), predict(colourFinder, image),
+                predict(shadingFinder, image), predict(shapeFinder, image)));
     }
 
     private int predict(FeatureFinder finder, BufferedImage image) throws IOException, ParseException {

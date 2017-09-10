@@ -24,7 +24,7 @@ public class PredictCards {
             } catch (IOException | ParseException e) {
                 throw new RuntimeException(e);
             }
-        }).forEach(System.out::println);
+        }).forEach(cp -> System.out.println(cp.getCard()));
     }
 
     public static void main(String[] args) throws Exception {
