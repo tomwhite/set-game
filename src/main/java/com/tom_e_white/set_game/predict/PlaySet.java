@@ -74,7 +74,7 @@ public class PlaySet {
 
     public static BufferedImage annotateImage(BufferedImage image, boolean debug) {
         CardDetector cardDetector = new CardDetector(4, 66); // TODO: blur radius should be a function of image size
-        CardPredictor cardPredictor = new CardPredictorNN();
+        CardPredictor cardPredictor = new CardPredictorNNPerAttribute();
         List<CardImage> images;
         try {
             images = cardDetector.detect(image, null, debug, true);
