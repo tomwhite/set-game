@@ -102,9 +102,9 @@ public class PredictCardColorNN {
       g.importGraphDef(graphDef);
       try (Session s = new Session(g);
            Tensor result = s.runner()
-               .feed("conv2d_1_input_1", image) // TODO: how to get reliably?
-               .feed("dropout_1/keras_learning_phase", Tensor.create(false))
-               .fetch("dense_2_1/BiasAdd").run().get(0)) { // TODO: this should be softmax
+               .feed("conv2d_1_input", image)
+               .feed("keras_learning_phase", Tensor.create(false))
+               .fetch("dense_2/Softmax").run().get(0)) {
         final long[] rshape = result.shape();
         if (result.numDimensions() != 2 || rshape[0] != 1) {
           throw new RuntimeException(
