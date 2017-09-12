@@ -27,6 +27,10 @@ public class CardDetector {
     this(16, 25);
   }
 
+  public CardDetector(int areaTolerancePct) {
+    this(-1, areaTolerancePct);
+  }
+
   public CardDetector(int medianBlur, int areaTolerancePct) {
     this.medianBlur = medianBlur;
     this.areaTolerancePct = areaTolerancePct;
@@ -60,6 +64,7 @@ public class CardDetector {
     if (!allowRotated && image.getWidth() > image.getHeight()) {
       throw new IllegalArgumentException("Image height must be greater than width: " + imageInfo);
     }
+    int medianBlur = this.medianBlur != -1 ? this.medianBlur : Math.max(image.getHeight(), image.getWidth()) / 200; // heuristic
 
     ListDisplayPanel panel = debug ? new ListDisplayPanel() : null;
 
