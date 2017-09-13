@@ -24,24 +24,40 @@ import java.text.ParseException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
  * Use {@link CardPredictor} to play Set using a webcam, or another image source, such as a file.
  */
-public class PlaySet {
+public class PlaySet implements Runnable{
 
     private final Supplier<BufferedImage> imageSupplier;
     private final CardPredictor cardPredictor;
     private final ImagePanel panel;
+    private final boolean streaming;
 
-    public PlaySet(Supplier<BufferedImage> imageSupplier, boolean debug) throws IOException {
+    public PlaySet(Supplier<BufferedImage> imageSupplier, boolean streaming, boolean debug) throws IOException {
         this.imageSupplier = imageSupplier;
         this.cardPredictor = new CardPredictorConvNet();
         this.panel = new ImagePanel(annotateImage(imageSupplier.get(), debug));
-        addMouseListener(panel);
+        this.streaming = streaming;
+    }
+
+    @Override
+    public void run() {
+        if (!streaming) {
+            addMouseListener(panel);
+        }
         ShowImages.showWindow(panel, PlaySet.class.getSimpleName(), true);
+
+        if (streaming) {
+            while (true) {
+                newImage(imageSupplier.get());
+            }
+        }
     }
 
     private void addMouseListener(ImagePanel panel) {
@@ -57,7 +73,7 @@ public class PlaySet {
     }
 
     private void newImage(BufferedImage image) {
-        panel.setBufferedImage(annotateImage(image, false));
+        panel.setBufferedImageSafe(annotateImage(image, false));
     }
 
     private static Webcam findWebcam(String url) throws MalformedURLException {
@@ -100,6 +116,8 @@ public class PlaySet {
 
         if (cardPredictions.isEmpty()) {
             System.out.println("No cards found in image");
+        } else if (cardPredictions.size() < 3) {
+            System.out.println("Too few cards found in image");
         } else {
             System.out.println(cardPredictions);
             SetPredictor setPredictor = new SetPredictor();
@@ -123,13 +141,18 @@ public class PlaySet {
     }
 
     public static void main(String[] args) throws Exception {
-        // "http://192.168.1.92:8080/shot.jpg"
+        // "http://192.168.1.67:8080/shot.jpg"
         boolean debug = false;
         Supplier<BufferedImage> imageSupplier = new ImageSuppliers.ReverseChronologicalSavedImageSupplier();
+        boolean streaming = false;
         if (args.length > 0) {
             if (args[0].equals("webcam")) {
                 String url = args.length == 1 ? null : args[1];
                 imageSupplier = new ImageSuppliers.WebcamImageSupplier(findWebcam(url));
+                streaming = true;
+            } else if (args[0].equals("webcamsaver")) {
+                String url = args.length == 1 ? null : args[1];
+                imageSupplier = new ImageSuppliers.WebcamSaverImageSupplier(findWebcam(url));
             } else if (args[0].equals("reverse")) {
                 imageSupplier = new ImageSuppliers.ReverseChronologicalSavedImageSupplier();
             } else if (args[0].equals("random")) {
@@ -138,6 +161,7 @@ public class PlaySet {
                 imageSupplier = new ImageSuppliers.NamedSavedImageSupplier(new File(args[1]).getAbsolutePath());
             }
         }
-        new PlaySet(imageSupplier, debug);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(new PlaySet(imageSupplier, streaming, debug));
     }
 }

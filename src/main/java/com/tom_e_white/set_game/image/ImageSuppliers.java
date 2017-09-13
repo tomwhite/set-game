@@ -83,6 +83,20 @@ public class ImageSuppliers {
 
         @Override
         public BufferedImage get() {
+            return webcam.getImage();
+        }
+    }
+
+    public static class WebcamSaverImageSupplier implements Supplier<BufferedImage> {
+
+        private Webcam webcam;
+
+        public WebcamSaverImageSupplier(Webcam webcam) {
+            this.webcam = webcam;
+        }
+
+        @Override
+        public BufferedImage get() {
             BufferedImage image = webcam.getImage();
             DateFormat format = new SimpleDateFormat("yyyyMMdd_HHmmss");
             File file = new File(WEBCAM_DIR, format.format(new Date()) + ".png");
