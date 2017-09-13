@@ -33,6 +33,6 @@ public class PredictCardsOnTestDataTest {
     @Test
     public void testConvNetPerAttribute() throws IOException, ParseException {
         double accuracy = PredictCardsOnTestData.predict(TEST_LAYOUT, new CardPredictorConvNetPerAttribute());
-        assertEquals(93, accuracy, 1);
+        assertEquals(100, accuracy, 1);
     }
 }
