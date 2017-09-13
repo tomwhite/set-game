@@ -13,7 +13,6 @@ import com.tom_e_white.set_game.model.Card;
 import com.tom_e_white.set_game.model.Triple;
 import com.tom_e_white.set_game.preprocess.CardDetector;
 import com.tom_e_white.set_game.preprocess.CardImage;
-
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -22,8 +21,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.text.ParseException;
-import java.util.*;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -33,10 +33,12 @@ import java.util.stream.Collectors;
 public class PlaySet {
 
     private final Supplier<BufferedImage> imageSupplier;
+    private final CardPredictor cardPredictor;
     private final ImagePanel panel;
 
-    public PlaySet(Supplier<BufferedImage> imageSupplier, boolean debug) {
+    public PlaySet(Supplier<BufferedImage> imageSupplier, boolean debug) throws IOException {
         this.imageSupplier = imageSupplier;
+        this.cardPredictor = new CardPredictorConvNet();
         this.panel = new ImagePanel(annotateImage(imageSupplier.get(), debug));
         addMouseListener(panel);
         ShowImages.showWindow(panel, PlaySet.class.getSimpleName(), true);
@@ -71,16 +73,18 @@ public class PlaySet {
         return webcam;
     }
 
-    public static BufferedImage annotateImage(BufferedImage image, boolean debug) {
+    public BufferedImage annotateImage(BufferedImage image, boolean debug) {
         CardDetector cardDetector = new CardDetector(66);
-        CardPredictor cardPredictor = new CardPredictorConvNet();
+        long start = System.currentTimeMillis();
         List<CardImage> images;
         try {
             images = cardDetector.detect(image, null, debug, true);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        System.out.println("Time to detect cards: " + (System.currentTimeMillis() - start));
 
+        start = System.currentTimeMillis();
         List<CardPrediction> cardPredictions = images.stream().map(cardImage -> {
             try {
                 return cardPredictor.predict(cardImage);
@@ -88,6 +92,7 @@ public class PlaySet {
                 throw new RuntimeException(e);
             }
         }).collect(Collectors.toList());
+        System.out.println("Time to predict cards: " + (System.currentTimeMillis() - start));
 
         Graphics2D g2 = image.createGraphics();
         g2.setStroke(new BasicStroke(10));
