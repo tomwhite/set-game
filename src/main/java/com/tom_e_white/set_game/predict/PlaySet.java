@@ -73,7 +73,7 @@ public class PlaySet {
 
     public static BufferedImage annotateImage(BufferedImage image, boolean debug) {
         CardDetector cardDetector = new CardDetector(66);
-        CardPredictor cardPredictor = new CardPredictorConvNetPerAttribute();
+        CardPredictor cardPredictor = new CardPredictorConvNet();
         List<CardImage> images;
         try {
             images = cardDetector.detect(image, null, debug, true);

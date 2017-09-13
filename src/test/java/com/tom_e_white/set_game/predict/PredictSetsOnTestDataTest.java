@@ -35,7 +35,7 @@ public class PredictSetsOnTestDataTest {
     @Test
     public void testConvNet() throws IOException, ParseException {
         double accuracy = PredictSetsOnTestData.predict(TEST_FILES, new CardPredictorConvNet());
-        assertEquals(66, accuracy, 1);
+        assertEquals(100, accuracy, 1);
     }
 
     @Test
