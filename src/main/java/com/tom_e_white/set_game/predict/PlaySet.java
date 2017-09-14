@@ -14,6 +14,8 @@ import com.tom_e_white.set_game.model.Triple;
 import com.tom_e_white.set_game.preprocess.CardDetector;
 import com.tom_e_white.set_game.preprocess.CardImage;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -29,6 +31,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import javax.swing.*;
 
 import static java.awt.RenderingHints.KEY_ANTIALIASING;
 import static java.awt.RenderingHints.VALUE_ANTIALIAS_ON;
@@ -56,7 +59,16 @@ public class PlaySet implements Runnable{
         if (!streaming) {
             addMouseListener(panel);
         }
-        ShowImages.showWindow(panel, PlaySet.class.getSimpleName(), true);
+        JFrame window = ShowImages.showWindow(panel, PlaySet.class.getSimpleName(),true);
+        window.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (e.getKeyChar() == 'x') {
+                    System.out.println("'Not a Set!'");
+                    // TODO: record errant image and Set
+                }
+            }
+        });
 
         if (streaming) {
             while (true) {
