@@ -98,6 +98,11 @@ public class ImageSuppliers {
         @Override
         public BufferedImage get() {
             BufferedImage image = webcam.getImage();
+            save(image);
+            return image;
+        }
+
+        public static void save(BufferedImage image) {
             DateFormat format = new SimpleDateFormat("yyyyMMdd_HHmmss");
             File file = new File(WEBCAM_DIR, format.format(new Date()) + ".png");
             try {
@@ -106,7 +111,7 @@ public class ImageSuppliers {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            return image;
+
         }
     }
 }

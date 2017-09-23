@@ -19,6 +19,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -45,12 +47,15 @@ public class PlaySet implements Runnable{
     private final CardPredictor cardPredictor;
     private final ImagePanel panel;
     private final boolean streaming;
+    private BufferedImage image;
     private Triple previousSet;
 
     public PlaySet(Supplier<BufferedImage> imageSupplier, boolean streaming, boolean debug) throws IOException {
         this.imageSupplier = imageSupplier;
         this.cardPredictor = new CardPredictorConvNet();
-        this.panel = new ImagePanel(annotateImage(imageSupplier.get(), debug));
+        this.image = imageSupplier.get();
+        this.panel = new ImagePanel(1280, 720);
+        this.panel.setBufferedImageSafe(annotateImage(image, debug));
         this.streaming = streaming;
     }
 
@@ -63,16 +68,17 @@ public class PlaySet implements Runnable{
         window.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                if (e.getKeyChar() == 'x') {
+                if (e.getKeyChar() == 'x' && previousSet != null) {
                     System.out.println("'Not a Set!'");
-                    // TODO: record errant image and Set
+                    ImageSuppliers.WebcamSaverImageSupplier.save(image);
                 }
             }
         });
 
         if (streaming) {
             while (true) {
-                newImage(imageSupplier.get());
+                image = imageSupplier.get();
+                newImage(image);
             }
         }
     }
@@ -129,9 +135,12 @@ public class PlaySet implements Runnable{
 
         if (cardPredictions.isEmpty()) {
             System.out.println("No cards found in image");
+            previousSet = null;
         } else if (cardPredictions.size() < 3) {
             System.out.println("Too few cards found in image");
+            previousSet = null;
         } else {
+            System.out.println(cardPredictions);
             SetPredictor setPredictor = new SetPredictor();
             List<SetPrediction> setPredictions = setPredictor.predict(cardPredictions);
             if (setPredictions.isEmpty()) {
@@ -141,31 +150,31 @@ public class PlaySet implements Runnable{
                 for (int i = 0; i < cardPredictions.size(); i++) {
                     cardToImageMap.put(cardPredictions.get(i).getCard(), images.get(i));
                 }
-                highlightSets(setPredictions, cardToImageMap, image, 1);
+                image = highlightSets(setPredictions, cardToImageMap, image, 1);
             }
         }
         return image;
     }
 
-    private void highlightSets(List<SetPrediction> setPredictions, Map<Card, CardImage> cardToImageMap, BufferedImage image, int maxToShow) {
-        Graphics2D g2 = image.createGraphics();
+    private BufferedImage highlightSets(List<SetPrediction> setPredictions, Map<Card, CardImage> cardToImageMap, BufferedImage image, int maxToShow) {
+        BufferedImage annotatedImage = deepCopy(image);
+        Graphics2D g2 = annotatedImage.createGraphics();
         g2.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON);
         Color[] colors = new Color[] {
                 Color.BLUE, Color.RED, Color.GREEN
         };
-        List<Triple> sets = setPredictions.stream().map(SetPrediction::getSet).collect(Collectors.toList());
         List<Triple> setsToShow = new ArrayList<>();
-        if (maxToShow == 1 && sets.contains(previousSet)) { // use previous for visual continuity
-            setsToShow.add(previousSet);
-        } else {
-            float topProbability = setPredictions.get(0).getProbability();
-            previousSet = setPredictions.get(0).getSet();
-            for (SetPrediction setPrediction : setPredictions) {
-                if (setPrediction.getProbability() < topProbability) {
-                    break;
-                }
-                setsToShow.add(setPrediction.getSet());
+        SetPrediction prediction = setPredictions.get(0);
+        if (previousSet == null || !previousSet.equals(prediction.getSet())) {
+            System.out.println("Best set: " + prediction);
+        }
+        float topProbability = prediction.getProbability();
+        previousSet = prediction.getSet();
+        for (SetPrediction setPrediction : setPredictions) {
+            if (setPrediction.getProbability() < topProbability) {
+                break;
             }
+            setsToShow.add(setPrediction.getSet());
         }
         for (int i = 0; i < setsToShow.size(); i++) {
             if (i == maxToShow) {
@@ -178,10 +187,20 @@ public class PlaySet implements Runnable{
             VisualizeShapes.draw(cardToImageMap.get(set.second()).getExternalQuadrilateral(), g2);
             VisualizeShapes.draw(cardToImageMap.get(set.third()).getExternalQuadrilateral(), g2);
         }
+        return annotatedImage;
+    }
+
+    private static BufferedImage deepCopy(BufferedImage bi) {
+        ColorModel cm = bi.getColorModel();
+        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+        WritableRaster raster = bi.copyData(null);
+        return new BufferedImage(cm, raster, isAlphaPremultiplied, null)
+                .getSubimage(0, 0, bi.getWidth(), bi.getHeight());
     }
 
     public static void main(String[] args) throws Exception {
         // "http://192.168.1.67:8080/shot.jpg"
+        // "http://192.168.1.92:8080/shot.jpg"
         boolean debug = false;
         Supplier<BufferedImage> imageSupplier = new ImageSuppliers.ReverseChronologicalSavedImageSupplier();
         boolean streaming = false;

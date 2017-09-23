@@ -115,6 +115,6 @@ public class CardDetector {
   }
 
   public static void main(String[] args) throws IOException {
-    new CardDetector().detect(args[0], true, true);
+    new CardDetector(66).detect(args[0], true, true);
   }
 }
