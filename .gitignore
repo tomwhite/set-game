@@ -1,4 +1,8 @@
 .DS_Store
+data/color*
+data/number*
+data/shading*
+data/shape*
 data/test-out*
 data/train-out*
 data/train-v2
