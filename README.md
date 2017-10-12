@@ -1,6 +1,9 @@
-# Set
+# SET
 
-Play Set using image recognition.
+Play [SET](https://www.setgame.com/) using image recognition. I've written this up as a
+ blog post.
+ 
+![Playing SET](animation.gif)
 
 ## Idea
 
@@ -9,17 +12,17 @@ Use image recognition algorithms that
 1. Pick out individual cards from an image.
 2. For each card, count the number of shapes, and detect the colour, shape and shading.
 
-Finally finding Sets within the image is the easy bit.
+Finally finding _SETs_ within the image is the easy bit.
 
 ## Technique
 
-Deep Learning is an obvious candidate, but I started by using more basic image processing
-and machine learning techniques. These serve as a baseline, and will help quantify
+I started by using basic image processing and machine learning techniques, before going
+on to use Deep Learning. The basic approach serve as a baseline, and helped quantify
 how much better Deep Learning can do.
 
 ## Data
 
-I took photos of lots of Set cards under various lighting conditions. The cards were
+I took photos of lots of SET cards under various lighting conditions. The cards were
 on black backgrounds to make things easier. An obvious extension would be to try
 different backgrounds at some point.
 
@@ -38,11 +41,11 @@ lacking, so I created a new, larger second dataset with more varied lighting con
 
 ### Dataset 2
 
-The _train-v2_ dataset is a collection of Set card images.
+The _train-v2_ dataset is a collection of SET card images.
 
 The _raw-archive_ directory contains original camera images. Each image is a 
 photo of a board of 27 images, arranged in a 3 by 9 grid. There are three
-boards, one contains all the Set cards with one shape, one with two shapes,
+boards, one contains all the SET cards with one shape, one with two shapes,
 and one with three shapes.
 
 The _raw-archive_ images are photos of the same boards taken at different times under
@@ -80,7 +83,8 @@ rm -rf data/train-v2/raw-{new,sorted,labelled}
 
 ### Test Data
 
-The test data is in _data/20170106_205743.jpg_, as well as _data/ad-hoc_.
+The test data is in _data/20170106_205743.jpg_, as well as _data/ad-hoc_ and 
+_data/webcam_.
 
 ## Processing
 
@@ -100,7 +104,8 @@ _Prediction_ (or inference) is the last step of the process, and uses the `Featu
 classes to recognize the cards in new or test images.
 
 Prediction is carried out by the classes in `com.tom_e_white.set_game.predict`, including
-`PlaySet` which takes an image and highlights the Sets in it.
+`PlaySet` which takes an image (or a series of images from a webcam) and highlights the 
+_SETs_ in it.
 
 `PredictCardFeaturesOnTestData`
 calculates the accuracy of predicting each feature (number, colour, shading, shape) for each
@@ -148,8 +153,11 @@ Total: 15
 Accuracy: 80 percent
 ```
 
-The next thing to try is using more advanced colour prediction techniques, possibly
-using a neural network.
+## Deep Learning
+
+I trained a convolutional neural network on the second dataset (see _train-cnn.py), and 
+got 100% accuracy on the test images. When the model is deployed in `PlaySet` it can play
+a decent game of SET - see the animated GIF at the top of the page.
 
 ## References
 
