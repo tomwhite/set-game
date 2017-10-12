@@ -1,7 +1,7 @@
-# SET
+# Getting a computer to play SET®
 
-Play [SET](https://www.setgame.com/) using image recognition. I've written this up as a
- blog post.
+Play [SET®](https://www.setgame.com/) using image recognition. I've written this 
+project up as a [blog post](https://blog.cloudera.com/blog/2017/10/understanding-how-deep-learning-learns-to-play-set/).
  
 ![Playing SET](animation.gif)
 
@@ -161,5 +161,8 @@ a decent game of SET - see the animated GIF at the top of the page.
 
 ## References
 
+* [The Joy of SET](http://press.princeton.edu/titles/10824.html) by McMahon et al.
 * [BoofCV Java Computer Vision library](http://boofcv.org/index.php?title=Manual)
+* [Deep Learning with Python](https://www.manning.com/books/deep-learning-with-python) by François Chollet
 * [Vehicle Color Recognition using Convolutional Neural Network](https://arxiv.org/pdf/1510.07391.pdf)
+* [YOLO9000: Better, Faster, Stronger](https://arxiv.org/abs/1612.08242)
