@@ -30,22 +30,22 @@
         <dependency>
             <groupId>org.boofcv</groupId>
             <artifactId>feature</artifactId>
-            <version>${boofcv.version}</version>
+            <version>0.26</version>
         </dependency>
         <dependency>
             <groupId>org.boofcv</groupId>
             <artifactId>io</artifactId>
-            <version>${boofcv.version}</version>
+            <version>0.26</version>
         </dependency>
         <dependency>
             <groupId>org.boofcv</groupId>
             <artifactId>ip</artifactId>
-            <version>${boofcv.version}</version>
+            <version>0.26</version>
         </dependency>
         <dependency>
             <groupId>org.boofcv</groupId>
             <artifactId>visualize</artifactId>
-            <version>${boofcv.version}</version>
+            <version>0.26</version>
         </dependency>
         <dependency>
             <groupId>com.github.haifengl</groupId>
@@ -55,7 +55,7 @@
         <dependency>
             <groupId>net.coobird</groupId>
             <artifactId>thumbnailator</artifactId>
-            <version>[0.4, 0.5)</version>
+            <version>0.4.20</version>
         </dependency>
         <dependency>
             <groupId>com.github.sarxos</groupId>
@@ -65,7 +65,7 @@
         <dependency>
             <groupId>com.github.sarxos</groupId>
             <artifactId>webcam-capture-driver-ipcam</artifactId>
-            <version>0.3.10</version>
+            <version>0.3.12</version>
         </dependency>
         <dependency>
             <groupId>org.tensorflow</groupId>
@@ -75,7 +75,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
