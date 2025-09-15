@@ -1,7 +1,7 @@
 # Getting a computer to play SET®
 
 Play [SET®](https://www.setgame.com/) using image recognition. I've written this 
-project up as a [blog post](https://blog.cloudera.com/blog/2017/10/understanding-how-deep-learning-learns-to-play-set/).
+project up as a [blog post](https://tom-e-white.com/2017/10/understanding-how-deep-learning-learns-to-play-set.html).
  
 ![Playing SET](animation.gif)
 
